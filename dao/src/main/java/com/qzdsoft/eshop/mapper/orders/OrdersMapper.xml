@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.orders.OrdersMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.orders.Orders" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="address_id" property="addressId" jdbcType="INTEGER" />
+    <result column="address_info" property="addressInfo" jdbcType="VARCHAR" />
+    <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="zip" property="zip" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="SMALLINT" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_price" property="payPrice" jdbcType="DECIMAL" />
+    <result column="carrige" property="carrige" jdbcType="DECIMAL" />
+    <result column="end_carrige" property="endCarrige" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="split_status" property="splitStatus" jdbcType="SMALLINT" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="online_pay_money" property="onlinePayMoney" jdbcType="DECIMAL" />
+    <result column="balance_pay_money" property="balancePayMoney" jdbcType="DECIMAL" />
+    <result column="user_remark" property="userRemark" jdbcType="LONGVARCHAR" />
+    <result column="admin_remark" property="adminRemark" jdbcType="LONGVARCHAR" />
+    <result column="reminding_deliver" property="remindingDeliver" jdbcType="SMALLINT" />
+    <result column="ctime" property="ctime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+  	<result column="invoice" property="invoice" jdbcType="SMALLINT" />
+  </resultMap>
+  <select id="selectByOrderNo" resultMap="BaseResultMap">
+	  	SELECT
+		order_id,
+		user_id,
+		address_id,
+		address_info,
+		true_name,
+		phone,
+		zip,
+		pay_type,
+		order_no,
+		reminding_deliver,
+		pay_price,
+		carrige,
+		end_carrige,
+		STATUS,
+		split_status,
+		delete_status,
+		online_pay_money,
+		balance_pay_money,
+		user_remark,
+		admin_remark,
+		ctime,
+		end_time,
+		invoice
+	FROM
+		orders
+	WHERE
+		order_no = #{orderNo}
+	AND user_id = #{userId}
+  </select>
+  
+  <select id="selectByOrderId" resultMap="BaseResultMap">
+	  	SELECT
+		order_id,
+		user_id,
+		address_id,
+		address_info,
+		true_name,
+		phone,
+		zip,
+		pay_type,
+		order_no,
+		reminding_deliver,
+		pay_price,
+		carrige,
+		end_carrige,
+		STATUS,
+		split_status,
+		delete_status,
+		online_pay_money,
+		balance_pay_money,
+		user_remark,
+		admin_remark,
+		ctime,
+		end_time,
+		invoice
+	FROM
+		orders
+	WHERE
+		order_id = #{orderId}
+	AND user_id = #{userId}
+  </select>
+  <!-- 查询所有未分润的订单 -->
+  <select id="findAllOrders" resultMap="BaseResultMap">
+	  	SELECT
+		order_id,
+		user_id,
+		address_id,
+		address_info,
+		true_name,
+		phone,
+		zip,
+		pay_type,
+		order_no,
+		reminding_deliver,
+		pay_price,
+		carrige,
+		end_carrige,
+		STATUS,
+		split_status,
+		delete_status,
+		online_pay_money,
+		balance_pay_money,
+		user_remark,
+		admin_remark,
+		ctime,
+		end_time,
+		invoice
+	FROM
+		orders
+	WHERE split_status = 0 AND
+		(status = 4 OR status = 5 OR status = 6)
+  </select>
+</mapper>

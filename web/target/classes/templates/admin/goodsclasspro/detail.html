@@ -1,0 +1,166 @@
+
+
+<div  style="overflow-x:auto;height:290px;">
+ <form  class="layui-form" action="" id="contentForm" lay-filter="contentForm">
+</form>
+</div>
+<!-- 头部 -->
+<div style="margin-top:15px">
+  <form class="layui-form search" id="headForm">
+  <input type="hidden" id="propertyId" name="propertyId" th:value="${propertyId}"/>
+  <div class="layui-form-item">
+     <!-- <div class="layui-inline">
+      <div class="layui-input-inline" style="width:100px">
+        <input type="text" name="name" placeholder="属性值名称" class="layui-input"/>
+      </div>
+    </div> -->
+      <!-- <div class="layui-input-inline" style="width:60px;">
+     	<button class="layui-btn" id="searchBtn1" type="button">查询</button>
+      </div> -->
+      <div class="layui-input-inline" style="width:240px;margin-left:80px;">
+     	<button class="layui-btn" id="saveBtn" type="button" authcode="63">保存</button>
+     	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+     	<button class="layui-btn layui-btn-danger" id="removeBtn" type="button" authcode="64">删除</button>
+      </div>
+  </div>
+ </form>
+</div>
+
+
+<script>
+var materialDialogIdx,trobj;
+$(function(){
+	
+	layui.use(['form','layer','laytpl'], function(){
+		var form = layui.form;
+		var laydate = layui.laydate;
+		 //获取原来的添加的数据
+		var formData = $("#headForm").serializeJson();
+		
+		$("#contentForm").load("/admin/goodsclasspro/prospecdetails?propertyId="+$("#propertyId").val(),function(data){
+			$("#contentForm").html(data);
+			$("#contentTab tbody").append($("#blankTpl tr").parent().html());
+			form.render();
+		});
+		
+		//输入值后新增一行
+		$("#contentForm").on("blur","#newName",function(){
+			if($(this).val()!=null && $(this).val()!=""){
+				$("#contentTab tbody").append($("#blankTpl tr").parent().html());
+				form.render();
+			}
+		});
+		
+		
+		//查询按钮点击
+		$("#searchBtn1").click(function(){
+			var formData = $("#headForm").serializeJson();
+			$.detailLoad("/admin/goodsclasspro/prospecdetails?id="+$("#propertyId").val(),formData,function(data){
+				$("#contentForm").html(data);
+				$("#contentTab tbody").append($("#blankTpl tr").parent().html());
+				form.render();
+				var requireDates = $("[name='requireDate']");
+				for(var i=0;i<requireDates.length-1;i++){
+				laydate.render({
+				    elem:requireDates.eq(i).get(0) //指定元素
+				  });
+				}
+			});
+			
+		});
+		
+		 form.on('submit(contentForm)', function(data){
+			 	var data = {};
+				data["propertyId"]=$("#propertyId").val();
+				var items = [];
+				var $trs = $("#contentTab tbody tr");
+				for(var i=0;i<$trs.size();i++){
+					var $tr = $trs.eq(i);
+				    var specId = $tr.find("input[name='specId']").val();
+				    var name =  $tr.find("input[name='name']").val();
+					items.push({
+						specId:specId,
+						name:name,
+					    });
+				}
+				data["items"] = items;
+				$.ajax({url:"/admin/goodsclasspro/edit-prospecdetails",
+						data:JSON.stringify(data),
+						type:"post",
+						contentType:"application/json",
+						success:function(data){
+							if(data.code==200){
+								layer.close(specdex);
+								layer.msg('数据保存成功！', { 
+									  icon: 6,
+									  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+									}, function(){
+										$("#searchBtn").click();
+									}); 
+								
+							}else{
+								layer.msg(data.result);
+							}
+						}});
+			return false;
+		 });
+		 
+		//保存按钮事件
+		$("#saveBtn").click(function(){
+			$("#contentForm").submit();
+		});
+		
+		//删除按钮事件
+		$("#removeBtn").click(function(){
+			//获取所有的checkbox
+			var checkedBox = $("#contentTab").find('tbody input[type="checkbox"]:checked');
+			var removeids = [];//删除的id数组
+			checkedBox.each(function(index, item){
+				   var id = $(item).parents('tr').find("input[name='specId']").val();
+				   if(id!=null&&id!=''){
+					   //获取所有的id列表
+					   removeids.push(id);
+				   }
+		           $(item).parents("tr").remove();
+		         
+		     }); 
+			if(removeids.length==0){
+				return ;
+			}
+			var data = {};
+			data['ids'] = removeids;
+			$.ajax({
+	             type: "post",
+	             url: "/admin/goodsclasspro/remove-prospec",
+	             data: JSON.stringify(data),
+	             type:"post",
+				 contentType:"application/json",
+	             success: function(data){
+	             	if(data.code==200){
+	             		layer.msg(data.message)
+	             	}else{
+	             		layer.msg(data.result)
+	             	}
+	             }
+			});
+		});
+		
+		//复选框表头操作
+		form.on("checkbox(headCheckBox)",function(data){
+			
+			 var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]');  
+	            child.each(function(index, item){  
+	              item.checked = data.elem.checked;  
+	            });  
+	            form.render('checkbox'); 
+		});
+		$('#closeBtn').click(function() {
+			layer.closeAll();
+		});
+	});
+	
+});
+
+</script>
+<!--<div th:replace="/department/model::modelDiv"></div>-->
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.shoppingcart.ShoppingCartQueryMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goods.ShoppingCart" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="cart_id" property="cartId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="num" property="num" jdbcType="INTEGER" />
+    <result column="sku_id" property="skuId" jdbcType="INTEGER" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+  </resultMap>
+  <select id="findCartInfo" resultType="com.qzdsoft.eshop.vo.goods.pc.ShoppingCartItemInfo">
+   SELECT
+   		c.cart_id cartId,
+		a.url goodImage,
+		g.name goodName,
+		gs.price price,
+		gs.spec_ids specs,
+		gs.sku_id skuId,
+		gs.goods_id goodsId,
+		c.num num,
+		gc.name className
+	FROM
+		`shopping_cart` c
+	JOIN `user` u ON c.user_id = u.user_id
+	JOIN goods_sku gs ON c.sku_id = gs.sku_id
+	JOIN goods g ON g.goods_id = gs.goods_id
+	JOIN goods_class gc ON g.class_id = gc.class_id
+	JOIN goods_img gm ON gm.goods_id = g.goods_id
+	AND gm.is_master_img = 1
+	JOIN accessory a ON a.accessory_id = gm.accessory_id
+	WHERE
+		c.delete_status = 0
+	AND u.user_id = #{userId}
+  </select>
+</mapper>

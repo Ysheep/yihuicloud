@@ -1,0 +1,182 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+<style>
+	*{margin:0px;}
+	.menu ul{width:100%;background-color:#FFFFFF;}
+	.menu li{border-left: 5px solid #FFFFFF;}
+	.menu li,a{width:100%;height:40px;font-size:14px;line-height:40px;text-align:center;color:#000000;padding-top:2px;}
+	.menu li:hover{background-color:#f2f2f2;cursor:pointer;}
+	.current{border-left: 5px solid #009E94!important;background-color:#f2f2f2;}
+	.content{margin-left:10px;}
+</style>
+<body>
+
+<th:block layout:fragment="content">
+<!-- 头部 -->
+<div class="layui-row" style="margin-top:15px;">
+  <div class="menu layui-col-xs2 layui-col-sm2 layui-col-md2" style="height:85%;">
+  		<ul>
+		  <li th:each="me:${menus}" class="" th:value="${me.code}" th:text="${me.value}"></li>
+		</ul>
+  </div>
+  <div class="layui-col-xs10 layui-col-sm10 layui-col-md10" style="height:85%;">
+  		<div class="content">
+  		</div>
+  </div>
+</div>
+<script>
+	var menuCode,menuValue;
+	$(function(){
+		var lis = $(".menu li");
+		if(lis.length>0){
+			lis.eq(0).click();
+		}
+	});
+	$(".menu li").on("click",function(){
+		menuCode = $(this).attr("value");
+		menuValue = $(this).text();
+		$(".menu li").attr("class","");
+		$(this).attr("class","current");
+		$.ajax({
+			type:'GET',
+			url:'/admin/dictionary/detail',
+			data:{'type':menuCode},
+			dataType:'html',
+			success:function(data){
+				$(".content").html("");
+				$(".content").html(data);
+				if(menuCode!='2'){
+					$("#contentTab tbody").append($("#blankTpl tr").parent().html());
+				}
+			}
+			
+		});
+		return false;
+	});
+	//输入值后新增一行
+	$(".content").on("blur","#newValue",function(){
+		var tr = $(this).parent().parent().next().html();
+		if($(this).val()!=null && $(this).val()!="" && typeof(tr)=='undefined'){
+			$("#contentTab tbody").append($("#blankTpl tr").parent().html());
+		}
+	});
+	
+	//复选框表头操作
+	$(".content").on("click","#headCheckBox",function(){
+		var head = this.checked;
+		 var child = $("#contentTab").find('tbody input[type="checkbox"]');
+            $.each(child,function(index, item){
+              if(head){
+            	  item.checked = true;
+              }else{
+            	  item.checked = false;
+              }
+            });  
+	});
+	//保存
+	$(".content").on("click","#saveBtn",function(){
+		var data ={};
+		data["typecode"] = menuCode;
+		data["typevalue"] = menuValue;
+		var items = [];
+		var trs = $("#contentTab").find('tbody tr');
+		trs.each(function(index,tr){
+			if(index!=trs.length-1){
+				var check = $(tr).find("input[name='trCheckBox']").prop("checked");
+				var  id= $(tr).find("input[name='id']").val();
+				if(id!=''){
+					var code = $(tr).find("input[name='dictionarycode']").val();
+					var  val= $(tr).find("input[name='dictionaryValue']").val();
+				}else{
+					var code = $(tr).find("input[name='newCode']").val();
+					var  val= $(tr).find("input[name='newValue']").val();
+				}
+				if(menuCode=='2'){
+					var reg=/^(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$/;//验证数字
+					if(!reg.test(Number(val))){
+						alert("分润设置值不能为负");
+						return false;
+					};
+				}
+				
+				if(code!=''&&val!=''){
+					var item = {
+							id:id,
+							code:code,
+							value:val
+					}
+					items.push(item);
+				}else{
+					alert("code和值不能为空");
+					return false;
+				}
+			}
+			
+		});
+		data["details"]=items;
+		if(items.length==0){
+			return false;
+		}
+		$.ajax({
+			type:'POST',
+			url:'/admin/dictionary/save',
+			data:JSON.stringify(data),
+			dataType:'json',
+			contentType:'application/json',
+			success:function(data){
+				if(data==200){
+					window.location.reload();
+				}
+			}
+		});
+		return false;
+	});
+	//删除
+	$(".content").on("click","#removeBtn",function(){
+		var trs = $("#contentTab").find('tbody tr');
+		var data = {}
+		var ids = [];
+		trs.each(function(index,tr){
+			var check = $(tr).find("input[name='trCheckBox']").prop("checked");
+			var  id= $(tr).find("input[name='id']").val();
+			if(check&&index!=trs.length-1){
+				$(tr).remove();
+				if(id!=''){
+					ids.push(id);
+				}
+			}
+		});
+		if(ids.length==0){
+			return false;
+		}
+		data["ids"] = ids;
+		$.ajax({
+			type:'POST',
+			url:'/admin/dictionary/del',
+			data:JSON.stringify(data),
+			dataType:'json',
+			contentType:'application/json',
+			success:function(data){
+				if(data==200){
+					
+				}
+			}
+		});
+		return false;
+	});
+	
+	$(".content").click(function(){
+		$("#contentTab").find('tbody input[type="checkbox"]').each(function(index,item){
+			$(item).on("click",function(){
+				if(!item.checked){
+						$("#headCheckBox").removeAttr("checked");
+			       }
+				});
+		});
+	});
+</script>
+</th:block>
+</body>
+</html>

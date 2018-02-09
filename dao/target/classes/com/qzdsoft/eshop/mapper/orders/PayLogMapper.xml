@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzdsoft.eshop.mapper.orders.PayLogMapper">
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.orders.PayLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="paylog_id" jdbcType="INTEGER" property="paylogId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="mer_order_no" jdbcType="VARCHAR" property="merOrderNo" />
+    <result column="resp_time" jdbcType="TIMESTAMP" property="respTime" />
+    <result column="resp_status" jdbcType="VARCHAR" property="respStatus" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="resp_info" jdbcType="LONGVARCHAR" property="respInfo" />
+  </resultMap>
+  
+</mapper>

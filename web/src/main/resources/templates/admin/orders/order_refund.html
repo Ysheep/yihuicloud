@@ -1,0 +1,103 @@
+<style>
+.layui-input-block{
+margin-left:120px;
+}
+.layui-layer-page .layui-layer-content {
+	position: relative;
+	overflow: visible !important;
+}
+</style>
+<form class="layui-form" action="" id="orderEditForm" style="position: absolute;">
+<input type="hidden" name="orderId" th:value="${orderinfo.orderId}">
+<div class="layui-row"  style="margin-top:10px;"> 	
+	<div class="layui-form-item" style="">
+  			<label class="layui-form-label" style="width:80px;">订单总额(元)</label>
+  			<div class="layui-input-block" style="width:200px;">
+		         <input type="text" id="refund" th:value="${orderinfo.payPrice}" class="layui-input" readonly />
+		    </div>
+	 </div>
+	 
+ 
+  	  <div class="layui-form-item" style="">
+		    <label class="layui-form-label " style="width:80px;">是否退款</label>
+		    <div class="layui-input-block" style="width:200px;">
+	         	<select name="refundStatus" lay-verify="required" lay-filter="isrefund">
+		      		<option th:each="ec:${restatus}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code}==1"></option>
+		      	</select>
+		    </div>
+	   </div>
+	 <div class="layui-form-item" style="">
+  			<label class="layui-form-label required" style="width:80px;">退款金额</label>
+  			<div class="layui-input-block" style="width:200px;">
+  				 <input type="text" name="refundFee" id="refundFee" th:value="${orderinfo.payPrice}" class="layui-input ch" lay-verify="required|number" />
+		    </div>
+	 </div>
+  	 	
+</div>
+  
+ <div class="layui-row" style="margin-top:40px;margin-left:80px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;">
+          <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode="80">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+<script>
+
+//start use
+layui.use('form', function(){
+	
+	  var form = layui.form; 
+	//只有执行了这一步，部分表单元素才会自动修饰成功
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		var params =$("#orderEditForm").serializeJson();
+		var oldre = $("#refund").val();
+		if(params.refundFee>oldre) {
+			layer.msg("退款金额不能大于订单总额:【"+oldre+"】");
+			return false;
+		}
+		$.ajax({url:'/admin/orders/refundconfirm',
+			data:$("#orderEditForm").serializeJson(),
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					$.reloadData("searchBtn");
+					layer.msg(data.message);
+					layer.closeAll();
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	$('#closeBtn').click(function() {
+		layer.close(editdialogindex);
+	});
+	
+	form.on('select(isrefund)',function(data) {
+		var val= data.value;
+		console.log("val="+val);
+		if(val==1) {//同意
+			$(".ch").each(function() {
+				$(this).removeAttr('disabled').attr('lay-verify','required|number');
+			});
+		}else{
+			$(".ch").each(function() {
+				$(this).attr('disabled','disabled').removeAttr('lay-verify').val("");
+			});
+			
+		}
+	});
+	        
+});
+//end use
+</script>
+
+ 

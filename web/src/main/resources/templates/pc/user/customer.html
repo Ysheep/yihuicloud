@@ -1,0 +1,84 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="/">首页</a></li>
+		<li><a href="list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  member start  =============== --> 
+<div class="member-main  cf">
+	<div th:include="pc/commons/header :: mm-left"></div>
+	<div class="mm-right">
+		<div class="customer">
+			<div class="customer-top cf">
+				<div class="ct-img">
+					<a href=""></a>
+				</div>
+				<div class="vip_word">
+					<div class="v_name">
+						<h3><span th:text="${userName}"></span>&nbsp;<a style="font-size:12px;" href="">提醒消息</a></h3>
+					</div>
+					<div class="v_level"> <span>创客</span><a href="">查看等级特权&gt;&gt;</a> </div>
+				</div>
+			</div>
+			<div class="biaoge">
+            	<label>客户列表</label>
+                <div class="see">
+                	<div class="top">
+                    	<span class="name">名称</span>
+                    	<span class="zhuangtai">级别</span>
+                        <span class="detail">详情</span>
+                    </div>
+                    <div class="center">
+                    		<ul>
+                    			<li th:remove="${customerList.size()==0?'none':'all'}">
+                                	<span class="userName"></span><span class="level" >暂无顾客</span><span class="namePhone" ></span>
+                           		</li>
+                    			<li th:each="customer:${customerList}">
+                                	<span class="userName" th:text="${customer.userName}"></span><span class="level" th:text="${customer.level}"></span><span class="namePhone" th:text="${customer.phone}"></span>
+                           		</li>
+                    		</ul>
+                    </div>
+                </div>
+            </div>
+		</div>
+		
+	</div>	
+</div>
+<!-- ===============  member end  =============== --> 
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+</body>
+</html>
+
+
+

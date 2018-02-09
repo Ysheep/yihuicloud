@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.express.ExpressInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.express.ExpressInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="express_id" property="expressId" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+    <result column="express_no" property="expressNo" jdbcType="VARCHAR" />
+    <result column="express_company_code" property="expressCompanyCode" jdbcType="VARCHAR" />
+    <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>

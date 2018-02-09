@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.GoodsQueryMapper" >
+  <!-- 查分类属性 -->
+  <select id="findByClass" resultType="com.qzdsoft.eshop.vo.goods.GoodsListInfo" >
+  	SELECT
+		g.`name` name,
+		g.goods_id id,
+		ac.url image,
+		g.price price,
+		gc.type classType,
+		g.purchase_num purchaseNum
+	FROM
+		goods g
+	JOIN goods_class gc ON gc.class_id = g.class_id AND g.delete_status=0 AND g.class_id = #{classid} AND g.start_time &lt;=#{startDate} AND g.end_time &gt;=#{endDate}
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+	ORDER BY g.goods_id DESC
+	LIMIT #{startPage},#{limitCounter}
+  </select>
+  <!-- 查询商品图片 -->
+  <select id="findGoodsImages" resultType="string">
+	 SELECT
+		a.url
+	FROM
+		goods_img gi
+	JOIN goods g ON g.goods_id = gi.goods_id AND gi.goods_id=#{goodsId}
+	JOIN accessory a ON a.accessory_id = gi.accessory_id
+  </select>
+  
+  <select id="findAllGoodsInfo" resultType="com.qzdsoft.eshop.vo.goods.GoodsInfo" parameterType="com.qzdsoft.eshop.vo.goods.GoodsQueryInfo">
+  	SELECT
+		a.goods_id goodsId,
+		a.class_id classId,
+		a. NAME NAME,
+		a.descript descript,
+		a.decode decode,
+		b. NAME className,
+		a.detail,
+		a.purchase_num purchaseNum,
+		a.price,
+		a.ctime,
+		CASE WHEN a.end_time &lt; NOW() THEN 1 ELSE 0 END status,
+		a.start_time startTime,
+		a.end_time endTime,
+		a.delete_status deleteStatus,
+		a.is_recommend isRecommend,
+		a.vedio_id vedio,
+		a.system_id systemId,
+		a.is_package isPackage,
+		a.package_index_show packageIndexShow
+	FROM
+		`goods` a
+	LEFT JOIN goods_class b ON a.class_id = b.class_id
+	WHERE 1=1
+	AND a.delete_status = 0
+	<if test="name != null and name != ''">
+		AND a.name LIKE CONCAT(CONCAT("%",#{name}),"%")
+	</if>
+	<if test="isRecommend!=null">
+		AND a.is_recommend = #{isRecommend}
+	</if>
+	<if test="isPackage!=null and isPackage!=''">
+		AND a.is_package = #{isPackage}
+	</if>
+	ORDER BY a.goods_id DESC
+  </select>
+
+  <select id="findImg" resultType="com.qzdsoft.eshop.vo.goods.GoodsImgInfo">
+  	SELECT
+		a.accessory_id accessoryId,
+		goods_id goodsId,
+		is_master_img isMasterImg,
+		url
+	FROM
+		`goods_img` a
+	LEFT JOIN accessory b ON a.accessory_id = b.accessory_id
+	WHERE
+		a.goods_id = #{goodsId}
+  </select>
+  
+  <select id="selectOffLineByClass" resultType="com.qzdsoft.eshop.vo.goods.GoodsListInfo">
+  	SELECT
+		g.`name` name,
+		g.goods_id id,
+		cg.sku_id skuId,
+		ac.url image,
+		cg.price price,
+		gc.type classType,
+		cg.sole_amount purchaseNum
+	FROM
+		`counter_goods` cg
+	JOIN counter c ON cg.counter_id = c.counter_id AND cg.count &gt; 0  AND c.counter_code = #{counterNo}
+	JOIN goods_sku gs ON cg.sku_id = gs.sku_id
+	JOIN goods g ON gs.goods_id = g.goods_id AND g.delete_status=0
+	JOIN goods_class gc ON g.class_id = gc.class_id 
+	AND  gc.class_id = #{classid}
+	AND g.start_time &lt;=#{startDate} AND g.end_time &gt;=#{endDate}
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+	ORDER BY g.goods_id DESC
+	LIMIT #{startPage},#{limitCounter}
+  </select>
+  
+  <select id="getOnlineGoods" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT
+  		g.goods_id code
+  		,g.name value
+  	FROM
+  		goods g
+  	 
+  	WHERE 1 = 1
+  	AND g.delete_status = 0
+  		<if test="null != name and '' != name">
+  			AND g.name LIKE CONCAT(CONCAT('%',#{name}),'%')
+  		</if>
+  	ORDER BY g.goods_id DESC
+  </select>
+  <select id="getAllSystemId" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT
+  		g.id code
+  		,g.value value
+  	FROM
+  		data_dictionary g
+  	WHERE 1 = 1 AND typecode='1'
+  </select>
+  <select id="getRecommentGoods" resultType="com.qzdsoft.eshop.vo.goods.GoodsListInfo">
+  	SELECT
+		g.`name` name,
+		g.goods_id id,
+		ac.url image,
+		g.price price,
+		gc.type classType,
+		g.purchase_num purchaseNum
+	FROM
+		goods g
+	JOIN goods_class gc ON gc.class_id = g.class_id AND g.delete_status=0 AND g.is_recommend = 1 AND gc.type = 0 
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+	ORDER BY g.goods_id DESC
+	LIMIT #{page},#{limit}
+  </select>
+  <select id="goodsSearchByQuery" resultType="com.qzdsoft.eshop.vo.goods.pc.GoodsSearchInfo">
+  	SELECT
+		g.`name` name,
+		g.goods_id goodsId,
+		ac.url imageUrl,
+		g.price price
+	FROM
+		goods g
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+	<if test="null!=systemId and ''!=systemId">
+	JOIN data_dictionary da ON g.system_id = da.id AND typecode='1' AND da.id = #{systemId}
+	</if>
+  	WHERE 
+  	g.start_time &lt;=#{startDate} AND g.end_time &gt;=#{endDate}
+  	<if test="null!=keyWord and ''!= keyWord">
+  		AND g.`name` LIKE CONCAT('%',CONCAT(#{keyWord},'%')) 
+  	</if>
+  	<if test="null!=classId and ''!= classId">
+  		AND g.class_id = #{classId} 
+  	</if>
+  	<if test="null!= isPackage and isPackage!=''">
+  		AND g.is_package = #{isPackage}
+  	</if>
+  </select>
+  
+  <select id="queryStartGoods" resultType="com.qzdsoft.eshop.vo.goods.pc.StartGoodsInfo">
+  	 SELECT
+		g.`name` name,
+		g.goods_id goodsId,
+		ac.url imageUrl,
+		g.price price,
+		g.descript descript
+	FROM
+		goods g
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+  	WHERE 
+  	g.start_time &lt;=#{currentTime} AND g.end_time &gt;=#{currentTime}
+  	AND g.is_recommend = 1
+	ORDER BY g.goods_id DESC
+  </select>
+  <select id="queryPackageGoods" resultType="com.qzdsoft.eshop.vo.goods.pc.PackageGoodsInfo">
+  	 SELECT
+		g.`name` name,
+		g.goods_id goodsId,
+		ac.url imageUrl,
+		g.price price,
+		g.descript descript
+	FROM
+		goods g
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+  	WHERE 
+  	g.start_time &lt;=#{currentTime} AND g.end_time &gt;=#{currentTime}
+  	AND g.is_package = 1
+  	AND g.package_index_show = 1
+	ORDER BY g.goods_id DESC
+  </select>
+  <select id="findGoodsParams" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT
+  		p.name code
+  		,p.value value
+  	FROM
+  		goods_param p
+  	WHERE
+  		p.goods_id = #{goodsId}
+  	AND p.delete_status = 0
+  </select>
+</mapper>
+

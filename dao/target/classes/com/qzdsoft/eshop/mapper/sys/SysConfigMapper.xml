@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.sys.SysConfigMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.SysConfig" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="config_id" property="configId" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="detail" property="detail" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getCompanyInfo" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT
+		`value`  `code`
+		,detail `value`
+	FROM
+		sys_config
+	WHERE 
+	 `code`  = 'company_code'	
+  </select>
+  
+</mapper>

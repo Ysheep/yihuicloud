@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headc">
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+
+    <title>亿慧云</title>
+
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html"/>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="favicon.ico">
+    <link th:href="@{/layerui/css/layui.css}" rel="stylesheet">
+    <link th:href="@{/css/plugins/select2/select2.min.css}" rel="stylesheet" />
+	<link href="https://cdn.bootcss.com/zTree.v3/3.5.29/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+    <!-- layer js -->
+    <script th:src="@{/layerui/layui.js?v=3.2}"></script>
+    <script th:src="@{/js/common.js?v=1.0.2}"></script>
+	<script th:src="@{/js/plugins/select2/select2.min.js}"></script>
+	<script th:src="@{/js/plugins/select2/i18n/zh-CN.js}"></script>
+	<style>
+		.search .layui-inline{margin-bottom:0px;}
+		.search .layui-form-item{padding:10px;}
+		.required:before{content:"*";color:red;font-weight: 900}
+	</style>
+	<script th:inline="javascript">
+    /*<![CDATA[*/
+	var fields = [[${fields}]];  //表格权限字段
+	/*]]>*/
+	</script>	
+</head>
+
+<body>
+
+</body>
+</html>

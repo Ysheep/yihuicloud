@@ -1,0 +1,69 @@
+<style>
+.layui-input-block{
+margin-left:120px;
+}
+</style>
+<form class="layui-form" action="" id="orderEditForm" style="position: absolute;">
+<div class="layui-row"  style="margin-top:10px;">
+	  <input type="hidden" name="propertyId" th:value="${goodsPro.propertyId}" />
+	 <div class="layui-form-item">
+		    <label class="layui-form-label required" style="width:90px;">属性名称</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="text" name="name" class="layui-input" th:value="${goodsPro.name}" lay-verify="required"/>
+		    </div>
+	   </div>
+	   <!-- 
+	  <div class="layui-form-item">
+		    <label class="layui-form-label" style="width:120px;">父级分类</label>
+		    <div class="layui-input-block" style="width:200px;" >
+				<select name="pid" id="pid">
+					<option value="">请选择</option>
+				    <option th:each="ec:${classList}" th:value="${ec.classId}" th:text="${ec.name}" th:selected="${ec.classId==goodsclass.pid}"></option>
+				</select>
+		    </div>
+	   </div>
+	   -->
+  	
+</div>
+  
+ <div class="layui-row" style="margin-top:20px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;margin-left:35px;">
+        <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode="60">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+<script>
+
+//start use
+layui.use('form', function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		$.ajax({url:'/admin/goodsclasspro/execute_edit',
+			data:$("#orderEditForm").serializeJson(),
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					layer.msg("数据保存成功！");
+					$.reloadData("searchBtn");
+					layer.closeAll();
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	$('#closeBtn').click(function() {
+		layer.close(editdialogindex);
+	});
+});
+//end use
+</script>

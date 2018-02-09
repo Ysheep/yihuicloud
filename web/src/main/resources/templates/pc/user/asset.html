@@ -1,0 +1,149 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="/">首页</a></li>
+		<li><a href="list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  member start  =============== --> 
+<div class="member-main  cf">
+	<div th:include="pc/commons/header :: mm-left"></div>
+	<div class="mm-right">
+		
+		
+		<div class="asset">
+			<div class="my_balance">
+				<h3>我的余额：</h3>
+				<span th:text="${balance}"></span>元
+				<a href="javascript:;" id="cz">充值</a>
+				<a href="javascript:;" id="cz">提现</a>
+			</div>
+            <div class="balance_record">
+			    <div class="balance_record_chose">
+					<div class="brc_left">
+						<ul>
+							<li class="brc_left_focus"><a href="">账单记录</a></li>
+							<!--<li class=""><a href="/index.php/shop/member/money/type/money_record/UsersID/7cqkyz0yzv">资金流水</a></li>-->
+						</ul>
+					</div>
+				</div>
+				<div class="balance_record_table">
+				    <div class="brt_different">
+						<span id="type">充值/提成</span><span id="time">时间</span><span id="state">状态</span><span id="writesome">备注</span>
+					</div>
+					<div class="brt_see">
+                        <p th:remove="${walletList.wallet.size()==0?'none':'all'}" style="line-height:50px; text-align:center;color:#999;">暂无订单！</p>
+                        <ul>
+                           <li th:each="wallet:${walletList.wallet}">
+                                <span class="type" th:text="${(wallet.type=='1'?'-':'+')+wallet.money}"></span><span class="time" th:text="${wallet.time}"></span><span class="state state-ed" th:text="${wallet.status=='1'?'已到账':'未到账'}"></span><span class="writesome" th:text="${wallet.remark}"></span>
+                           </li>
+                        </ul>
+                    </div>
+				</div>
+			</div>
+			<input type="hidden" name="page" value="1">
+            <div class="fenye">
+                <div class="fy1"> 
+				    <a href="javascript:;" title="上一页" id="up" flag="false" style="color: rgb(153, 153, 153); cursor: auto;">&lt;</a> 
+				    <span><i id="cur_page" th:text="${walletList.page}"></i>/<b id="total_page" th:text="${walletList.pageTotal}"></b></span> 
+					<a href="javascript:;" title="下一页" id="down" flag="false" style="color: rgb(153, 153, 153); cursor: auto;">&gt;</a>
+					<i>到</i>
+                    <input type="text" id="text" maxlength="2">
+                    <i>页</i>
+					<a id="submit" href="javascript:;">跳转</a> 
+				</div>
+            </div>
+		</div>
+
+	</div>	
+</div>
+<script>
+	$("#up,#down,#submit").on('click',function(){
+		var page = $("#cur_page").text();
+		var totalPage = $("#total_page").text();
+		var num = $("#text").val();
+		if($(this).attr("id")=="up"){
+			if(page==1){
+				return false;
+			}else{
+				page = Number(page)-1;
+				wallet(page);
+			}
+		}else if($(this).attr("id")=="down"){
+			if(page==totalPage){
+				alert("last page");
+				return false;
+			}else{
+				page = Number(page)+1;
+				wallet(page);
+			}
+		}else if($(this).attr("id")=="submit"){
+			if(num<1||num>totalPage){
+				return false;
+			}else{
+				wallet(num);
+			}
+		}
+		
+	});
+	function wallet(page){
+		$.ajax({
+			type:"POST",
+			url:"/user/center/wallet",
+			data:{"page":page},
+			dataType:"json",
+			success:function(data){
+				$(".brt_see ul").html("");
+				if(data.code==200){
+					var walletList = data.result.wallet; 
+					var li ="";
+					$.each(walletList,function(i,wallet){
+						li = li+"<li><span class=\"type\">"+(wallet.type=='1'?'-':'+')+wallet.money+"</span><span class=\"time\">"+wallet.time+"</span><span class=\"state state-ed\">"+(wallet.status=='1'?'已到账':'未到账')+"</span><span class=\"writesome\">"+wallet.remark+"</span></li>";
+					});
+					$(".brt_see ul").append(li);
+					$("#cur_page").text(data.result.page);
+					$("#total_page").text(data.result.pageTotal);
+				}
+			}
+		});
+		return false;
+	}
+
+</script>
+<!-- ===============  member end  =============== --> 
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+</body>
+</html>
+
+
+

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.CommentQueryMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goods.Comment" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="comment_id" property="commentId" jdbcType="INTEGER" />
+    <result column="sku_id" property="skuId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="ctime" property="ctime" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMap1" type="com.qzdsoft.eshop.vo.goods.pc.GoodsCommentInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="comment_id" property="commentId" jdbcType="INTEGER" />
+    <result column="userName" property="userName" jdbcType="VARCHAR"/>
+    <result column="ctime" property="ctime" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <collection property="imageUrl" column="comment_id" javaType="List" ofType="java.lang.String" select="findImgs"></collection>
+  </resultMap>
+  <select id="findGoodComment" resultMap="BaseResultMap1">
+  	SELECT
+  		c.comment_id,
+  		c.content content
+  		,DATE_FORMAT(c.ctime,'%Y-%m-%d') ctime
+  		,u.user_name userName
+  	FROM
+  		comment c
+  	JOIN goods_sku gs ON c.sku_id = gs.sku_id AND c.goods_id = #{goodsId}
+  	JOIN user u ON c.user_id = u.user_id
+  </select>
+  <select id="findImgs" resultType="java.lang.String">
+  	select
+  	b.url imageUrl
+  	from comment_img a
+  	JOIN accessory b ON a.accessory_id = b.accessory_id 
+  	WHERE a.comment_id=#{comment_id}
+  </select>
+</mapper>

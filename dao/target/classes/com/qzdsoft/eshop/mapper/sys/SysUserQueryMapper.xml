@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.sys.SysUserQueryMapper" >
+  	<select id="queryUser" resultType="com.qzdsoft.eshop.vo.sys.LoginUserInfo">
+  		SELECT
+  			s.user_id loginId,
+			s. NAME name,
+			s.phone phone,
+			0 type,
+			s.role_id roleId
+		FROM
+			sys_user s
+		WHERE
+			s.phone = #{username}
+		AND s.`password` =#{password}
+  	</select>
+  	<select id="selectByQueryParam" resultType="com.qzdsoft.eshop.vo.sys.SysUserInfo">
+  		SELECT
+  			s.user_id userId,
+			s. NAME name,
+			s.phone phone,
+			s.role_id roleId,
+			s.ctime ctime,
+			s.delete_status deleteStatus,
+			r.name role
+		FROM
+			sys_user s
+		LEFT JOIN role r ON s.role_id = r.role_id
+		WHERE 1 = 1
+		<if test="sreachKey!=null and sreachKey!=''">
+			AND (s.name LIKE CONCAT(#{sreachKey},'%') OR s.phone LIKE CONCAT(#{sreachKey},'%'))
+		</if>
+  	</select>
+  	
+  	<select id="selectAllButton" resultType="com.qzdsoft.vo.TypeInfo">
+  		SELECT
+  		r.resource_id code
+  		,r.url value
+  		FROM
+  		resource r
+  		WHERE r.type = 1
+  	</select>
+  	<select id="selectAuthorizedButton" resultType="com.qzdsoft.vo.TypeInfo">
+  		SELECT
+  		rr.resource_id code
+  		,re.url value
+  		FROM
+  		role_res rr
+  		JOIN resource re ON rr.resource_id = re.resource_id AND re.type = 1
+  		WHERE rr.role_id = #{roleId}
+  	</select>
+  	<select id="isHasAllFunction" resultType="Integer">
+		SELECT
+			r.all_function
+		FROM
+			role r
+		WHERE 
+			r.role_id=#{roleId}
+ 	</select>
+ 	<select id="selectAllUrl" resultType="String">
+ 		SELECT
+  		r.url url
+  		FROM
+  		resource r
+  		WHERE 1=1
+ 	</select>
+	<select id="selectAuthorizedUrl" resultType="String">
+	SELECT
+	re.url url
+	FROM
+		role_res rr 
+	JOIN resource re ON rr.resource_id = re.resource_id
+	WHERE 
+	rr.role_id=#{roleId}
+ 	</select>
+ 	<select id="selectById" resultType="com.qzdsoft.eshop.vo.sys.SysUserInfo">
+ 		SELECT
+ 			u.name name
+ 			,u.phone phone
+ 			,r.name role
+ 		FROM
+ 			sys_user u
+ 		LEFT JOIN role r ON u.role_id = r.role_id
+ 		WHERE u.user_id = #{id}
+ 	</select>
+ 	<select id="selectBy" resultType="com.qzdsoft.eshop.vo.sys.SysUserInfo">
+ 		SELECT
+ 			a.name name
+ 			,a.phone phone
+ 			,a.abonus_rate taxRate
+ 			,a.balance balance
+ 			,b.name parentName
+ 			,b.phone parentPhone
+ 			,r.name role
+ 		FROM
+ 			agent a
+ 		LEFT JOIN role r ON a.role_id = r.role_id
+ 		LEFT JOIN agent b ON a.recommender_id = b.agent_id
+ 		WHERE 
+ 			a.agent_id =  #{id}
+ 	</select>
+</mapper>

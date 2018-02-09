@@ -1,0 +1,229 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+
+   <div th:include="pc/commons/header :: top-bar "></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="/">首页</a></li>
+		<li><a href="/goods/list.html?isPackage=1">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  cart  start  =============== --> 
+<div class="cart cf">
+	<div class="cart-nav">
+		购物车
+    </div>
+    <div class="cart-select-all">
+        <span id="cart-select-all"></span>全选
+    </div>  
+	<ul class="cart-list" th:remove="${#lists.size(cartList.items)} eq '0'?'all':'none'">
+		<li class="cart-item" th:each="cart:${cartList.items}" th:attr="data-price=${cart.price},data-cartId=${cart.cartId}"> 
+            <span id="cart-select"></span>
+			<div class="ci-item cart-img"><a th:href="@{${'/goods/detail'}(goodsId=${cart.goodsId})}"><img th:src="${cart.goodImage}"/></a></div>
+			<div class="ci-item cart-title" th:text="${cart.goodName}"></div>
+			<div class="ci-item cart-type" th:text="${cart.specs}"></div>
+            <div class="ci-item mod-modifier">
+                <a href="javascript:;" class="modifier-sub" id="decrement" th:attr="data-price=${cart.price},data-cartId=${cart.cartId}">-</a>
+                <input type="text" th:value="${cart.num}" class="num" th:attr="data-skuid=${cart.skuId},data-goodsId=${cart.goodsId}" readonly/>
+                <a href="javascript:;" class="modifier-add" id="increment" th:attr="data-price=${cart.price},data-cartId=${cart.cartId}">+</a>
+            </div> 
+            <div class="ci-item cart-price"><i th:text="'¥'+${cart.totalPrice}" class="goodprice"></i></div>
+            <div class="ci-item cart-delete"><a href="javascript:;" class="itemDelete" th:attr="data-cartId=${cart.cartId}"><img src="/images/delete.png" alt="" /></a></div>  
+		</li>
+	</ul>
+	<ul class="goods-odr-list" class="goods-odr-list" th:remove="${#lists.size(cartList.items)} eq '0'?'none':'all'">
+    	<a href="/goods/list"><p class="empty-filter-info"  style="text-align:  center;height:  50px;line-height:  50px;font-size: 20px;">购物车空空如也，请点击前去选购商品!》</p></a>
+    </ul>
+	<div class="cart-balance">
+	    <p class="cb-total">商品总价:<span>¥ </span><span id="totalPrice"> 0</span></p>
+	    <a href="javascript:;" class="cb-pay" id="cb-pay">结算</a>
+	</div>
+</div>
+<!-- ===============  cart  end  =============== --> 
+
+
+<!-- ===============  footer页脚 start  =============== --> 
+     <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+	<script>
+		var eCart = {
+				itemNumChange : function() {
+					//减
+					$(".modifier-sub").click(function() {//-
+						var _thisInput = $(this).siblings("input")
+						var price = $(this).attr("data-price");
+						var cartId = $(this).attr("data-cartId");
+						var num = parseInt(_thisInput.val())-1
+						var $totalprice = $(this).parent("div").next().find("i");
+						if(num == 0) return;
+						 $.post('/user/cart/update_num',{'cartId':cartId,"num":num},function(data) {
+							 if(data.code==200) {
+								_thisInput.val(num);
+								 var total = parseInt(_thisInput.val())*price;
+								 $totalprice.text(total.toFixed(2));
+						 		eCart.refreshTotalPrice();
+							 }else{
+								 alert(data.message);
+							 }
+						 });
+					});
+					//加
+					$(".modifier-add").click(function() {//+
+						var _thisInput = $(this).siblings("input")
+						var price = $(this).attr("data-price");
+						var cartId = $(this).attr("data-cartId");
+						var $totalprice = $(this).parent("div").next().find("i");
+						console.log($totalprice);
+						var num = parseInt(_thisInput.val())+1
+						$.post('/user/cart/update_num',{'cartId':cartId,"num":num},function(data) {
+							 if(data.code==200) {
+								 _thisInput.val(num);
+								 var total = parseInt(_thisInput.val())*price;
+								 $totalprice.text(total.toFixed(2));
+								 eCart.refreshTotalPrice();
+							 }else{
+								 alert(data.message);
+							 }
+						 });
+						
+					});
+				},
+				//重新计算总价
+				refreshTotalPrice : function() {
+					var sel_goods = $(".item-bg")
+					var total = 0;
+					if(sel_goods.length<=0) {
+						$("#totalPrice").text(total)
+						return;
+					}
+					sel_goods.each(function(i,e) {
+						var _this = $(e);
+						console.log(_this.find("input").val());
+						var num = parseInt(_this.find("input").val());
+						var price =  _this.attr("data-price")
+						console.log("price"+price);
+						total +=price*num;
+					});
+					console.log("total="+total.toFixed(2));
+					$("#totalPrice").text(total.toFixed(2))
+				},
+				//选择
+				ItemClick : function() {
+					//全选框
+					$('.cart .cart-select-all #cart-select-all').click(function() {
+						eCart.refreshTotalPrice();
+					});
+					//单选
+					$('.cart .cart-list .cart-item span').click(function() {
+						 eCart.refreshTotalPrice();
+					});
+				},
+				//删除购物车
+				ItemDelte : function() {
+					$('.itemDelete').click(function() {
+						var _item = $(this);
+						var cartId = _item.attr("data-cartId");
+						var _ids = [];
+						_ids[0] = cartId
+						var data = {}
+						data["ids"] = _ids
+						$.ajax({
+							url:"/user/cart/del",
+							data:JSON.stringify(data),
+							type:'post',
+							contentType:"application/json",
+							success:function(data) {
+								if(data.code == 200) {
+									
+									_item.parent().parent('li').remove();
+									 eCart.refreshTotalPrice();
+									if($('.cart-list').children('li').length == 0) {
+										location.reload();
+									}
+								}else{
+									alert(data.message);
+								}
+							}
+						});
+					});
+				},
+				//购物车结算
+				accountCart : function() {
+					$("#cb-pay").click(function() {
+						var select_goods = $(".item-bg")
+						if(select_goods.length<=0) {
+							alert("请选择结算的商品");
+							return;
+						}
+						var data = {};
+						data["orderType"] = 1;
+						var goods = []
+						select_goods.each(function(i,e) {
+							var good = {};
+							var _this = $(e);
+							console.log(_this.find("input").val());
+							var num = parseInt(_this.find("input").val());
+							var skuId = _this.find("input").attr("data-skuid");
+							var goodsId = _this.find("input").attr("data-goodsId");
+// 							console.log("price"+price);
+							good.skuId = skuId;
+							good.num = num;
+							good.goodsId = goodsId;
+							goods.push(good);
+// 							total +=price*num;
+						});
+						data["goods"] = goods;
+						console.log(JSON.stringify(data));
+						$.ajax({
+							url:'/user/orders/orderAdd',
+							data:JSON.stringify(data),
+							contentType:'application/json',
+							type:'post',
+							success:function(data){
+								if(data.code=200) {
+									window.location.href="/user/orders/firm-order?orderId="+data.result;
+								}else{
+									alert(data.messsge);
+								}
+							}
+						});
+					});
+				}
+		}
+		$(function() {
+			eCart.itemNumChange();
+			eCart.ItemClick();
+			eCart.ItemDelte();
+			eCart.accountCart();
+		});
+	</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.deliverytemplate.CarryModeMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.deliverytemplate.CarryMode" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="carry_id" property="carryId" jdbcType="INTEGER" />
+    <result column="template_id" property="templateId" jdbcType="INTEGER" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="first_piece" property="firstPiece" jdbcType="INTEGER" />
+    <result column="first_weight" property="firstWeight" jdbcType="DECIMAL" />
+    <result column="first_bulk" property="firstBulk" jdbcType="DECIMAL" />
+    <result column="first_amount" property="firstAmount" jdbcType="DECIMAL" />
+    <result column="second_piece" property="secondPiece" jdbcType="INTEGER" />
+    <result column="second_weight" property="secondWeight" jdbcType="DECIMAL" />
+    <result column="second_bulk" property="secondBulk" jdbcType="DECIMAL" />
+    <result column="second_amount" property="secondAmount" jdbcType="DECIMAL" />
+    <result column="carry_way" property="carryWay" jdbcType="INTEGER" />
+    <result column="is_default" property="isDefault" jdbcType="SMALLINT" />
+  </resultMap>
+</mapper>

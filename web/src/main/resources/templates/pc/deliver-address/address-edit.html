@@ -1,0 +1,206 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+     <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="index-login.html">首页</a></li>
+		<li><a href="list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  收货地址  start  =============== --> 
+<div class="address">
+	<div class="address-nav">
+		收货地址&nbsp;>>&nbsp;<a class="nav-back">返回</a>
+	</div>
+	<div class="goods-add">
+		<input type="hidden" id="id" th:value="${address.addressId}">
+        <div class="gdl-box gdl-dark">
+            <label for="name"></label><input type="text" placeholder="XXX" name="username" id="username" th:value="${address.linkMan}"/>
+        </div>
+        <div class="gdl-box gdl-dark">
+            <label for="num"></label><input type="text" placeholder="185****8694" name="num" id="num" th:value="${address.mobile}"/>
+        </div>
+        <div class="content-block">
+            <div class="diqu-info">
+                <div style="margin-top: 10px;">
+                    <select name="sel_province"  id="sel_province" onchange="select_citys(this)">
+                    	<option th:each="pro:${provices}" th:value="${pro.areaId}" th:text="${pro.name}" th:selected="${pro.areaId} == ${address.provinceId}"></option>
+                    </select>
+                    <select name="sel_city" id="sel_city" onchange="select_areas(this)">
+                    	<option th:each="ct:${citys}" th:value="${ct.areaId}" th:text="${ct.name}" th:selected="${ct.areaId} == ${address.cityId}"></option>
+                    </select>
+                    <select name="sel_county" id="sel_town">
+                    	<option th:each="town:${towns}" th:value="${town.areaId}" th:text="${town.name}" th:selected="${town.areaId} == ${address.districtId}"></option>
+                    </select>
+                </div>
+                <div id="show"></div>
+            </div>
+        </div>
+        <div class="gdl-box gdl-dark">
+            <label for="address"></label><input type="text" placeholder="前进二路" name="address" id="address" th:value="${address.address}"/>
+        </div>
+        <div class="gdl-box">
+            <label for="zipcode"></label><input type="text" placeholder="518101" name="zipcode" id="zipcode" th:value="${address.zip}"/>
+        </div>
+<!--         <div class="set-as-default">         -->
+<!--             <p><span></span>设为默认收货地址</p> -->
+<!--         </div> -->
+        
+    </div>
+    <a href="javascript:;" class="gdl-btn" id="save">保存</a>
+</div>
+<!-- ===============  收货地址  end  =============== --> 
+
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+	function select_citys(obj){  
+	    var provinceId = $(obj).val();
+	    
+    	$("#sel_city").html("<option>--城市--</option>"); // 声明变量就要判断是否为null 
+    	$("#sel_town").html("<option>--城市--</option>"); 
+	    if(!provinceId)return; // 声明变量就要判断是否为null 
+	  
+	    $.ajax({  
+	        type:"post",//请求方式get/post  
+	        url:"/user/deliver_address/areas",//请求对应的地址  
+	        data:{"level":2,"pid":provinceId}, //往服务器传递的参数，  
+	        success:function(data){//服务器交互成功调用的回调函数，data就是服务器端传递出来的数据  
+	            var jdata = data.result; // 去前后空格  
+	            if( data.code != 200){  
+	                //查询失败!  
+	            }else{  
+	                var jsonData = eval(jdata);//将字符串的json对象转换成json  
+	                $("#sel_city").html("<option>-请选择-</option>");  
+	                append_template(jsonData,"sel_city");  
+	            }  
+	        }  
+	    });  
+	};  
+	          
+	//通过省份ID查询查询所有的地区信息  
+	function select_areas(obj){  
+	    var cityId = $(obj).val();  
+	    if(!cityId)return;  
+	    $.ajax({  
+	        type:"post",  
+	        url:"/user/deliver_address/areas",  
+	        data:{"level":3,"pid":cityId},  
+	        success:function(data){  
+	            var jdata = data.result;  
+	            if( data.code != 200){  
+	                //查询失败  
+	            }else{  
+	                var jsonData = eval(jdata);  
+	                append_template(jsonData,"sel_town");  
+	            }  
+	        }  
+	    });  
+	};  
+	          
+	//封装其通用内容  
+	function append_template(jsonData,target){  
+	    var length = jsonData.length;  
+	    var html = "<option>-请选择-</option>";  
+	    for(var i=0;i<length;i++){  
+	        html +="<option value='"+jsonData[i].areaId+"'>"+jsonData[i].name+"</option>";  
+	    }  
+	    $("#"+target).html(html);  
+	};
+	
+	//提交
+	$("#save").click(function() {
+		var phoneReg = /^1(3|4|5|7|8)\d{9}$/;
+		var addressId = $("#id").val();
+		var username = $("#username").val();
+		var phone = $("#num").val();
+		var provinceId = $("#sel_province").val();
+		var cityId = $("#sel_city").val();
+		var districtId = $("#sel_town").val();
+		var address = $("#address").val();
+		var zip = $("#zipcode").val();
+		if(username==null || username=='') {
+			alert("收货人姓名不能为空");
+			return false;
+		}
+		if(phone == null || phone == '') {
+			alert("请输入手机号");
+			return false;
+		}
+		if(!phoneReg.test(phone)) {
+			alert("请输入正确的手机号");
+			return false;
+		}
+		if(provinceId==''){
+			alert("请选择省");
+			return false;
+		} 
+		if(cityId==''){
+			alert("请选择市");
+			return false;
+		} 
+		if(districtId==''){
+			alert("请选择区/县");
+			return false;
+		} 
+		if(address==''){
+			alert("请填写详细地址");
+			return false;
+		} 
+		var data= {} ;
+		data["linkMan"] = username;
+		data["mobile"] = phone;
+		data["provinceId"] = provinceId;
+		data["cityId"] = cityId;
+		data["districtId"] = districtId;
+		data["zip"] = zip;
+		data["address"] = address;
+		data["addressId"] = addressId;
+		$.ajax({
+			type:"post",
+			url:"/user/deliver_address/save",
+			contentType:"application/json",
+			data:JSON.stringify(data),
+			success:function(result){
+				if(result.code=200) {
+// 					alert("成功")
+					window.location.href = "/user/deliver_address/list";
+				}else{
+					alert(result.message);
+				}
+			}
+		});
+	})
+	</script>
+</body>
+</html>
+
+
+

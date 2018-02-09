@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.sys.DictionaryMapper" >
+  <select id="getAllType" resultType="com.qzdsoft.vo.TypeInfo">
+	SELECT
+		a.typecode 'code',
+		a.typevalue 'value'
+	FROM
+		`data_dictionary` a
+	GROUP BY
+		a.typecode;
+  </select>
+  <select id="getDictionaryInfo" resultType="com.qzdsoft.eshop.domain.DictionaryInfo">
+	SELECT
+		a.id,
+		a.typecode,
+		a.typevalue,
+		a.code,
+		a.value
+	FROM
+		`data_dictionary` a
+	WHERE
+		a.typecode = #{type}
+  </select>
+  
+</mapper>

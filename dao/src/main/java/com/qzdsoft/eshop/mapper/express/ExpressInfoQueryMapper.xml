@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.express.ExpressInfoQueryMapper" >
+ 	
+ 	  <select id="getOrderExpressInfo" resultType="com.qzdsoft.eshop.vo.express.OrderExpressInfo">
+  	SELECT
+		ei.express_no expressNo
+		,ei.delivery_time delivertTime
+		,ei.express_id expressId
+		,ec.`name` expressName
+		,ec.`code` expressCode
+	FROM
+		`express_info` ei
+	JOIN express_company ec ON ei.company_id = ec.company_id 
+	WHERE ei.order_id = #{orderId}
+  </select>
+</mapper>

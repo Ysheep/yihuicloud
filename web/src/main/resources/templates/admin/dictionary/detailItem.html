@@ -1,0 +1,44 @@
+<div>
+<table class="layui-table" style="width:200px;" id="contentTab">
+  	 <thead style="positon:fixed;">
+    	<tr>
+    	 <th><input type="checkBox" lay-skin="primary" id="headCheckBox" lay-filter="headCheckBox"/></th>
+		 <th data-field="name">code</th>
+		 <th data-field="value">值</th>
+    	</tr>
+     </thead>
+ 	<tbody>
+   
+    <tr th:each="item:${items}" class="edittr" >
+    	<td style="width:40px;"><input type="checkbox" lay-skin="primary" name="trCheckBox"/></td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" name="dictionarycode" th:attr="readonly=${item.typecode=='2'?'true':'false'}" class="layui-input" style="width:150px;" th:value="${item.code}"/>
+			<input type="hidden" name="id" class="layui-input" style="width:150px;" th:value="${item.id}"/>
+		</td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" name="dictionaryValue" class="layui-input" style="width:150px;" th:value="${item.value}"/>
+		</td>
+	</tr>
+	</tbody>
+</table>
+<table style="display:none;" id="blankTpl">
+<tbody>
+<tr class="edittr">
+		<td style="width:40px;"><input type="checkbox" lay-skin="primary" name="trCheckBox" lay-filter="trCheckBox"/></td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" id="newCode" name="newCode" placeholder="新增code" class="layui-input" style="width:150px;" value=""/>
+			<input type="hidden" name="id" class="layui-input" style="width:150px;" value=""/>
+		</td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" id="newValue" name="newValue" placeholder="新增值" class="layui-input" style="width:150px;" value=""/>
+		</td>
+	</tr>
+</tbody>
+</table>
+</div>
+<div>
+	<div class="layui-input-inline" style="width:240px;margin-left:80px;">
+     	<button class="layui-btn" id="saveBtn" type="button" authcode="88">保存</button>
+     	<button class="layui-btn layui-btn-danger" id="removeBtn" authcode="89" type="button">删除</button>
+      </div>
+</div>

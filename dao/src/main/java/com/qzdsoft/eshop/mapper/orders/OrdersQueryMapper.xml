@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.orders.OrdersQueryMapper" >
+  <resultMap id="OrdersMap" type="com.qzdsoft.eshop.vo.orders.pc.OrdersInfo" >
+    <result column="orderId" property="orderId" jdbcType="INTEGER" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_price" property="actualTotal" jdbcType="DECIMAL" />
+    <result column="status" property="orderStatus" jdbcType="SMALLINT" />
+    <collection property="items" column="orderId" javaType="List" ofType="com.qzdsoft.eshop.vo.orders.pc.GoodsOrderInfo" select="findgoodsOrderByOrderId"></collection>
+  </resultMap>
+  
+  <resultMap id="OrderDetailMap" type="com.qzdsoft.eshop.vo.orders.pc.OrdersDetailInfo" >
+    <result column="orderId" property="orderId" jdbcType="INTEGER" />
+    <result column="addressId" property="addressId" jdbcType="INTEGER" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="addressInfo" property="addressInfo" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_price" property="actualTotal" jdbcType="DECIMAL" />
+    <result column="status" property="orderStatus" jdbcType="SMALLINT" />
+    <result column="carrige" property="carrige" jdbcType="DECIMAL" />
+    <result column="end_carrige" property="endCarrige" jdbcType="DECIMAL" />
+    <result column="ctime" property="ctime" jdbcType="TIMESTAMP" />
+    <result column="payTime" property="payTime" jdbcType="TIMESTAMP" />
+    <result column="deliverTime" property="deliverTime" jdbcType="TIMESTAMP" />
+    <result column="endTime" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="userRemark" property="userRemark" jdbcType="VARCHAR" />
+    <collection property="items" column="orderId" javaType="List" ofType="com.qzdsoft.eshop.vo.orders.pc.GoodsOrderInfo" select="findgoodsOrderByOrderId"></collection>
+  </resultMap>
+  <resultMap id="billMap" type="com.qzdsoft.eshop.vo.orders.OrderDetailInfo" >
+  	<result column="orderId" property="orderId" jdbcType="INTEGER" />
+    <result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+    <result column="addInfo" property="addInfo" jdbcType="VARCHAR" />
+    <result column="userRemark" property="userRemark" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="userNmae" property="userNmae" jdbcType="VARCHAR" />
+    <result column="trueName" property="trueName" jdbcType="VARCHAR" />
+    <result column="expressNo" property="expressNo" jdbcType="VARCHAR" />
+    <result column="expressCode" property="expressCode" jdbcType="VARCHAR" />
+    <result column="zip" property="zip" jdbcType="VARCHAR" />
+    <result column="payType" property="payType" jdbcType="VARCHAR" />
+    <result column="goodsTotalPrice" property="goodsTotalPrice" jdbcType="DECIMAL" />
+    <result column="onlinePayMoney" property="onlinePayMoney" jdbcType="DECIMAL" />
+    <result column="balancePayMoney" property="balancePayMoney" jdbcType="DECIMAL" />
+    <result column="orderStatus" property="orderStatus" jdbcType="SMALLINT" />
+    <result column="splitStatus" property="splitStatus" jdbcType="SMALLINT" />
+    <result column="invoice" property="invoice" jdbcType="SMALLINT" />
+    <result column="carrige" property="carrige" jdbcType="DECIMAL" />
+    <result column="endCarrige" property="endCarrige" jdbcType="DECIMAL" />
+    <result column="ctime" property="ctime" jdbcType="TIMESTAMP" />
+    <result column="payTime" property="payTime" jdbcType="VARCHAR" />
+    <result column="deliverTime" property="deliverTime" jdbcType="TIMESTAMP" />
+    <result column="endTime" property="endTime" jdbcType="TIMESTAMP" />
+     <collection property="goods" column="orderId" javaType="List" ofType="com.qzdsoft.eshop.vo.orders.OrderGoodsItem" select="selectOrderItemsByOrderId"></collection>
+  </resultMap>
+   <select id="findOrderById" resultMap="OrderDetailMap">
+  	SELECT
+  		o.order_id orderId
+  		,o.order_no orderNo
+  		,o.pay_price pay_price
+  		,o.status status
+  		,ex.delivery_time deliverTime
+  		,pl.pay_time payTime
+  		,o.ctime ctime
+  		,o.end_time endTime
+  		,o.carrige carrige
+  		,o.end_carrige end_carrige
+  		,o.address_info addressInfo
+  		,o.true_name trueName
+  		,o.phone phone
+  		,o.address_id addressId
+  		,o.user_remark userRemark
+  	FROM 
+  		orders o
+  	JOIN user u ON o.user_id = u.user_id AND o.user_id = #{userId} AND o.order_id = #{orderId}
+  	LEFT JOIN express_info ex ON o.order_id = ex.order_id
+  	LEFT JOIN pay_log pl ON o.order_no = pl.mer_order_no
+  	WHERE
+  	 o.delete_status = 0
+  </select>
+  <select id="findByParam" resultMap="OrdersMap" parameterType="com.qzdsoft.eshop.vo.orders.pc.OrdersQueryParam">
+  	SELECT
+  		o.order_id orderId
+  		,o.order_no orderNo
+  		,o.pay_price pay_price
+  		,o.status status
+  	FROM 
+  		orders o
+  	JOIN user u ON o.user_id = u.user_id AND o.user_id = #{userId}
+  	WHERE
+  	 o.delete_status = 0
+  	 <if test="null!=orderStatus and ''!=orderStatus">
+  	 	AND o.status = #{orderStatus}
+  	 </if>
+  	ORDER BY o.order_id DESC
+  </select>
+ 
+  <select id="findgoodsOrderByOrderId" parameterType="int" resultType="com.qzdsoft.eshop.vo.orders.pc.GoodsOrderInfo">
+  	SELECT
+  		gs.sku_id skuId
+  		,g.goods_id goodsId 
+  		,go.num num
+  		,go.price price
+  		,g.name goodName
+  		,gs.spec_ids specs
+  		,go.total_money receivableTotal
+  		,go.end_pay_money actualTotal
+  		,a.url image
+  	FROM
+  		goods_order go
+  	JOIN goods_sku gs ON go.sku_id = gs.sku_id AND go.order_id = #{orderId}
+  	JOIN goods g ON gs.goods_id = g.goods_id
+  	JOIN goods_img gm ON gm.goods_id = g.goods_id
+			AND gm.is_master_img = 1
+	JOIN accessory a ON a.accessory_id = gm.accessory_id
+  </select>
+  <select id="findByQuery" resultType="com.qzdsoft.eshop.vo.orders.OrdersInfo">
+  	SELECT
+		 o.order_id orderId
+		 ,o.order_no orderNo
+		 ,o.carrige carrige
+		 ,o.end_carrige endCarrige
+		 ,o.pay_price goodsTotalPrice
+		 ,o.online_pay_money onlinePayMoney
+		 ,o.balance_pay_money balancePayMoney
+		 ,o.user_remark userRemark
+		 ,o.split_status splitStatus
+		 ,o.status orderStatus
+		 ,o.ctime ctime
+		 ,o.invoice invoice
+		 ,o.pay_type payType
+		FROM 
+		orders o
+		WHERE 1 =1
+		<if test="null!=keyWord and ''!=keyWord">
+			AND (o.order_no = #{keyWord} OR o.phone = #{keyWord} OR o.true_name LIKE CONCAT(#{keyWord},'%') )
+		</if>
+		<if test="startTime!=null and startTime!=''">
+			AND o.ctime &gt;= #{startTime}
+		</if>
+		<if test="endTime!=null and endTime!=''">
+			AND o.ctime &lt;#{endTime}
+		</if>
+		<if test="null!=orderStatus and ''!=orderStatus">
+			AND o.status = #{orderStatus}
+		</if>
+		AND o.delete_status = 0
+		ORDER BY o.order_id DESC
+  </select>
+  <select id="selectByOrderId" resultMap="billMap">
+  	SELECT
+		o.order_id orderId
+		,o.order_no orderNo
+		,o.pay_type payType
+		,o.pay_price goodsTotalPrice
+		,o.carrige carrige
+		,o.end_carrige endCarrige
+		,o.online_pay_money onlinePayMoney
+		,o.balance_pay_money balancePayMoney
+		,o.user_remark userRemark
+		,o.status orderStatus
+		,o.split_status	 splitStatus
+		,o.true_name trueName
+		,o.address_info addInfo
+		,o.zip zip
+		,o.phone phone
+		,u.user_name userNmae
+		,ex.express_no expressNo
+		,ex.express_company_code expressCode
+		,o.invoice invoice
+		,o.ctime ctime
+		,ex.delivery_time deliverTime
+		,o.end_time end_time
+		,pl.pay_time payTime
+	FROM
+	orders o
+	JOIN user u ON o.user_id = u.user_id
+	LEFT JOIN express_info ex ON o.order_id = ex.order_id
+	LEFT JOIN pay_log pl  ON o.order_no = pl.mer_order_no
+	WHERE 
+		o.order_id = #{orderId}
+  </select>
+  <select id="selectOrderItemsByOrderId" resultType="com.qzdsoft.eshop.vo.orders.OrderGoodsItem">
+  	SELECT
+  		gs.sku_id skuId
+  		,g.goods_id goodsId 
+  		,go.num num
+  		,go.price price
+  		,g.name goodName
+  		,gs.spec_ids specs
+  		,go.total_money totalMoney
+  		,go.end_pay_money endPayMoney
+  		,a.url image
+  	FROM
+  		goods_order go
+  	JOIN goods_sku gs ON go.sku_id = gs.sku_id AND go.order_id = #{orderId}
+  	JOIN goods g ON gs.goods_id = g.goods_id
+  	JOIN goods_img gm ON gm.goods_id = g.goods_id
+			AND gm.is_master_img = 1
+	JOIN accessory a ON a.accessory_id = gm.accessory_id
+  </select>
+  <select id="selectaddByOrid" resultType="com.qzdsoft.eshop.vo.orders.OrderAddressInfo">
+		SELECT
+			o.order_no orderNo
+			,o.order_id orderId
+			,o.address_info addInfo
+			,o.phone phone
+			,o.true_name trueName
+			,u.user_name userName
+			,o.zip zip
+			,i.express_no expressNo
+			,i.company_id companyId
+			,i.express_id expressId
+		FROM
+			`orders` o
+		LEFT JOIN user u ON o.user_id = u.user_id
+		LEFT JOIN express_info i ON o.order_id = i.order_id
+		WHERE
+			o.order_id = #{orderId}
+	</select>
+	<select id="selectRefundInfoByOrderId" resultType="com.qzdsoft.eshop.vo.orders.OrderRefundInfo">
+		SELECT
+			o.order_id orderId
+			,o.order_no orderNo
+			,o.pay_type payType
+			,o.pay_price goodsTotalPrice
+			,o.carrige carrige
+			,o.end_carrige endCarrige
+			,o.online_pay_money onlinePayMoney
+			,o.balance_pay_money balancePayMoney
+			,r.refund_no refundNo
+			,r.refund_reason refundReason
+			,r.type refundType
+		FROM
+			orders o
+		JOIN ON refund r ON o.order_id = r.order_id
+		WHERE
+			o.order_id = #{orderId}
+	</select>
+</mapper>

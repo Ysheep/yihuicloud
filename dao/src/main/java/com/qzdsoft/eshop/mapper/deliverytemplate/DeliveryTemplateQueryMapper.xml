@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.deliverytemplate.DeliveryTemplateQueryMapper" >
+  <resultMap id="billMap" type="com.qzdsoft.eshop.vo.deliverytemplate.DeliveryTemplateInfo" >
+    <result column="templateId" property="templateId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="addr" property="addr" jdbcType="VARCHAR" />
+    <result column="freeDelivery" property="freeDelivery" jdbcType="SMALLINT" />
+    <result column="pricingMethod" property="pricingMethod" jdbcType="SMALLINT" />
+    <result column="addTime" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="deleteStatus" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="isInclPostageByif" property="isInclPostageByif" jdbcType="SMALLINT" />
+  	<collection property="carryWays" column="templateId" javaType="List" ofType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo" select="selectCarryWays"></collection>
+  </resultMap>
+  
+  
+  <resultMap id="billsku" type="com.qzdsoft.eshop.vo.deliverytemplate.TemplateSkuInfo" >
+    <result column="templateId" property="templateId" jdbcType="INTEGER" />
+    <result column="pricingMethod" property="pricingMethod" jdbcType="INTEGER" />
+    <result column="skuId" property="skuId" jdbcType="VARCHAR" />
+    <result column="carryType" property="carryType" jdbcType="VARCHAR" />
+  	<collection property="carryWays" column="{templateId=templateId,carryType=carryType}" javaType="List" ofType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo" select="selectCarryWaysByTypeAndId"></collection>
+  </resultMap>
+  
+    <resultMap id="billgoodsId" type="com.qzdsoft.eshop.vo.deliverytemplate.TemlateCarryModelInfo" >
+    <result column="templateId" property="templateId" jdbcType="INTEGER" />
+    <result column="pricingMethod" property="pricingMethod" jdbcType="INTEGER" />
+    <result column="carryType" property="carryType" jdbcType="VARCHAR" />
+    <result column="freeDelivery" property="freeDelivery" jdbcType="INTEGER"/>
+    <result column="goodsId" property="goodsId" jdbcType="INTEGER"/>
+  	<collection property="carryWays" column="templateId" javaType="List" ofType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo" select="selectCarryModelByTemplateId"></collection>
+  </resultMap>
+  
+  <select id="selectAll" resultMap="billMap">
+  	SELECT
+  		template_id templateId
+  		,name name
+  		,addr addr
+  		,free_delivery freeDelivery
+  		,pricing_method pricingMethod
+  		,DATE_FORMAT(add_time,'%Y-%m-%d') addTime
+  		,delete_status deleteStatus
+  		,is_incl_postage_byif isInclPostageByif
+  	FROM
+  		delivery_template
+  	WHERE delete_status = 0
+  	ORDER BY template_id DESC
+  </select>
+  <select id="selectCarryWays" parameterType="int" resultType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo">
+  	SELECT 
+  		carry_id carryId
+  		,template_id templateId
+  		,region region
+  		,first_piece firstPiece
+  		,first_weight firstWeight
+  		,first_bulk firstBulk
+  		,first_amount firstAmount
+  		,second_piece secondPiece
+  		,second_weight secondWeight
+  		,second_bulk secondBulk
+  		,second_amount secondAmount
+  		,carry_way carryWay
+  	FROM 
+  		carry_mode m
+  	WHERE 
+  		m.template_id = #{templateId}
+  </select>
+  
+  <select id="selectCarryWaysByTypeAndId" parameterType="java.util.Map" resultType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo">
+  	SELECT 
+  		carry_id carryId
+  		,template_id templateId
+  		,region region
+  		,first_piece firstPiece
+  		,first_weight firstWeight
+  		,first_bulk firstBulk
+  		,first_amount firstAmount
+  		,second_piece secondPiece
+  		,second_weight secondWeight
+  		,second_bulk secondBulk
+  		,second_amount secondAmount
+  		,carry_way carryWay
+  		,m.is_default isDefault
+  	FROM 
+  		carry_mode m
+  	WHERE 
+  		m.template_id = #{templateId}
+  		AND m.carry_way = #{carryType}
+  </select>
+  
+  
+  <select id="getAll" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT
+  		template_id code
+  		,name value
+  	FROM
+  		delivery_template
+  	WHERE delete_status = 0
+  </select>
+  
+  <select id="selectBySkuid"  resultMap="billsku">
+  	SELECT
+	dt.template_id templateId
+	,gk.sku_id skuId
+	,#{carryType} carryType
+	,dt.pricing_method pricingMethod
+	FROM
+		delivery_template dt
+	JOIN goods gs ON gs.template_id = dt.template_id
+	JOIN goods_sku gk ON gs.goods_id = gk.goods_id
+	AND gk.sku_id In
+		(SELECT
+			go.sku_id skuId
+		FROM
+			goods_order go
+		WHERE go.order_id = #{orderId}
+		)
+	GROUP BY dt.template_id
+  </select>
+  
+  <select id="getCarryWayByOrderId" resultType="com.qzdsoft.vo.TypeInfo">
+  	SELECT 
+	 carry.carry_way code
+	,CASE WHEN carry.carry_way=0 THEN '平邮' 
+	WHEN carry.carry_way=1 THEN '快递'
+	ELSE 'EMS' END value
+	FROM
+		carry_mode  carry 
+	WHERE  EXISTS
+	(
+	SELECT
+	dt.template_id	
+	FROM
+	goods_sku gk
+	JOIN goods gs ON gs.goods_id = gk.goods_id 
+	AND gk.sku_id IN 
+		(
+		SELECT
+				go.sku_id skuId
+			FROM
+				goods_order go
+			WHERE go.order_id = #{orderId}
+	)
+	JOIN delivery_template dt ON gs.template_id = dt.template_id AND dt.free_delivery = 0
+	WHERE dt.template_id = carry.template_id
+	)
+	GROUP BY carry.carry_way
+  </select>
+  
+  <select id="selectByGoodsId"  resultMap="billgoodsId">
+  	SELECT
+	dt.template_id templateId
+	,gs.goods_id goodsId
+	,dt.pricing_method pricingMethod
+	,dt.free_delivery freeDelivery
+	FROM
+		delivery_template dt
+	JOIN goods gs ON gs.template_id = dt.template_id
+	WHERE gs.goods_id = #{goodsId}
+  </select>
+  
+   <select id="selectCarryModelByTemplateId" parameterType="int" resultType="com.qzdsoft.eshop.vo.deliverytemplate.CarryWayInfo">
+  	SELECT 
+  		carry_id carryId
+  		,template_id templateId
+  		,region region
+  		,first_piece firstPiece
+  		,first_weight firstWeight
+  		,first_bulk firstBulk
+  		,first_amount firstAmount
+  		,second_piece secondPiece
+  		,second_weight secondWeight
+  		,second_bulk secondBulk
+  		,second_amount secondAmount
+  		,carry_way carryWay
+  		,m.is_default isDefault
+  	FROM 
+  		carry_mode m
+  	WHERE 
+  		m.template_id = #{templateId}
+  </select>
+</mapper>

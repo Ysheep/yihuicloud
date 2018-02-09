@@ -1,0 +1,156 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc">
+</head>
+<style>
+    .laytable-cell-1-url{  /*最后的pic为字段的field*/
+      height: 100%;
+      max-width: 100%;
+    } 
+</style>
+<body>
+
+<th:block layout:fragment="content">
+  <form class="layui-form search" id="searchForm">
+  <div class="layui-form-item layui-elem-quote">
+    <div >
+      <label class="layui-form-label search-label" style="width:100px;">商品名称</label>
+      <div class="layui-input-inline" style="width:200px">
+        <input type="text" name="sreachKey" id = "sreachKey" readonly class="layui-input"/>
+        <input type="hidden" name="goodsName" id="goodsName" value="">
+      </div>
+    </div>
+    <div >
+	      <label class="layui-form-label required" style="width:90px">创建时间</label>
+	        <input type="text" id="startDate" class="layui-input" lay-verify="required" style="width:160px;float:left;" name='stime'/>
+	        <div class="layui-form-mid" style="margin:0px;">-</div>
+	        <input type="text" id="endDate" class="layui-input" style="width:160px;float:left;" name="etime"/>
+	</div>
+    <div >
+      <div class="layui-input-inline" style="width:300px;margin-left:60px;">
+        <button class="layui-btn" id="searchBtn" type="button" authcode="71">查询</button>
+        <button class="layui-btn" id="addBtn" type="button" authcode='72'>新增</button>
+      </div>
+    </div>
+  </div>
+ </form>
+ 
+<table class="layui-table"  id="tab" lay-filter="tab"></table>
+
+<script>
+var ins,editdialogindex,trobj;
+$(function() {
+	//start use
+	layui.use(['table','laydate'], function(){
+	  var table = layui.table;
+	  var laydate = layui.laydate;
+	  //start render
+	  ins=table.render({
+		 elem:'#tab'
+		 ,url:'/admin/ad/data'
+		 ,cols:[[
+			  {field:'advertId',width:80, sort: true,title:'ID',fixed:'true',style:'height:120px;'}
+		      ,{field:'goodsName', width:400,title:'商品名称',fixed:'true',style:'height:120px;'}
+// 		      {field:'url', width:300,title:'链接'},
+		      ,{field: 'url', title: '图片', width: 150,templet:'<div><img src="{{ d.url}}"></div>',style:'height:120px;'}
+		      ,{field:'ctime', width:200,title:'创建时间',style:'height:120px;'}
+		      ,{align:'center',fixed:'right',width:200, toolbar:'#toolbar',title:'操作'}
+		 ]]
+	    ,page: true //是否显示分页
+	    ,limits: [10,20,50]
+	    ,limit:10 //每页默认显示的数量
+	    ,even:true
+		,done:function(res,curr,count){
+// 			 console.log(res);
+			 page = curr;
+			    //得到当前页码
+// 			    console.log(curr); 
+			    
+			    //得到数据总量
+// 			    console.log(count);
+		}
+	  });
+	  //start table on
+	  table.on("tool(tab)",function(obj) {
+		  var data = obj.data;//当前行数据
+		  var layEvent = obj.event; //获得 lay-event 对应的值
+		  trobj = obj;
+		  var tr = obj.tr; //获得当前行 tr 的DOM对象
+		  if(layEvent == 'edit'){
+			  $.get('/admin/ad/editinit?adverId='+data.advertId, {}, function(str){
+					editdialogindex = layer.open({
+										id:"layerDialog",
+										title:"修改广告信息",
+									    type: 1,
+									    area: ['700px', '450px'],
+									    content: str, //注意，如果str是object，那么需要字符拼接。
+									    zIndex:10
+									  });
+									});
+		  }
+		 
+		  else if(layEvent == 'del') {
+			  layer.confirm('确定删除该行单据', {icon: 3, title:'提示'}, function(index){
+			    		 //向服务端发送删除指令
+			    		$.get('/admin/ad/del?adverId='+data.advertId,{},function(result) {
+			    			if(result.code == 200) {
+			    				trobj.del(); //删除对应行（tr）的DOM结构
+							    layer.close(index);
+							    layer.msg(result.message,{icon: 6});
+							    return false;
+			    			}else{
+			    			 layer.msg(result.message,{icon: 0});
+			    			 layer.close(index);
+			    			 return false;
+			    			} 
+			    		});
+			      
+			      });
+		  }
+	  });
+	  //end table on
+	  //页面新增
+	  $("#addBtn").click(function() {
+		  $.post('/admin/ad/addinit',function(str) {
+			  editdialogindex = layer.open({
+				  id:"layerDialog",
+					title:"新增广告",
+					type:1,
+					area:['700px', '450px'],
+					content:str,
+					zIndex:10
+				});
+		  });
+	  });
+	  //页面查询按钮 start search
+	  $("#searchBtn").click(function(){
+			var table = layui.table;
+		    ins.reload({url: '/admin/ad/data',where:$("#searchForm").serializeJson()})
+		    return false;
+		});
+	  //end search
+	  
+		laydate.render({
+			  elem: '#startDate' //指定元素
+
+			});
+		laydate.render({
+			  elem: '#endDate' //指定元素
+			});
+	  
+	  
+	});
+	//end render
+	
+//end use
+});
+</script>
+
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="edit" authcode="73">修改</a>
+	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" authcode="74">删除</a>
+</script>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+
+   <div th:include="pc/commons/header :: top-bar "></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+ <div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  确认订单  start  =============== -->
+<div class="firm cf">
+    <div class="firm-nav">
+        确认订单
+    </div>
+    <div class="firm-order">
+        <a th:href="@{${'/user/deliver_address/list'}(orderId=${order.orderId})}" >
+    	<input type="hidden" th:value="${order.addressId}" id="addressId">  
+    	<input type="hidden" th:value="${order.orderId}" id="orderId">  
+        <div class="goods-title">
+            <p class="goods-name" th:text="${order.trueName}!=null?'收货人：'+${order.trueName}:'收货人：'"></p>
+            <p class="goods-num" th:text="${order.phone}!=null?${order.phone}:''"></p>
+        </div>
+         </a>
+        <p class="goods-address" style="height:  28px;"><a th:href="@{${'/user/deliver_address/list'}(orderId=${order.orderId})}" th:text="${order.addressInfo}!=null?${order.addressInfo}:''"></a></p>
+        <span class="firm-bg"></span>
+    </div>
+    <h3 class="firm-goods" th:text="'商品清单：共'+${order.goodsNum}+'件'"></h3>
+    <ul class="firm-list">
+        <li th:each="good:${order.items}"><a th:href="@{${'/goods/detail'}(goodsId=${good.goodsId})}" >
+	        <div style="height: 80px;width:80px;">
+	        <img th:src="${good.image}" th:attr="alt=${good.goodName}" />
+	        </div>
+	        <span th:text="${good.goodName}" style="overflow-x: hidden;display: inline-block;width:  80px;white-space: nowrap;">1</span>
+            <span th:text="'X'+${good.num}">1</span>
+        </a></li>
+    </ul>
+    <div class="firm-item">
+        <p>支付方式： 
+            <select name="payType" id="payType">
+                <option  th:each="pay:${payType}" th:value="${pay.code}" th:text="${pay.value}"></option>
+            </select>
+            <div class="pay-tip" th:remove="${balance} <=0?'all':'none'">
+                <span th:text="'是否使用余额，您可使用余额为￥'+${balance}"></span>
+                <label for="">
+                    <input type="radio" checked="checked" id="RadioGroup1_0" value="1" name="RadioGroup1">
+                    是
+                </label>
+                <label for="">
+                    <input type="radio" id="RadioGroup1_0" value="0" name="RadioGroup1">
+                    否
+                </label>
+            </div>
+        </p>
+<!--         <p>配送方式：  -->
+<!--         <span th:remove="${#lists.size(delivery)} eq '0'?'none':'all'" id="delivery" th:attr="data-delivery=${#lists.size(delivery)}">卖家免邮配送</span> -->
+<!--         <select name="delivery" id="delivery" th:remove="${#lists.size(delivery)} eq '0'?'all':'none'" th:attr="data-delivery=${#lists.size(delivery)}" onchange="carryWayChange()"> -->
+<!--         	<option th:each="d:${delivery}" th:value="${d.code}" th:text="${d.value}"> -->
+<!--         </select> -->
+<!--         </p> -->
+        <p>发票信息： 
+            <select name="invoice" id="invoice" >
+                <option  th:each="inv:${invoice}" th:value="${inv.code}" th:text="${inv.value}"></option>
+            </select>
+        </p>
+        <p>
+            <div class="p-remark">买家留言：</div> 
+            <textarea name="pay_remark" id="pay_remark" placeholder="填写内容请先和客服确认" style="width:280px;height:80px;padding:10px;border: 1px solid #ccc;" th:text="${order.userRemark}"></textarea>
+        </p>
+    </div>
+    <div class="cart-balance">
+        <p class="cb-total">商品总价：¥<span id="totalPrice" th:text="${order.totalPrice}"></span></p>
+        <p class="cb-total">运费：¥<span id="carryPrice" th:text="${order.endCarrige}"></span></p>
+        <p class="cb-total">合计(含运费)：¥<span id="payTotal"></span></p>
+        <a href="javascript:;" class="cb-pay confirm-pay" id="submitOrder">确认付款</a>
+    </div>
+</div>
+
+<!-- ===============  确认订单  end  =============== --> 
+
+
+<!-- ===============  footer页脚 start  =============== --> 
+     <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+		var firmOrder = {
+				//计算运费
+				countCarryPrice :function() {
+					var deliverysize = $("#delivery").attr("data-delivery");
+					if(deliverysize == 0) {
+						return;
+					}
+					var orderId = $("#orderId").val();
+					var addressId = $("#addressId").val();
+					if(addressId == null || addressId == '' || typeof(addressId) == 'undefined') {
+// 						alert("请选择收货地址");
+						return;
+					}
+					var totalPrice = $("#totalPrice").text();
+					$.post('/user/orders/counterCarryPrice',{"orderId":orderId,"addressId":addressId},function(data) {
+						if(data.code == 200) {
+							$("#carryPrice").text(data.result);
+							var payTotal = parseFloat(totalPrice) + data.result;
+							payTotal = payTotal.toFixed(2);
+							$("#payTotal").text(payTotal);
+						}else{
+							alert(data.message);
+						}
+					});
+				},
+				submitOrder : function(orderId,addressId,payType,isUseBalance,invoice,userRemark) {
+					var data = {}
+					data["orderId"] = orderId;
+					data["addressId"] = addressId;
+					data["payType"] = payType;
+					data["isUseBalance"] = isUseBalance;
+					data["isInvoice"] = invoice;
+					data["userRemark"] = userRemark;
+					$.ajax({
+						url:'/user/orders/submitOrders',
+						type:'post',
+						comtentType:'application/json',
+						data:data,
+						success:function(data) {
+							if(data.code == 200) {
+// 								alert(data.result);
+								location.href="/user/orders/order_pay.html?orderNo="+data.result;
+							}else{
+								alert(data.message);
+							}	
+						}
+					});
+					
+				}
+		}
+		$(function() {
+			firmOrder.countCarryPrice();
+			$("#submitOrder").click(function() {
+				var isUseBalance = $("input[name='RadioGroup1']:checked").val();
+				if(typeof(isUseBalance) == 'undefined'){
+					isUseBalance = 0;
+				}
+				var payType = $("#payType option:selected").val()
+				var orderId = $("#orderId").val();
+// 				var carryType = $("#delivery option:selected").val();
+				var addressId = $("#addressId").val();
+				var invoice = $("#invoice option:selected").val();
+				var userRemark = $("#pay_remark").val();
+				if(addressId == null || addressId =='') {
+					alert("请添加收货地址");
+					return;
+				}
+				firmOrder.submitOrder(orderId,addressId,payType,isUseBalance,invoice,userRemark);
+			});
+		});
+// 		function carryWayChange() {
+// 			firmOrder.countCarryPrice();
+// 		}
+	</script>
+</body>
+</html>
+
+
+

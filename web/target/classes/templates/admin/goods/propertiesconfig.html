@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head ></head>
+
+<body>
+<th:block layout:fragment="content">
+<style>
+.click{
+	color:#009688;text-decoration:underline;cursor: pointer;
+}
+.layui-input-block{
+margin-left:120px;
+}
+.w90{width:90px;height:90px;margin-left:2px;}
+.w320{width:320px;margin-top:10px;}
+.w321{width:320px;margin-top:10px;}
+.w320 input{margin:2px 3px;}
+.w320 label{width:500px;}
+.w520{width:420px;}
+.w800{width:500px;}
+</style>
+ <form class="layui-form" action="" id="orderEditForm" style="position: relative;">
+<div>
+	<input type="hidden" th:value="${goodsId}" id="goodsId">
+	<div class="w800" id="properties" >
+		<div class="w320" th:each="pro:${pros}" th:remove="${#lists.size(pros)} eq '0'?'all':'none'">
+			<label class="layui-form-label" style="width:40px;" th:value="${pro.prop.code}" th:text="${ pro.prop.value}"></label>
+			<div class="layui-input-block w520" th:id="'properties_'+${pro.prop.code}">
+			<table id="prec_img" class="layui-table" border="1" cellpadding="1" cellspacing="0" style="width:100%;padding:5px;">
+				<thead>
+					<tr>
+					<th  th:text="${pro.prop.value}"></th>
+					<th style="width:70px;">图片预览(无图片可不填)</th>
+					<th style="width:70px;">属性图片</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:value="${pro.prop.code}" th:each="spec,iterStat:${pro.specs}">
+						<td th:value="${spec.specId}" style="width:70px;" th:text="${spec.specName}"></td>
+						<td style="width:70px;">
+							<img name="prec_picture" style="width:50px;height:50px;" th:src="${spec.imageUrl}!=null?${spec.imageUrl}:''">
+						</td>
+						<td style="width:70px;">
+							<input th:id="'prec_picturePath_'+${pro.prop.code}+${iterStat.index}" name="prec_picture" type="hidden" th:value="${spec.accessoryId}" th:attr="specId=${spec.specId}">
+							<button type="button" class="layui-btn demoMore" th:id="'prec_picture_'+${pro.prop.code}+${iterStat.index}" th:attr="specindex=${pro.prop.code}+${iterStat.index}" th:name="'prec_picture_botton'+${pro.prop.code}+${iterStat.index}">
+							上传图片</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			</div>
+  		</div>
+  		<div class="w320" th:remove="${#lists.size(pros)} eq '0'?'none':'all'">
+  			<h2  style="width: 100%;height: 250px;line-height: 250px;margin-left: 120px;text-align:  center;">该商品未设置商品属性</h2>
+  		</div>
+	</div>
+</div>
+
+ <div class="layui-row" style="margin-bottom:20px;margin-top:20px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;">
+        <button class="layui-btn" lay-submit="" lay-filter="formSubmit" th:remove="${#lists.size(pros)} eq '0'?'all':'none'">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+
+<script>
+//start use
+layui.use(['form','upload'], function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  var upload = layui.upload;
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		var data = {};
+		var goodsId = $("#goodsId").val();
+		var specs = [];
+		var picture = $("input[name='prec_picture']");
+		var num = 0
+		for(var i=0;i<picture.size();i++){
+			var imgId = picture.eq(i).val();
+			var specId = picture.eq(i).attr("specId"); 
+			if(imgId !=null && imgId!='' && typeof(imgId)!='undefined') {
+				var spec = {};
+				spec.specId = specId;
+				spec.accessoryId = imgId
+				specs.push(spec);
+				num++;
+			}
+		}
+		if(num == 0) {
+			return false;
+		}
+		data["goodsId"] = goodsId;
+		data["specs"] = specs;
+		console.log("data="+JSON.stringify(data));
+		$.ajax({
+			url:'/admin/goods/pros_save',
+			data:JSON.stringify(data),
+			type:"post",
+			contentType:"application/json",
+			success:function(data) {
+				if(data.code == 200) {
+					layer.close(prosindex);
+				}else{
+					layer.msg(data.message);
+				}
+			}
+		});
+		return false;
+	});
+	
+	$('#closeBtn').click(function() {
+		layer.closeAll();
+	});
+	
+	//上传分类图片
+     var uploadInst = upload.render({
+		    elem: '.demoMore'
+		        ,url: '/admin/goods/upload'
+		        ,done: function(res){
+		          //上传完毕
+		          if(res.code==200){
+		        	  var item = this.item;
+		        	  console.log(item.prev().val());
+					  item.parent("td").parent("tr").find("img").attr("src",res.result.value);
+		        	  item.prev().val(res.result.code);
+		            form.render();
+		          }else{
+		        	  layer.msg("上传失败");
+		          }
+		        }
+		        ,error: function(){
+		        	 layer.msg("上传失败");
+		          }
+		      });
+
+});
+//end use
+</script>
+
+</th:block>
+</body>
+</html>

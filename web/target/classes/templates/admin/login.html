@@ -1,0 +1,110 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>后台管理系统 </title>
+<link rel="stylesheet" th:href="@{/layerui/css/layui.css}" media="all"/>
+<link rel="stylesheet" th:href="@{/css/login.css}"  media="all"/>
+</head>
+<body class="layui-bg-cyan" style="text-align:center;">
+	<div class="admin-login-block">
+		<div class="admin-login-text">
+			亿慧云商城 <span>管理系统</span>
+		</div>
+		<div class="login-font">
+			<span>系统登录</span>
+		</div>
+		<div class="admin-login-form">
+			<form class="layui-form" action="" lay-filter="login" id="loginForm">
+				<div class="layui-form-item">
+					<div class="layui-input-block admin-login-input">
+						<input type="text" name="username"
+							lay-verify="required|phone" placeholder="登录账号" autocomplete="off"
+							class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block admin-login-input">
+						<input type="password" name="password" 
+							lay-verify="required" placeholder="登录密码" autocomplete="off"
+							class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-row admin-login-input">
+						<div class="layui-col-md8">
+						<input type="text" name="verifyCode" lay-verify="required" placeholder="验证码" autocomplete="off"
+							class="layui-input">
+						</div>
+						<div class="layui-col-md4">
+							<img src="/admin/kaptcha.jpg" id="kaptchaImage" title="看不清，点击换一张" style="padding-left:5px;height:38px;"/> 
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block admin-login-input">
+						<button class="layui-btn admin-login-btn" lay-submit="" lay-filter="loginBtn">登录</button>
+					</div>
+				</div>
+			</form>
+			<div class="admin-login-copy">
+				<p></p>
+			</div>
+		</div>
+	</div>
+<script src="https://cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script th:src="@{/layerui/layui.js}" charset="utf-8"  type="text/javascript"></script>
+<script th:src="@{/js/common.js}" charset="utf-8"  type="text/javascript"></script>
+<script th:src="@{/js/jquery.md5.js}" charset="utf-8"  type="text/javascript"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+	var status = [[${status}]];  //表格权限字段
+	if(status==2){
+		window.parent.location.href="/admin";
+	}
+	/*]]>*/
+	</script>	
+<script type="text/javascript">
+layui.use(['form','layer'], function(){
+	 var form = layui.form;
+	  var layer = layui.layer;
+	 $(function(){
+		setTimeout(function(){
+			$("[name='password']").val("");
+			$("[name='username']").val("");
+			
+		},100);
+		 $('#kaptchaImage').click(function() {$(this).attr('src','/admin/kaptcha.jpg?' + Math.floor(Math.random() * 100));}); 
+	
+		  form.on('submit(loginBtn)', function(data){
+			  var data = $("#loginForm").serializeJson();
+			  data["password"] = $.md5(data["password"]);
+			  $.ajax({
+		            type: "post",
+		            url: "/admin/login",
+		            data: data,
+		            dataType: "json",
+		            success: function(data){
+		            	if(data.code==200){
+		            		//关闭弹出层
+		            		localStorage.setItem("authorizedButs",JSON.stringify(data.result));
+		           	    	location.href="/admin/index"
+		            	}else{
+		            		layer.msg(data.message,{icon:5});
+		            		$('#kaptchaImage').click();
+		            	}
+		            }
+		           });
+			   
+		    return false;
+		  });
+		});
+	});
+</script>
+</body>
+</html>

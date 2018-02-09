@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<!-- 这个元素用来指定外部的属性元素，不是必须的元素。 -->
+    <properties resource="application.properties"/>
+	<!-- <context>元素用于指定生成一组对象的环境。例如指定要连接的数据库，要生成对象的类型和要处理的数据库中的表。运行MBG的时候还可以指定要运行的<context>。 -->
+	<!--
+	conditional  
+		这是默认值  
+		这个模型与hierarchical模型相似,除了如果一个实体类只包含一个字段,则不会单独生成此实体类。因此,如果一个表的主键只有一个字段,那么不会为该字段生成单独的实体类,会将该字段合并到基本实体类中。  
+		  
+		flat  
+		该模型为每一张表只生成一个实体类。这个实体类包含表中的所有字段。一般使用这个模型就够了。  
+		  
+		hierarchical  
+		如果表有主键,那么该模型会产生一个单独的主键实体类,如果表还有BLOB字段，则会为表生成一个包含所有BLOB字段的单独的实体类,然后为所有其他的字段生成一个单独的实体类。MBG会在所有生成的实体类之间维护一个继承关系。  
+		显然这个模型比较复杂。   
+	 -->
+    <context id="Mysql" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+		<property name="javaFileEncoding" value="UTF-8"/>
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="com.qzdsoft.util.MyMapper"/>
+        </plugin>
+
+        <jdbcConnection driverClass="${spring.datasource.driver-class-name}"
+                        connectionURL="${spring.datasource.url}"
+                        userId="${spring.datasource.username}"
+                        password="${spring.datasource.password}">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="com.qzdsoft.eshop.domain" targetProject="src/main/java"/>
+
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources"/>
+
+        <javaClientGenerator targetPackage="com.qzdsoft.eshop.mapper" targetProject="src/main/java"
+                             type="XMLMAPPER"/>
+         
+
+        <table tableName="express_company">
+            <!--mysql 配置-->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+            <!--oracle 配置-->
+            <!--<generatedKey column="id" sqlStatement="select SEQ_{1}.nextval from dual" identity="false" type="pre"/>-->
+        </table>
+    </context>
+  
+</generatorConfiguration>

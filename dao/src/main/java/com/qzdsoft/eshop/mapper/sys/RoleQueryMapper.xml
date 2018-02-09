@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.sys.RoleQueryMapper" >
+	<select id="selectData" parameterType="com.qzdsoft.eshop.vo.role.RoleQueryInfo" resultType="com.qzdsoft.eshop.vo.role.RoleInfo">
+		SELECT
+		r.role_id roleId
+		,r.name name
+		,r.ctime ctime 
+		,r.all_function allFunction
+		FROM
+		 role r
+		WHERE 1 = 1
+		<if test="null != name and ''!= name">
+		AND	r.name LIKE CONCAT(#{name},"%")
+		</if>
+	</select>
+	<select id="findByRoleId"  resultType="com.qzdsoft.eshop.vo.res.ZtreeNode">
+		SELECT
+			res.resource_id id
+			,res.name
+			,res.pid pId
+			,r.role_id checked
+		FROM
+			resource res
+		LEFT JOIN role_res r ON res.resource_id =r.resource_id AND r.role_id = #{roleId}
+		WHERE 1 = 1 
+ 	</select>
+</mapper>

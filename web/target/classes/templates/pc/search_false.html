@@ -1,0 +1,85 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+ <div th:include="pc/commons/header :: top-bar"></div>
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  面包屑导航 start  =============== --> 
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-con">
+            <a href="/">首页</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span th:text="${keyWord}">哈哈</span>
+        </div>
+    </div>
+    <div class="filter-box">
+        <div class="empty-search">
+        <p class="empty-filter-hd">抱歉，没有搜索到与<span th:text="'“'+${keyWord}+'”'">“哈哈”</span>相关的商品</p>
+        <p class="empty-filter-info">请检查您的输入是否有误</p>
+        <div class="empty-filter-see">或者您还可以尝试以下搜索：<a href="list.html">智能开关</a> | <a href="list.html">智能主机</a> | <a href="list.html">智能传感</a> | <a href="list.html">智能安防</a> | <a href="list.html">智能电机</a></div><!-- 链接别空了呀 -->
+    </div>
+    </div>
+
+<!-- ===============  热销推荐 start  =============== --> 
+<div class="goods-search-wrap">
+    <div class="goods-search">
+    <h2><span>热销推荐</span></h2>
+        <ul class="goods-search-list clearfix">
+            <li>
+                <dl>
+                    <dt><a href="#"><img src="images/pro-pic01.png" alt="" /></a></dt>
+                    <dd class="smart-name"><a href="#">亿慧云智能门锁</a></dd>
+                    <dd class="smart-price">2999元</dd>
+                </dl>
+            </li>
+            <li>
+                <dl>
+                    <dt><a href="#"><img src="images/pro-pic01.png" alt="" /></a></dt>
+                    <dd class="smart-name"><a href="#">亿慧云智能门锁</a></dd>
+                    <dd class="smart-price">2999元</dd>
+                </dl>
+            </li>
+            <li>
+                <dl>
+                    <dt><a href="#"><img src="images/pro-pic01.png" alt="" /></a></dt>
+                    <dd class="smart-name"><a href="#">亿慧云智能门锁</a></dd>
+                    <dd class="smart-price">2999元</dd>
+                </dl>
+            </li>
+            <li>
+                <dl>
+                    <dt><a href="javascript:;"><img src="images/pro-pic01.png" alt="" /></a></dt>
+                    <dd class="smart-name"><a href="#">亿慧云智能门锁</a></dd>
+                    <dd class="smart-price">2999元</dd>
+                </dl>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+</body>
+</html>
+
+
+

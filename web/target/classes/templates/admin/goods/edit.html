@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+
+<body>
+<th:block layout:fragment="content">
+<style>
+.click{
+	color:#009688;text-decoration:underline;cursor: pointer;
+}
+.layui-input-block{
+margin-left:120px;
+}
+input:checkbox{
+	width:150px;heigth:35px;
+}
+.w90{width:90px;height:90px;margin-left:2px;}
+.w91{width:40px;}
+.w320{width:320px;margin-top:10px;}
+.w321{width:320px;margin-top:10px;}
+.w320 input{margin:2px 3px;}
+.w320 label{width:820px;}
+.w520{width:520px;}
+.w800{width:800px;}
+</style>
+ <form class="layui-form" action="" id="orderEditForm" style="position: relative;">
+<div style="width:1000px;">
+	<div class="layui-row"  style="width:800px;margin-top:10px;">
+		 <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">商品名称</label>
+			    <div class="layui-input-block" style="width:400px;">
+			         <input type="text" name="name" class="layui-input" th:value="${goods.name}" lay-verify="required"/>
+			         <input type="hidden" id="gdsId" th:value="${goods.goodsId}" />
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">产品简述</label>
+			    <div class="layui-input-block" style="width:400px;">
+			         <input type="text" name="descript" class="layui-input" th:value="${goods.descript}" lay-verify="required"/>
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">产品编码</label>
+			    <div class="layui-input-block" style="width:140px;">
+			         <input type="text" name="decode" class="layui-input" th:value="${goods.decode}" lay-verify="required"/>
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">是否套餐</label>
+			    <div class="layui-input-block" style="width:140px;">
+			         <input type="checkbox" name="isPackage" value="0" lay-skin="switch" th:checked="${goods.isPackage==1?'true':'false'}" lay-filter="switchTest" lay-text="是|否">
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">系统</label>
+			    <div class="layui-input-block" style="width:200px;">
+					<select name="systemId" id="systemId" lay-verify="required">
+						<option value="">请选择</option>
+					    <option th:each="ec:${systemList}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code==goods.systemId+''}"></option>
+					</select>
+			    </div>
+		   </div>
+		  <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">分类</label>
+			    <div class="layui-input-block" style="width:200px;">
+					<select name="classId" id="classId" lay-filter="classId" lay-verify="required">
+						<option value="">请选择</option>
+					    <option th:each="ec:${classList}" th:value="${ec.classId}" th:text="${ec.name}" th:selected="${ec.classId==goods.classId}"></option>
+					</select>
+			    </div>
+		   </div>
+		      	  <div class="w321" id="templateSelect">
+			    <label class="layui-form-label required" style="width:90px;">运费模板</label>
+			    <div class="layui-input-block" style="width:200px;">
+					<select name="templateId" id="templateId" lay-filter="templateId" lay-verify="required">
+						<option value="">请选择</option>
+					    <option th:each="ec:${template}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code}==${goods.templateId}"></option>
+					</select>
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">商品价格</label>
+			    <div class="layui-input-block" style="width:200px;">
+			         <input type="text" name="initiprice" class="layui-input" th:value="${goods.price}" lay-verify="required|number"/>
+			         <input type="hidden" id="specs" th:value="${specs}" />
+			         <input type="hidden" th:each="ec:${goodsSku}" name="goodsSku" th:id="${ec.skuId}" th:value="${ec.price}" th:attr="spec=${ec.specIds},pictId=${ec.accessoryId},picurl=${ec.imgurl}" />
+			    </div>
+		   </div>
+		   <div class="w321">
+			    <label class="layui-form-label required" style="width:90px;">上传视频</label>
+			    <div class="layui-input-block" style="width:200px;">
+			         <button type="button" class="layui-btn" id="test5"><i class="layui-icon"></i>上传视频</button>
+			         <span style="color:red;" id="vedioTip"></span>
+			         <input type="hidden" id="vedioId" name="vedio" th:value="${goods.vedio}" />
+			    </div>
+		</div>
+		   <div style="margin-top:10px;">
+	      <label class="layui-form-label required" style="width:90px">上架时间</label>
+	        <input type="text" id="startDate" class="layui-input" lay-verify="required" style="width:160px;float:left;" th:value="${#dates.format(goods.startTime,'yyyy-MM-dd HH:mm:ss')}" name='startDate'/>
+	        <div class="layui-form-mid" style="margin:0px;">-</div>
+	        <input type="text" id="endDate" class="layui-input" style="width:160px;float:left;" th:value="${#dates.format(goods.endTime,'yyyy-MM-dd HH:mm:ss')}" name="endDate"/>
+	    </div>
+	</div>
+	<div class="layui-row"  style="width:800px;margin-top:10px;">
+		 <div class="layui-upload required">
+			  <button type="button" class="layui-btn" style="margin-left:20px;" id="test2">商品图片上传</button><span>（支持*.png;*.jpg;*.gif等格式上传，建议选择尺寸420x420以上的图片）</span>
+			  <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="display:none;" id="tips2">&#xe63d;</i> 
+			  <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+			    预览图(上传图片并选择商品主图)：
+			    <div class="layui-upload-list" id="demo2"  style="height:120px;">
+			       	<div class="w90" style="height:120px;float:left;" th:each="img,iterStat:${goodsImg}" th:remove="${goodsImg.size()>0?'none':'all'}">
+				    	<img th:src="${img.url}" alt="" class="layui-upload-img w90">
+			       		<i class="layui-icon" onclick="removePic(this.parentNode);" style="font-size: 20px; color: #f5073c;position: relative;top:-100px;left:80px;">&#x1007;</i>
+				    	<input type="radio" name="picture" style="margin:0px 10px;" th:value="${img.accessoryId}" title=" " th:checked="${img.isMasterImg==1?'checked':'false'}">
+			       	</div>
+			    </div>
+			 </blockquote>
+		 </div>
+	</div>
+	
+	<div class="w800" id="properties">
+			<div class="w320" th:remove="${properties.size()>0?'none':'all'}" th:each="prop,iterStat:${properties}" style="margin-top:2px;">
+					<label class="layui-form-label" style="width:40px;" th:value="${prop.propertyId}" th:text="${prop.propertyName}"></label>
+					<div class="layui-input-block w520" th:id="${'properties_'+prop.propertyId}">
+								<input type='checkbox' th:each="item,iterStat:${prop.spec}" th:name="${'encrypt_'+prop.propertyId}" th:value="${item.code}" th:title='${ item.value}'>
+					</div>
+		   </div>
+	</div>
+</div>
+	<div class="div_contentlist2 class="w800"">
+         <ul>
+            <li><div class="w800" id="createTable"></div></li>
+         </ul>
+    </div>
+	<div class="layui-row">
+		<label  class="layui-form-label" style="width:800px;text-align:left;"><strong>商品详情:（支持*.png;*.jpg;*.gif等格式上传，建议选择尺寸420x420以上的图片）</strong></label>
+	</div>
+	<div class="layui-row" style="width:80%">
+			<textarea class="layui-textarea" id="gooddesc" name="detail" style="display: none;" th:text="${goods.detail}"></textarea>
+	</div>			
+
+ <div class="layui-row" style="margin-bottom:20px;margin-top:20px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="margin-left:235px;">
+        <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode="68">提交</button>
+      	<!-- <button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button> -->
+    </div>
+  </div>
+</form>
+
+<script id="demo" type="text/html">
+{{#  layui.each(d, function(index, item){ }}
+  <div class="w320">
+	<label class="layui-form-label" style="width:40px;" value="{{item.propertyId}}">{{ item.propertyName}}</label>
+	<div class="layui-input-block w520" id="properties_{{item.propertyId}}">
+		  {{#  layui.each(item.spec, function(index, item2){ }}
+					<input type='checkbox' name='encrypt_{{item.propertyId}}' lay-filter="encrypt_{{item.propertyId}}" value="{{ item2.code}}" title='{{ item2.value}}'>
+  		  {{#  }); }}
+  		   
+	</div>
+  </div>
+{{#  }); }}
+</script>
+
+<script>
+function removePic(elem){
+	elem.parentNode.removeChild(elem);
+}
+//start use
+layui.use(['form','laytpl','upload','laydate','layedit'], function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  var laytpl = layui.laytpl;
+	  var upload = layui.upload;
+	  var layedit = layui.layedit;
+	  var laydate = layui.laydate;
+		laydate.render({
+			  elem: '#startDate' //指定元素
+				  ,type: 'datetime'
+			});
+		laydate.render({
+			  elem: '#endDate' //指定元素
+				  ,type: 'datetime'
+			});
+	  
+	  var getTpl = demo.innerHTML
+	  ,view = document.getElementById('properties');
+	  
+	  var properys = {},allData;
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听指定开关
+	  form.on('switch(switchTest)', function(data){
+		  $("[name='isPackage']").val(this.checked?1:0);
+	  });
+	//视频上传 start
+	   upload.render({
+		    elem: '#test5'
+		    ,url: '/admin/goods/upload'
+		    ,accept: 'video' //视频
+		    ,before: function(obj){ 
+		    	$("#vedioTip").text("上传中");
+		    }
+		    ,done: function(res){
+		      if(res.code==200){
+		    	  //上传成功
+		    	  $("#vedioTip").text("上传成功");
+		    	  $("#vedioId").val(res.result.code);
+		    	  
+		      }else{
+		    	  //上传失败
+		    	  $("#vedioTip").text("上传失败,请重新上传");
+		      }
+		    }
+		  });
+	 //视频上传 end
+	  var uploadInst = upload.render({
+		    elem: '#test2'
+		        ,url: '/admin/goods/upload'
+		        ,multiple: true
+		        ,before: function(obj){
+		        	$("#test2").hide();
+		        	$("#tips2").show();
+		          //预读本地文件示例，不支持ie8
+		         obj.preview(function(index, file, result){
+		        	//  $('#demo2').append('<div class="w90" style="height:120px;float:left;"><img src="" alt="" class="layui-upload-img w90"><i class="layui-icon" onclick="removePic(this.parentNode);" style="font-size: 20px; color: #f5073c;position: relative;top:-100px;left:80px;">&#x1007;</i><input type="radio" name="picture" value="" title=" " checked=""></div>')
+		          }); 
+		        }
+		        ,done: function(res){
+		          //上传完毕
+		          if(res.code==200){
+		        	 
+		        	$('#demo2').append('<div class="w90" style="height:120px;float:left;"><img src="'+ res.result.value +'" alt="" class="layui-upload-img w90"><i class="layui-icon" onclick="removePic(this.parentNode);" style="font-size: 20px; color: #f5073c;position: relative;top:-100px;left:80px;">&#x1007;</i><input type="radio" name="picture" value="" title=" " checked=""></div>')
+		        	//$("#demo2 img").attr("src",res.result.value);
+		            $("#demo2 input[type='radio']:last").val(res.result.code);
+		            form.render();
+		          }else{
+		        	  layer.msg("上传失败");
+		        	  $("#demo2 i:last").parent().parent().find("i:first").click();
+		          }
+		          $("#test2").show();
+		          $("#tips2").hide();
+		        }
+		        ,error: function(){
+		            //请求异常回调
+		        	 $("#demo2 i:last").parent().parent().find("i:first").click();
+		        	  $("#test2").show();
+			          $("#tips2").hide();
+		          }
+		      });
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		var vedioTip = $("#vedioTip").text();
+		var comint = true;
+		if(vedioTip=="上传中"){
+			comint = false;
+			layer.confirm('视频还未上传完,要继续提交吗?', function(index){
+				comint=true;
+				}); 
+			if(!comint){
+				return false;
+			}
+		}
+		//获取表格数据
+		var data = {};
+		data["detail"] = layedit.getContent(editindex);//获取商品描述
+		data["goodsId"] = $("#gdsId").val();
+		data["name"]=$("input[name='name']").val(); //商品名
+		data["descript"]=$("input[name='descript']").val(); //商品描述
+		data["decode"]=$("input[name='decode']").val(); //产品编码
+		data["vedio"]=$("input[name='vedio']").val(); //产品编码
+		data["isPackage"]=$("input[name='isPackage']").val(); //是否套餐
+		data["systemId"]=$("#systemId").val();
+		data["classId"]=$("#classId").val();
+		data["templateId"]=$("#templateId").val();
+		data["startDate"]=$("#startDate").val();
+		data["endDate"]=$("#endDate").val();
+		data["initiprice"]=$("input[name='initiprice']").val();
+		if($("input[name='name']").val()==null||$("input[name='name']").val()==""){
+			layer.msg("请填写商品名！");
+			return false;
+		}
+		if($("#classId").val()==null||$("#classId").val()==""){
+			layer.msg("请选择商品类别！");
+			return false;
+		}
+		if($("input[name='initiprice']").val()==null||$("input[name='initiprice']").val()==""){
+			layer.msg("请填写商品价格！");
+			return false;
+		}
+		var ids=[];
+		data["pictureMainId"] = $("[name='picture']:checked").val();//主图id
+		if($("[name='picture']:checked").val()==null || $("[name='picture']:checked").val() ==""){
+			layer.msg("请选择商品主图");
+			return false;
+		}
+		var picture = $("input[name='picture']");
+		for(var i=0;i<picture.size();i++){
+			if(picture.eq(i).val()==null || picture.eq(i).val()==''){
+				layer.msg("商品图未上传完,请稍后！");
+				return false;
+			}
+			ids.push(picture.eq(i).val());
+		}
+		if(ids.length==0){
+			layer.msg("请添加商品图片！");
+			return false;
+		}
+		data["ids"]=ids;
+		
+		var items = [];
+		var $trs = $("#createTable tbody tr");
+		for(var i=0;i<$trs.size();i++){
+			var $tr = $trs.eq(i);
+			var $tds = $tr.find("td");
+			var skuId = $tr.attr("id");
+			var specIds = "";
+			for(var j=0;j<$tds.size();j++){
+				if($tds.eq(j).attr("value") !=null && typeof($tds.eq(j).attr("value")) != "undefined"){
+					specIds += $tds.eq(j).attr("value");
+					if(j != $tds.size()-1){
+						specIds +=",";
+					}
+				}
+			}
+		    var price =  $tr.find("input[name='Txt_PriceSon']").val();
+		    var validat= /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/;
+		    if(price != null && price !="" && !validat.test(price)){
+		    	layer.msg("请填写正确价格");
+		    	return false;
+		    }
+		    if(skuId != null && skuId != ""){
+		    	$("#"+skuId).val(price);
+		    }
+		    var picturePath=$tr.find("input[name='picturePath']").val();
+		    
+			    items.push({
+			    	skuId:skuId,
+			    	specIds:specIds,
+			    	price:price,
+			    	picturePath:picturePath
+			    });
+		   /* else{
+		    	if(i==$trs.size()-1){
+		    		continue;
+		    	}
+		    	if(price==''){
+		    		layer.msg("数据第"+(i+1)+"行价格没有填写");
+		    	}
+		    	return false;
+		    } */
+		}
+		data["items"] = items;
+		if($(".w320 input[type='checkbox']").length>0 && items.length<=0){
+			layer.msg("请选择属性值");
+			return false;
+		}
+		
+		$.ajax({url:'/admin/goods/execute_edit',
+			data:JSON.stringify(data),
+			type:"post",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					layer.msg("数据保存成功！", {time: 1000},function(){
+						window.parent.removeTabfunc("tab_商品修改"+$("#gdsId").val());
+					});
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	
+	form.on('select(classId)', function(data){
+		if(data.value==null||data.value==''){
+			return false;
+		}
+		var $option = $(data.elem).find("option[value='"+data.value+"']");
+		$.ajax({url:'/admin/goods/getproperties',
+			data:{'classId':data.value},
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				
+					laytpl(getTpl).render(data, function(html){
+						  view.innerHTML = html;
+						});
+					form.render();
+			}});
+		return false;
+	});
+	
+	$(document).ready(function() {
+		var $option =$("#classId");//$(data.elem).find("option[value='"+data.value+"']")
+	});
+	
+	//注意：layedit.set 一定要放在 build 前面，否则配置全局接口将无效。
+	layedit.set({
+		  uploadImage: {
+		    url: '/admin/goods/pictureUpload' //接口url
+		    ,type: 'POST' //默认post
+		  }
+		});
+	//建立编辑器
+	var editindex = layedit.build('gooddesc',{
+		height: 500
+	}); 
+	
+	$('#closeBtn').click(function() {
+		closeAll();
+	});
+	
+
+//end use
+
+$(document).ready(function(){
+  // 在这里写你的代码...
+  
+});
+$(function () {
+    //SKU信息
+    $("#properties").bind("click", function () {
+        step.Creat_Table();
+        
+        var product = $("input[name='goodsSku']");
+        if(product.length>0){
+	    	var $trs = $("#createTable tbody tr");
+	    	for(var i=0;i<$trs.size();i++){
+	    		var $tr = $trs.eq(i);
+	    		var $tds = $tr.find("td");
+	    		var specIds = "";
+	    		for(var j=0;j<$tds.size();j++){
+	    			if($tds.eq(j).attr("value") !=null && typeof($tds.eq(j).attr("value")) != "undefined"){
+	    				specIds +=$tds.eq(j).attr("value");
+	    				if(j < $tds.size()-4){
+	    					specIds +=",";
+	    				}
+	    			}
+	    		}
+	    		for(var k=0;k<product.length;k++){
+	    			if(specIds==product.eq(k).attr("spec")){
+	    				$tr.attr("id",product.eq(k).attr("id"));
+	    				$tr.find("input[name='Txt_PriceSon']").val(product.eq(k).val());
+	    				$tr.find("input[name='picturePath']").val(product.eq(k).attr("pictId"));
+	    				$tr.find("img[name='picture']").attr("src",product.eq(k).attr("picurl"));
+	    				
+	    			}
+	    		}
+	    	}
+        }
+        
+        for(var i=0;i<$("[name='pictureName']").length;i++){
+        	upload.render({
+        	    elem: "#pictureName_"+i //绑定元素
+        	    ,url: '/admin/goods/upload' //上传接口
+        	    ,multiple: true
+        	    ,done: function(res){
+        	      //上传完毕回调
+        	      if(res.code==200){
+        	    	  this.item.prev().val(res.result.code);
+        	    	  this.item.parent().prev().find("img").attr("src",res.result.value);
+        	    	  this.item.next().next().text("上传成功");
+        	      }else{
+        	    	  layer.msg("图片上传失败");
+        	    	  this.item.next().text("上传失败");
+        	      }
+        	      
+        	    }
+        	    ,error: function(){
+        	      //请求异常回调
+        	    }
+        	  });
+			}
+        
+        form.render();
+    });
+    
+    var step = {
+        //SKU信息组合
+        Creat_Table: function () {
+            step.hebingFunction();
+            var SKUObj = $(".w320");
+            //var skuCount = SKUObj.length;//
+            var arrayTile = new Array();//标题组数
+            var arrayInfor = new Array();//盛放每组选中的CheckBox值的对象
+            var arrayColumn = new Array();//指定列，用来合并哪些列
+            var bCheck = true;//是否全选
+            var columnIndex = 0;
+            $.each(SKUObj, function (i, item){
+                arrayColumn.push(columnIndex);
+                columnIndex++;
+                arrayTile.push(SKUObj.find("label").eq(i).html().replace("：", ""));
+                var itemName = "properties_" + SKUObj.find("label").eq(i).attr("value"); 
+                //选中的CHeckBox取值
+                var order = new Array();
+                $("#" + itemName + " input[type=checkbox]:checked").each(function (){
+                    order.push($(this).val()+":"+$(this).attr("title"));
+                });
+                arrayInfor.push(order);
+                if (order.join() == ""){
+                    bCheck = false;
+                }
+                //var skuValue = SKUObj.find("li").eq(index).html();
+            });
+            //开始创建Table表
+            if (bCheck == true) {
+                var RowsCount = 0;
+                $("#createTable").html("");
+                var table = $("<table id=\"process\" class=\"layui-table\" border=\"1\" cellpadding=\"1\" cellspacing=\"0\" style=\"width:100%;padding:5px;\"></table>");
+                table.appendTo($("#createTable"));
+                var thead = $("<thead></thead>");
+                thead.appendTo(table);
+                var trHead = $("<tr></tr>");
+                trHead.appendTo(thead);
+                //创建表头
+                $.each(arrayTile, function (index, item) {
+                    var td = $("<th>" + item + "</th>");
+                    td.appendTo(trHead);
+                });
+                var itemColumHead = $("<th  style=\"width:70px;\">价格</th><th style=\"width:70px;\">图片预览</th><th style=\"width:70px;\">图片</th> ");
+                itemColumHead.appendTo(trHead);
+                var tbody = $("<tbody></tbody>");
+                tbody.appendTo(table);
+                ////生成组合
+                var zuheDate = step.doExchange(arrayInfor);
+                if (zuheDate.length > 0) {
+                    //创建行
+                    $.each(zuheDate, function (index, item) {
+                        var td_array = item.split(",");
+                        var tr = $("<tr id=\"\"></tr>");
+                        tr.appendTo(tbody);
+                        $.each(td_array, function (i, values) {
+                        	var str=values.split(":");
+                            var td = $("<td value=\""+str[0]+"\">" + str[str.length-1] + "</td>");
+                            td.appendTo(tr);
+                        });
+                        var td1 = $("<td ><input name=\"Txt_PriceSon\" placeholder=\"价格没填写将会删除\" class=\"layui-input l-text\" type=\"text\" value=\"\"></td>");
+                        td1.appendTo(tr);
+                        var td3 = $("<td ><img name=\"picture\" style=\"width:50px;height:50px;\" /></td>");
+                        td3.appendTo(tr);
+                  //      var td2 = $("<td ><form id=\"fileUploadForm\" method=\"POST\" enctype=\"multipart/form-data\"><input name=\"pictureName\" class=\"layui-input l-text\" type=\"file\" value=\"\"><input type=\"submit\" value=\"提交\" lay-submit=\"\" lay-filter=\"formPCSubmit\" name=\"btnSubmit\" /></form></td>");
+                        var td2 = $("<td ><input id=\"picturePath_"+index+"\" name=\"picturePath\" type=\"hidden\" value=\"\"/><button type=\"button\" class=\"layui-btn\" id=\"pictureName_"+index+"\" name=\"pictureName\"><i class=\"layui-icon\">&#xe67c;</i>上传图片</button><span style=\"color:red;margin-left:5px;\"></span></td>");
+                        td2.appendTo(tr);
+                        //var td3 = $("<td ><input name=\"Txt_NumberSon\" class=\"l-text\" type=\"text\" value=\"\"></td>");
+                        //td3.appendTo(tr);
+                        //var td4 = $("<td ><input name=\"Txt_SnSon\" class=\"l-text\" type=\"text\" value=\"\"></td>");
+                        //td4.appendTo(tr);
+                    });
+                }
+                //结束创建Table表
+                arrayColumn.pop();//删除数组中最后一项
+                //合并单元格
+                $(table).mergeCell({
+                    // 目前只有cols这么一个配置项, 用数组表示列的索引,从0开始
+                    cols: arrayColumn
+                });
+            } else{
+                //未全选中,清除表格
+                document.getElementById('createTable').innerHTML="";
+            }
+        },//合并行
+        hebingFunction: function () {
+            $.fn.mergeCell = function (options) {
+                return this.each(function () {
+                    var cols = options.cols;
+                    for (var i = cols.length - 1; cols[i] != undefined; i--) {
+                        // fixbug console调试
+                        // console.debug(cols[i]);
+                        mergeCell($(this), cols[i]);
+                    }
+                    dispose($(this));
+                });
+            };
+            function mergeCell($table, colIndex) {
+                $table.data('col-content', ''); // 存放单元格内容
+                $table.data('col-rowspan', 1); // 存放计算的rowspan值 默认为1
+                $table.data('col-td', $()); // 存放发现的第一个与前一行比较结果不同td(jQuery封装过的), 默认一个"空"的jquery对象
+                $table.data('trNum', $('tbody tr', $table).length); // 要处理表格的总行数, 用于最后一行做特殊处理时进行判断之用
+                // 进行"扫面"处理 关键是定位col-td, 和其对应的rowspan
+                $('tbody tr', $table).each(function (index) {
+                    // td:eq中的colIndex即列索引
+                    var $td = $('td:eq(' + colIndex + ')', this);
+                    // 取出单元格的当前内容
+                    var currentContent = $td.html();
+                    // 第一次时走此分支
+                    if ($table.data('col-content') == '') {
+                        $table.data('col-content', currentContent);
+                        $table.data('col-td', $td);
+                    } else {
+                        // 上一行与当前行内容相同
+                        if ($table.data('col-content') == currentContent) {
+                            // 上一行与当前行内容相同则col-rowspan累加, 保存新值
+                            var rowspan = $table.data('col-rowspan') + 1;
+                            $table.data('col-rowspan', rowspan);
+                            // 值得注意的是 如果用了$td.remove()就会对其他列的处理造成影响
+                            $td.hide();
+                            // 最后一行的情况比较特殊一点
+                            // 比如最后2行 td中的内容是一样的, 那么到最后一行就应该把此时的col-td里保存的td设置rowspan
+                            if (++index == $table.data('trNum'))
+                                $table.data('col-td').attr('rowspan', $table.data('col-rowspan'));
+                        } else { // 上一行与当前行内容不同
+                            // col-rowspan默认为1, 如果统计出的col-rowspan没有变化, 不处理
+                            if ($table.data('col-rowspan') != 1) {
+                                $table.data('col-td').attr('rowspan', $table.data('col-rowspan'));
+                            }
+                            // 保存第一次出现不同内容的td, 和其内容, 重置col-rowspan
+                            $table.data('col-td', $td);
+                            $table.data('col-content', $td.html());
+                            $table.data('col-rowspan', 1);
+                        }
+                    }
+                });
+            }
+            // 同样是个private函数 清理内存之用
+            function dispose($table) {
+                $table.removeData();
+            }
+        },
+        //组合数组
+        doExchange: function (doubleArrays) {
+            var len = doubleArrays.length;
+            if (len >= 2) {
+                var arr1 = doubleArrays[0];
+                var arr2 = doubleArrays[1];
+                var len1 = doubleArrays[0].length;
+                var len2 = doubleArrays[1].length;
+                var newlen = len1 * len2;
+                var temp = new Array(newlen);
+                var index = 0;
+                for (var i = 0; i < len1; i++) {
+                    for (var j = 0; j < len2; j++) {
+                        temp[index] = arr1[i] + "," + arr2[j];
+                        index++;
+                    }
+                }
+                var newArray = new Array(len - 1);
+                newArray[0] = temp;
+                if (len > 2) {
+                    var _count = 1;
+                    for (var i = 2; i < len; i++) {
+                        newArray[_count] = doubleArrays[i];
+                        _count++;
+                    }
+                }
+                //console.log(newArray);
+                return step.doExchange(newArray);
+            }
+            else {
+                return doubleArrays[0];
+            }
+        }
+    }
+    //初始化数据  start
+    var checkbox = $("input[type='checkbox']");
+    var arr = $("#specs").val().split(",");
+	for(var i=0;i<checkbox.length;i++){
+		var trust = $.inArray($("input[type='checkbox']").eq(i).val(), arr);
+	 if(trust != -1 ){
+		 $("input[type='checkbox']").eq(i).click();
+		 
+	  }
+	}
+	
+	var product = $("input[name='goodsSku']");
+	if(product.length>0){
+		var $trs = $("#createTable tbody tr");
+		for(var i=0;i<$trs.size();i++){
+			var $tr = $trs.eq(i);
+			var $tds = $tr.find("td");
+			var specIds = "";
+			for(var j=0;j<$tds.size();j++){
+				if($tds.eq(j).attr("value") !=null && typeof($tds.eq(j).attr("value")) != "undefined"){
+					specIds +=$tds.eq(j).attr("value");
+					if(j < $tds.size()-4){
+						specIds +=",";
+					}
+				}
+			}
+			for(var k=0;k<product.length;k++){
+				if(specIds==product.eq(k).attr("spec")){
+					$tr.attr("id",product.eq(k).attr("id"));
+					$tr.find("input[name='Txt_PriceSon']").val(product.eq(k).val());
+					$tr.find("input[name='picturePath']").val(product.eq(k).attr("pictId"));
+					$tr.find("img[name='picture']").attr("src",product.eq(k).attr("picurl"));
+				}
+			}
+		}
+	}
+	form.render();
+	//初始化数据stop
+    return step;
+    
+})
+});
+</script>
+
+</th:block>
+</body>
+</html>

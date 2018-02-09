@@ -1,0 +1,103 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+     <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+
+   <div th:include="pc/commons/header :: top-bar "></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  cart  start  =============== --> 
+<div class="deliver cf">
+	<input type="hidden" th:value="${info.orderId}" name="orderId" id="orderId">
+	<div class="deliver-nav">
+		物流信息
+	</div>
+	<div class="deliver-header">
+        <div class="dh-title">订单商品</div>
+        	<ul class="firm-list">
+        			<li th:each="good:${info.goods}"><a th:href="@{${'/goods/detail'}(goodsId=${good.goodsId})}" >
+        		<div style="height: 80px;width:80px;">
+		            <img th:src="${good.image}" th:attr="alt=${good.goodName}" />
+        		</div>
+        	<span th:text="${good.goodName}" style="overflow-x: hidden;display: inline-block;width:  80px;white-space: nowrap;"></span>
+            <span th:text="'X'+${good.num}"></span>
+        	</a></li>
+    		</ul>
+        <div class="dh-company"  th:text="'物流公司&nbsp&nbsp'+${info.expressName}">物流公司&nbsp&nbsp韵达快递</div>
+        <div class="dh-num" th:text="'运单号码&nbsp&nbsp'+${info.expressNo}">运单号码&nbsp&nbsp852868043</div>	
+    </div>
+    
+    <div class="track-rcol">
+        <div class="track-list">
+            <ul id="traces" >
+        </div>
+    </div>
+</div>
+<!-- ===============  cart  end  =============== --> 
+
+
+<!-- ===============  footer页脚 start  =============== --> 
+       <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+		var expressInfo = {
+				getExpressInfo : function(orderId) {
+					$.post('/user/orders/express',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							var ulstr = $("#traces");
+							if(data.result.traces!=null) {
+								 var result = data.result.traces.reverse();
+								 if(result.length>0) {
+									 console.log(result);
+									 for(var i=0;i<result.length;i++) {
+										 var listr = $("<li class=\"first\"></li>");
+										 var istr = $("<i class=\"node-icon\"></i>");
+										 istr.appendTo(listr);
+										 var timespan = $("<sapn class=\"class=time\">"+result[i].AcceptTime+"</sapn>");
+										 timespan.appendTo(listr);
+										 var txtspan = $("<sapn class=\"class=time\">"+result[i].AcceptStation+"</sapn>");
+										 txtspan.appendTo(listr);
+										 listr.appendTo(ulstr);
+									 }
+								 }else{
+									 var listr = $("<li class=\"first\"></li>");
+									 var istr = $("<i class=\"node-icon\"></i>");
+									 istr.appendTo(listr);
+									 var txtspan = $("<sapn class=\"class=time\">暂无轨迹信息</sapn>");
+									 txtspan.appendTo(listr);
+									 listr.appendTo(ulstr);
+								 }
+							 }
+						}
+					});
+				}
+		}
+		$(function() {
+			var orderId = $("#orderId").val();
+			expressInfo.getExpressInfo(orderId);
+		});
+	</script>
+</body>
+</html>

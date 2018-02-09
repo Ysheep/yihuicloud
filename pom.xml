@@ -1,0 +1,195 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.qzdsoft</groupId>
+  <artifactId>yihuieshop</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>yihuieshop</name>
+  <url>http://maven.apache.org</url>
+  <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.4.4.RELEASE</version>
+        <relativePath /> <!-- lookup parent from repository -->
+   </parent>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <commons-lang3.version>3.4</commons-lang3.version>
+    <mybatis-spring-boot-starter.version>1.1.1</mybatis-spring-boot-starter.version>
+    <jdk.version>1.8</jdk.version>
+    <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+    <httpclient.version>4.5.2</httpclient.version>
+    <poi-ooxml.version>3.15</poi-ooxml.version>
+    <poi.version>3.15</poi.version>
+    <dom4j.version>1.6</dom4j.version>
+    <zxing.version>3.2.1</zxing.version>
+    <mapper-spring-boot-starter.version>1.1.1</mapper-spring-boot-starter.version>
+    <pagehelper-spring-boot-starter.version>1.1.1</pagehelper-spring-boot-starter.version>
+  </properties>
+
+  <modules>
+  	<module>utils</module>
+  	<module>domain</module>
+  	<module>dao</module>
+  	<module>service</module>
+  	<module>vo</module>
+  	<module>web</module>
+  	
+  </modules>
+  
+   <dependencies>
+	   <dependency>
+	            <groupId>org.apache.commons</groupId>
+	            <artifactId>commons-lang3</artifactId>
+	            <version>${commons-lang3.version}</version>
+	   </dependency>
+    
+	<dependency>  
+            <groupId>org.springframework.boot</groupId>  
+            <artifactId>spring-boot-starter-web</artifactId>  
+    </dependency>
+    
+    <!-- thymeleaf -->
+    <dependency>  
+         <groupId>org.springframework.boot</groupId>  
+         <artifactId>spring-boot-starter-thymeleaf</artifactId>  
+	</dependency>  
+       
+     <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+     </dependency>
+     
+     <dependency>
+		 <groupId>org.springframework.boot</groupId>
+		 <artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+		
+     <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+     </dependency>
+ 
+	 <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+     </dependency>
+     
+     <!--mybatis-->
+	 <dependency>
+		    <groupId>org.mybatis.spring.boot</groupId>
+		    <artifactId>mybatis-spring-boot-starter</artifactId>
+		    <version>${mybatis-spring-boot-starter.version}</version>
+	</dependency>
+      
+     <!--mapper-->
+	<dependency>
+		    <groupId>tk.mybatis</groupId>
+		    <artifactId>mapper-spring-boot-starter</artifactId>
+		    <version>${mapper-spring-boot-starter.version}</version>
+	</dependency>
+	<!--pagehelper-->
+	<dependency>
+		    <groupId>com.github.pagehelper</groupId>
+		    <artifactId>pagehelper-spring-boot-starter</artifactId>
+		    <version>${pagehelper-spring-boot-starter.version}</version>
+	</dependency>
+	
+	 <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+	<dependency>
+	    <groupId>com.alibaba</groupId>
+	    <artifactId>druid</artifactId>
+	    <version>1.1.2</version>
+	</dependency>
+	
+	<!-- 使thymeleaf不强制闭合标签 -->
+	<dependency>
+		<groupId>net.sourceforge.nekohtml</groupId>
+		<artifactId>nekohtml</artifactId>
+		</dependency>
+	
+	<dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-redis</artifactId>
+    </dependency>
+    
+    <dependency>  
+	    <groupId>org.springframework.boot</groupId>  
+	    <artifactId>spring-boot-starter-aop</artifactId>  
+	</dependency>  
+    
+     <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>2.3.2</version>
+     </dependency>
+    <!-- 	
+	<dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+   </dependency> -->
+   
+   <dependency>  
+	    <groupId>io.jsonwebtoken</groupId>  
+	    <artifactId>jjwt</artifactId>  
+	    <version>0.7.0</version>  
+	</dependency>
+	
+	<dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+      <dependency>
+           <groupId>com.alipay</groupId>
+           <artifactId>skd-java</artifactId>
+           <version>20180104135049</version>
+     </dependency>
+     	<!-- 报表 -->  
+ <!--  <dependency>  
+       <groupId>net.sf.jasperreports</groupId>  
+       <artifactId>jasperreports</artifactId>  
+       <version>6.4.1</version>  
+   </dependency>  
+  <dependency>
+    <groupId>com.lowagie</groupId>  
+    <artifactId>itextasian</artifactId>  
+    <version>2.1.7</version> 这两个dependency已经无须使用，见我最新的博客  
+  </dependency> -->
+  <!-- 项目依赖end -->
+  	
+  </dependencies>
+  
+  <build>
+  	  <plugins> 
+			<plugin> 
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-compiler-plugin</artifactId> 
+				<configuration> 
+					<source>${jdk.version}</source> 
+					<target>${jdk.version}</target> 
+				</configuration> 
+			</plugin>
+			
+			<!-- 忽略单元测试 -->
+            <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <configuration>
+		          <testFailureIgnore>true</testFailureIgnore>
+		        </configuration>
+		    </plugin>
+	</plugins>
+	
+  </build>
+  
+</project>

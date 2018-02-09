@@ -1,0 +1,178 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+<link href="https://cdn.bootcss.com/zTree.v3/3.5.29/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+<body>
+
+<th:block layout:fragment="content">
+<div>
+  <form class="layui-form search" id="searchForm">
+  <div class="layui-form-item layui-elem-quote">
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;">分类名称</label>
+      <div class="layui-input-inline" style="width:140px">
+        <input type="text" name="name" class="layui-input" placeholder="请输入名称"/>
+      </div>
+    </div>
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;">状态</label>
+      <div class="layui-input-inline" style="width:120px">
+        <select name="status" id="status" lay-verify="required">
+			<option value="">请选择状态</option>
+			<option th:each="ec:${status}" th:value="${ec.code}" th:text="${ec.value}"></option>
+		</select>
+      </div>
+    </div>
+    <div class="layui-inline">
+      <div class="layui-input-inline" style="width:150px;">
+        <button class="layui-btn" id="searchBtn" type="button" authcode="54">查询</button>
+        <button class="layui-btn" id="addBtn" type="button" authcode="55">新增</button>
+      </div>
+    </div>
+    
+  </div>
+ </form>
+</div>
+
+<table class="layui-table"  id="tab" lay-filter="tab"></table>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.core.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.excheck.js"></script>
+<script>
+var ins,page,trobj,editdialogindex,table;
+$(function(){ 
+	
+	layui.use(['table','layer','element'], function(){
+		var element = layui.element;
+		table = layui.table;
+		ins =table.render({ //其它参数在此省略
+		 elem:"#tab",
+		 url: '/admin/goodsclass/data',
+		 cols:[[
+		      {field:'name', width:180,title:'分类名称'},
+		      {field:'pidName', width:180, title:'父级分类'},
+		      {field:'status',width:177,title:'状态'},
+		      {field:'isShowIndex', title:'首页显示', width:110,},
+		      {field:'seq', title:'序号', width:110,},
+		      {align:'center',fixed:'right',width:350, toolbar:'#toolbar',title:'操作'}
+		 ]]
+	    ,page: true //是否显示分页
+	    ,limits: [10,20,50]
+	    ,limit:10 //每页默认显示的数量
+	    ,even:true
+		  //where:{phone:phone}
+		  //method: 'post'
+		 ,done:function(res,curr,count){
+			 console.log(res);
+			 page = curr;
+			    //得到当前页码
+			    console.log(curr); 
+			    
+			    //得到数据总量
+			    console.log(count);
+		 }
+		});
+		
+		table.on("tool(tab)",function(obj){
+			var data = obj.data; //获得当前行数据
+			var layEvent = obj.event; //获得 lay-event 对应的值
+			trobj = obj;
+			var tr = obj.tr; //获得当前行 tr 的DOM对象
+			if(layEvent=='edit'){
+				window.parent.addTabFrame('/admin/goodsclass/edit?id='+data.classId,"修改分类"+$(this).attr("authcode"),"分类修改");
+			/* 	$.post('/admin/goodsclass/edit?id='+data.classId, {}, function(str){
+				editdialogindex = layer.open({
+									id:"editDialog",
+									title:"修改分类",
+								    type: 1,
+								    area: ['450px', '400px'],
+								    content: str, //注意，如果str是object，那么需要字符拼接。
+								    zIndex:10
+								  });
+								}); */
+			}else if(layEvent=='del'){
+				   layer.confirm('确定删除该分类', {icon: 3, title:'提示'}, function(index){
+				    		 //向服务端发送删除指令
+				    		$.post('/admin/goodsclass/del?id='+data.classId,{},function(result) {
+				    			if(result.code == 200) {
+// 				    				trobj.del(); //删除对应行（tr）的DOM结构
+								    layer.close(index);
+								    layer.msg(result.message,{icon: 6});
+				    			}else{
+				    			 layer.msg(result.message,{icon: 0});
+				    			 layer.close(index);
+				    			} 
+				    		});
+				      });
+					return false;
+			}else if(layEvent=="set"){
+				//新增一个Tab项
+				window.parent.addTabFrame('/admin/goodsclasspro/index?id='+data.classId,"商品分类"+data.classId,"商品分类属性设置");
+			}else if(layEvent=="movedown"){//下移
+				console.log("movedown="+data.sort);
+				$.post('/admin/goodsclass/setSort?classId='+data.classId+"&mode="+'movedown',{},function(result) {
+	    			if(result.code == 200) {
+//		    				trobj.del(); //删除对应行（tr）的DOM结构
+					    layer.msg(result.message,{icon: 6});
+						$.reloadData("searchBtn");
+	    			}else{
+	    			 layer.msg(result.message,{icon: 0});
+	    			} 
+	    		});
+			}else if(layEvent=="moveup"){//上移
+				console.log("moveup="+data.sort);
+				$.post('/admin/goodsclass/setSort?classId='+data.classId+"&mode="+'moveup',{},function(result) {
+	    			if(result.code == 200) {
+//		    				trobj.del(); //删除对应行（tr）的DOM结构
+					    layer.msg(result.message,{icon: 6});
+						$.reloadData("searchBtn");
+	    			}else{
+	    			 layer.msg(result.message,{icon: 0});
+	    			} 
+	    		});
+			}else if(layEvent=="movetop"){//置顶
+				console.log("movetop="+data.sort);
+				$.post('/admin/goodsclass/setSort?classId='+data.classId+"&mode="+'movetop',{},function(result) {
+	    			if(result.code == 200) {
+//		    				trobj.del(); //删除对应行（tr）的DOM结构
+					    layer.msg(result.message,{icon: 6});
+						$.reloadData("searchBtn");
+	    			}else{
+	    			 layer.msg(result.message,{icon: 0});
+	    			} 
+	    		});
+			}
+		});
+		
+		$("#searchBtn").click(function(){
+			var table = layui.table;
+		    ins.reload({url: '/admin/goodsclass/data',where:$("#searchForm").serializeJson()})
+		    return false;
+		});
+		$("#addBtn").click(function() {
+			
+			window.parent.addTabFrame('/admin/goodsclass/edit',"分类新增"+$(this).attr("authcode"),"新增分类");
+// 			$.post('/admin/goodsclass/edit',{},function(str) {
+// 			editdialogindex = layer.open({
+// 					id:"addDialog",
+// 					title:"新增分类",
+// 					type:1,
+// 					area:['600px', '400px'],
+// 					content:str,
+// 					zIndex:10
+// 				});
+// 			});
+		});
+	});
+		
+}); 
+
+</script>
+<script type="text/html" id="toolbar">
+		<a class="layui-btn layui-btn-xs" lay-event="edit" authcode="56">修改</a>
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" authcode="57">删除</a>
+		<a class="layui-btn layui-btn-xs" lay-event="set" authcode='58'>属性设置</a>
+</script>
+</th:block>
+</body>
+</html>

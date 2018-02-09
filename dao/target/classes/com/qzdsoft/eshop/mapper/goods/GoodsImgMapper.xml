@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.GoodsImgMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goods.GoodsImg" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="accessory_id" property="accessoryId" jdbcType="INTEGER" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="is_master_img" property="isMasterImg" jdbcType="SMALLINT" />
+  </resultMap>
+</mapper>

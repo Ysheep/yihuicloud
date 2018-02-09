@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.GoodsSkuMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goods.GoodsSku" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="sku_id" property="skuId" jdbcType="INTEGER" />
+    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="accessory_id" property="accessoryId" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="spec_ids" property="specIds" jdbcType="VARCHAR" />
+    <result column="delete_status" property="deleteStatus" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- <select id="selectBySkuid" resultType="com.qzdsoft.eshop.vo.order.GoodsOrderInfo">
+	SELECT
+		a.url image,
+		g.name goodName,
+		gs.price price,
+		gs.spec_ids specs,
+		gs.sku_id skuId,
+		g.goods_id goodsId
+	FROM
+	goods_sku gs
+	JOIN goods g ON g.goods_id = gs.goods_id
+	JOIN goods_img gm ON gm.goods_id = g.goods_id
+	AND gm.is_master_img = 1
+	JOIN accessory a ON a.accessory_id = gm.accessory_id
+	WHERE gs.sku_id IN 
+	<foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </select> -->
+  <select id="selectById" resultType="com.qzdsoft.eshop.vo.goods.GoodsSkuInfo">
+	SELECT
+		gs.sku_id skuId,
+		gs.goods_id goodsId,
+		gs.accessory_id accessoryId,
+		gs.price price,
+		gs.name name,
+		gs.spec_ids specIds,
+		a.url imgurl
+	FROM
+	goods_sku gs
+	LEFT JOIN accessory a ON a.accessory_id = gs.accessory_id
+	WHERE gs.goods_id = #{goodsId} AND gs.type=0 AND gs.delete_status=0
+  </select>
+  
+</mapper>

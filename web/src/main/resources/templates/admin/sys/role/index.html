@@ -1,0 +1,147 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc">
+<!-- 	<link th:href="@{/js/plugins/zTree/css/zTreeStyle/zTreeStyle.css}" rel="stylesheet"> -->
+</head>
+<!-- start body -->
+<body>
+<!-- start block -->
+<th:block layout:fragment="content">
+<div>
+	<!-- start form -->
+	<form class="layui-form search" id="searchForm">
+		  <div class="layui-form-item layui-elem-quote">
+		    <div class="layui-inline">
+		      <label class="layui-form-label" style="margin-left:-60px;width:100px">角色名</label>
+		      <div class="layui-input-inline" style="width:200px">
+		        <input type="text" name="name" class="layui-input" placeholder="请输入角色名"/>
+		      </div>
+		    </div>
+		    <div class="layui-inline">
+		      <div class="layui-input-inline" style="width:150px;">
+		        <button class="layui-btn" id="searchBtn" type="button" authcode="33">查询</button>
+		        <button class="layui-btn" id="addBtn" type="button" authcode="36">新增</button>
+		      </div>
+		    </div>
+		  </div>
+	</form><!-- end form -->
+</div>
+<table class="layui-table"  id="tab" lay-filter="tab"></table>
+<!-- <script th:src="@{/js/plugins/zTree/js/jquery.ztree.core.js}"></script>
+<script th:src="@{/js/plugins/zTree/js/jquery.ztree.excheck.js}"></script> -->
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.core.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.excheck.js"></script>
+<script>
+var ins,editdialogindex,trobj;
+$(function() {
+	//start use
+	layui.use('table', function(){
+	  var table = layui.table;
+	  //start render
+	  ins=table.render({
+		 elem:'#tab'
+		 ,url:'/admin/sys/role/data?first=true'
+		 ,cols:[[
+// 			  {field:'roleId',width:100, sort: true,title:'角色ID',fixed:'true'},
+		      {field:'name', width:200,title:'角色名称',fixed:'true'},
+		      {field:'isFunction', width:200,title:'是否拥有全部权限'},
+		      {field:'ctime', width:300, sort: true,title:'创建日期'},
+		      {align:'center',fixed:'right',width:350, toolbar:'#toolbar',title:'操作'}
+		 ]]
+	    ,page: true //是否显示分页
+	    ,limits: [10,20,50]
+	  	,even:true
+	    ,limit:10 //每页默认显示的数量
+		,done:function(res,curr,count){
+// 			 console.log(res);
+			 page = curr;
+			    //得到当前页码
+			    console.log(curr); 
+			    
+			    //得到数据总量
+			    console.log(count);
+		}
+	  });
+	  //start table on
+	  table.on("tool(tab)",function(obj) {
+		  var data = obj.data;//当前行数据
+		  var layEvent = obj.event; //获得 lay-event 对应的值
+		  trobj = obj;
+		  var tr = obj.tr; //获得当前行 tr 的DOM对象
+		  if(layEvent == 'edit'){
+			  $.get('/admin/sys/role/edit?id='+data.roleId, {}, function(str){
+					editdialogindex = layer.open({
+										id:"layerDialog",
+										title:"修改菜单信息",
+									    type: 1,
+									    area: ['400px', '250px'],
+									    content: str, //注意，如果str是object，那么需要字符拼接。
+									    zIndex:10
+									  });
+									});
+		  }else if(layEvent == 'detail') {
+			  $.get('/admin/sys/role/openTree?id='+data.roleId, {}, function(str){
+				  editdialogindex = layer.open({
+					  	id:"layerDialog",
+						title:"设置权限",
+					    type: 1,
+					    area: ['410px', '480px'],
+					    content: str, //注意，如果str是object，那么需要字符拼接。
+					    zIndex:10
+					  });
+					});
+		  }else if(layEvent == 'del') {
+			  layer.confirm('确定删除该行单据', {icon: 3, title:'提示'}, function(index){
+			    		 //向服务端发送删除指令
+			    		$.get('/admin/sys/role/del_execute?id='+data.roleId,{},function(result) {
+			    			if(result.code == 200) {
+							    layer.close(index);
+							    $.reloadData("searchBtn");
+							    layer.msg(result.message,{icon: 6});
+							    return false;
+			    			}else{
+			    			 layer.msg(result.message,{icon: 0});
+			    			 layer.close(index);
+			    			 return false;
+			    			} 
+			    		});
+			      
+			      });
+		  }
+	  });
+	  //end table on
+	  //页面新增
+	  $("#addBtn").click(function() {
+		  $.post('/admin/sys/role/addinit',function(str) {
+			  editdialogindex = layer.open({
+				  	id:"layerDialog",
+					title:"新增菜单",
+					type:1,
+					area:['400px', '250px'],
+					content:str,
+					zIndex:10
+				});
+		  });
+	  });
+	  //页面查询按钮 start search
+	  $("#searchBtn").click(function(){
+			var table = layui.table;
+		    ins.reload({url: '/admin/sys/role/data',where:$("#searchForm").serializeJson()})
+		    return false;
+		});
+	  //end search
+	  
+	});
+	//end render
+//end use
+});
+</script>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="edit" authcode="35">修改</a>
+	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" authcode="34">删除</a>
+	<a class="layui-btn  layui-btn-xs" lay-event="detail" authcode="37">菜单权限</a>
+</script>
+</th:block><!-- end block -->
+</body><!-- end body -->
+</html>

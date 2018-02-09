@@ -1,0 +1,139 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+<style>
+
+</style>
+</head>
+<body>
+<input type="hidden" id="orderId" th:value="${orderinfo.orderId}">
+<th:block layout:fragment="content">
+<div style="margin:20px;">
+	<div class="orderDetails" style="padding:0px;">
+		<div class="orderdh" >
+			<h2   class="layui-elem-quote" style="background-color:#f2f2f2;padding:10px;font-size:14px;color:#666;font-weight:bold;">订单状态</h2>
+		</div>
+		<div class="ordersee1">
+			<table class="layui-table" >
+				<tr>
+					<td width="80" align="right" class="blue2">订单状态：</td>
+					<td width="120" align="left" ><span class="layui-badge layui-bg-orange" th:text="${orderinfo.orderStatus}"></span></td>
+					<td width="80" align="right"  class="blue2">订单编号：</td>
+					<td width="320" align="left" th:text="${orderinfo.orderNo}"></td>
+					<td width="80" align="right"  class="blue2">支付时间：</td>
+					<td width="220" align="left" th:text="${orderinfo.payTime}"></td>
+				</tr>
+			</table>
+		</div>
+		<div class="ordersee2">
+			<h2   class="layui-elem-quote" style="background-color:#f2f2f2;padding:10px;font-size:14px;color:#666;font-weight:bold;">订单详情</h2>
+			<div class=" orderinfo">
+				<div class="orderinfo_r layui-row">
+					<div class="layui-col-xs4">
+						<span style="font-size:14px;color:#666;">应收运费：<span style="font-size:14px;color:#666;" class="frspan" th:text="${orderinfo.carrige}!=null?'￥'+${orderinfo.carrige}:''"></span></span>
+					</div>
+					<div class="layui-col-xs4">
+					<span style="font-size:14px;color:#666;">实收运费：<span style="font-size:14px;color:#666;" class="frspan" th:text="${orderinfo.carrige}!=null?'￥'+${orderinfo.carrige}:''"></span></span>
+					</div>
+				</div>
+				<div class="orderinfo_r layui-row">
+						<div class="layui-col-xs4">
+						<span style="font-size:14px;color:#666;">订单总价：<span style="font-size:14px;color:#666;" class="frspan" th:text="(${orderinfo.goodsTotalPrice}!=null?'￥' + ${orderinfo.goodsTotalPrice}:'')"></span></span>
+						</div>
+						<div class="layui-col-xs4">
+						<span style="font-size:14px;color:#666;">在线支付金额：<span style="font-size:14px;color:#666;" class="frspan" th:text="(${orderinfo.goodsTotalPrice}!=null?'￥' + ${orderinfo.goodsTotalPrice}:'')"></span></span>
+						</div>
+						<div class="layui-col-xs4">
+						<span style="font-size:14px;color:#666;">余额支付金额：<span style="font-size:14px;color:#666;" class="frspan" th:text="(${orderinfo.goodsTotalPrice}!=null?'￥' + ${orderinfo.goodsTotalPrice}:'')"></span></span>
+						</div>
+				</div>
+				<div class="orderinfo_r">
+						<span style="font-size:14px;color:#666;">订单备注：</span><span style="font-size:14px;color:#666;" class="frspan" th:text="(${orderinfo.userRemark}!=null?${orderinfo.userRemark}:'')"></span>
+				</div>
+						<div class="orderinfo_l">
+						
+						<table class="layui-table" >
+							<tr>
+				                <td width="20%" style="background:#F9F9F9"><strong>商品名称</strong></td>
+				                <td width="6%" align="center" style="background:#F9F9F9">商品属性</td>
+				                <td width="6%" align="center" style="background:#F9F9F9">商品数量</td>
+				                <td width="6%" align="center" style="background:#F9F9F9">商品价格(元)</td>
+				                <td width="6%" align="center" style="background:#F9F9F9">应收总额(元)</td>
+				                <td width="6%" align="center" style="background:#F9F9F9">实收总额(元)</td>
+			              	</tr>
+		              		<tr th:each="ec:${orderinfo.goods}">
+				                <td height="71" th:text=${ec.goodName}></td>
+		              			<td align="center" th:text=${ec.specs}></td>
+				                <td align="center" th:text=${ec.num}></td>
+				                <td align="center" th:text=${ec.price}><strong style="color:#F90"></strong></td>
+				                <td align="center" th:text=${ec.totalMoney}><strong style="color:#F90"></strong></td>
+				                <td align="center" th:text=${ec.endPayMoney}><strong style="color:#F90"></strong></td>
+		              		</tr>
+						</table>
+					</div>
+			</div>
+		</div>
+		<div class="ordersee3">
+			<blockquote  class="layui-elem-quote" style="background-color:#f2f2f2;padding:10px;font-size:14px;color:#666;font-weight:bold;">物流信息</blockquote>
+			<ul style="margin-bottom:10px;">
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">收货人:</label></span><span style="font-size:14px;color:#666;" class="orseet2" th:text="${orderinfo}!=null?${orderinfo.trueName}:''"></span></li>
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">收货地址:</label></span>
+				<span class="orseet2" style="font-size:14px;color:#666;"  th:text="${orderinfo}!=null?${orderinfo.addInfo}:''"></span>
+				</li>
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">邮政编码:</label></span><span style="font-size:14px;color:#666;"  class="orseet2" th:text="${orderinfo}!=null?${orderinfo.zip}:''"></span></li>
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">手机号码:</label></span><span  style="font-size:14px;color:#666;" class="orseet2" th:text="${orderinfo}!=null?${orderinfo.phone}:''"></span></li>
+			</ul>
+			<h2   class="layui-elem-quote" style="background-color:#f2f2f2;padding:10px;font-size:14px;font-weight:bold;color:#666;">
+				物流动态
+			</h2>
+			<ul>
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">物流公司:</label></span><span style="font-size:14px;color:#666;" class="orseet2" th:text="${expressinfo}!=null?${expressinfo.expressName}:''">
+				</span></li>
+				<li><span class="orseet"><label style="font-size:14px;color:#666;">物流单号:</label></span><span style="font-size:14px;color:#666;" class="orseet2" th:text="${expressinfo}!=null?${expressinfo.expressNo}:''"></span>
+<!-- 					<a href="javascript:void(0);" id="ship_info_a"> -->
+<!-- 						<i class="layui-icon" style="font-size: 25px;">&#xe619;</i>    -->
+<!-- 					</a> -->
+				</li>
+			</ul>
+<!-- 			<ul th:each="ec:${express.traces}"> -->
+<!-- 				<li><span th:text="${ec.AcceptTime}"></span></li> -->
+<!-- 				<li><span th:text="${ec.AcceptStation}"></span></li> -->
+<!-- 			</ul> -->
+			<ul id="express" class="layui-timeline" style="margin-top:20px;">
+				
+			</ul>
+		</div>
+	</div>
+</div>
+<script>
+$(function() {
+		var orderId =$("#orderId").val();
+		console.log("order="+orderId);
+		$.ajax({url:'/admin/orders/express?orderId='+orderId,
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					 if(data.code == 200) {
+						 
+						 if(data.result.traces!=null) {
+							 var result = data.result.traces.reverse();
+							 console.log(result);
+							 for(var i=0;i<result.length;i++) {
+								 var str1 = "<li class='layui-timeline-item'><i class='layui-icon layui-timeline-axis'></i>"+
+								 "<div class='layui-timeline-content layui-text'><div class='layui-timeline-title'>"+result[i].AcceptTime+"&nbsp;"+result[i].AcceptStation+"</div></li>";
+								 $("#express").append(str1);
+							 }
+						 }
+					}
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+})
+</script>
+</th:block>
+
+</body>
+</html>

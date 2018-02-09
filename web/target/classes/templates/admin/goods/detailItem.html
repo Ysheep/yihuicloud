@@ -1,0 +1,36 @@
+<table class="layui-table" style="width:200px;" id="contentTab">
+  	 <thead style="positon:fixed;">
+    	<tr>
+    	 <th><input type="checkBox" lay-skin="primary" name="headCheckBox" lay-filter="headCheckBox"/></th>
+		 <th data-field="name">参数名</th>
+		 <th data-field="name">参数值</th>
+    	</tr>
+     </thead>
+ 	<tbody>
+   
+    <tr th:each="item : ${details}" class="edittr" >
+    	<td style="width:40px;"><input type="checkBox" lay-skin="primary" name="trCheckBox"/></td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" name="name" class="layui-input" style="width:150px;" th:value="${item.name}"/>
+			<input type="hidden" name="paramId" class="layui-input" style="width:150px;" th:value="${item.paramId}"/>
+		</td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" name="value" class="layui-input" style="width:150px;" th:value="${item.value}"/>
+		</td>
+	</tr>
+	</tbody>
+</table>
+<table style="display:none;" id="blankTpl">
+<tbody>
+<tr class="edittr">
+		<td style="width:40px;"><input type="checkBox" lay-skin="primary" name="trCheckBox" lay-filter="trCheckBox"/></td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" id="newName" name="name" placeholder="新增参数" class="layui-input" style="width:150px;" value=""/>
+			<input type="hidden" name="paramId" class="layui-input" style="width:150px;" value=""/>
+		</td>
+		<td style="width:150px;padding-left:0px;padding-right:0px;">
+			<input type="text" id="newValue" name="value" placeholder="新增参数值" class="layui-input" style="width:150px;" value=""/>
+		</td>
+	</tr>
+	</tbody>
+</table>

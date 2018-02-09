@@ -1,0 +1,172 @@
+<style>
+.layui-layer-page .layui-layer-content {
+	position: relative;
+	overflow: visible !important;
+}
+.citys-list{
+	position: absolute; 
+	top: 20px;
+	 left: 20px;
+	 display:none;
+	 background-color:#fbfcc3;
+	 border: 1px solid #ebe4ad;
+	 width:300px;
+}
+.showCityPop{
+	z-index:55556;
+}
+.showCityPop .citys-list{
+	display:block;
+	z-index:55900;
+	
+}
+</style>
+<input type="hidden" id="modelid" th:value="${modelid}">
+<form class="layui-form" action="" id="orderEditForm" style="position:absolute;margin-left: 10px;">
+	<div class="layui-row"  th:each="area:${model}" style="margin-top:5px;">
+		 <!-- 地区选择 -->
+		<div class="layui-col-md2 group_label" th:id="'areagroup_' + ${area.areaId}">
+  	 		<input type="checkbox" lay-skin="primary" lay-filter="J_Group" class="J_Group">
+  	 		<label th:text="${area.name}"></label>
+  	 	</div>
+  	 	<div class="layui-col-md10" >
+  	 		<div class="layui-row" >
+  	 			<!-- 省份 -->
+  	 			<div class="layui-col-md4" th:each="pro:${area.provinces}"  style="position:relative;">
+  	 				<span class="Province_label">
+  	 					<input type="checkbox" lay-skin="primary" class="J_Province" lay-filter="J_Group" th:value="${pro.areaId}">
+  	 					<label th:text="${pro.name}"></label><a href="javascript:void(0)" onclick="ShowCounty(this);" th:attr="data-proid=${pro.areaId}"><i class="layui-icon" style="font-size: 10px;" >&#xe61a;</i></a>
+  	 				</span>
+  	 				<!-- 城市 -->
+  	 				<div class="layui-row layui-col-space1 citys-list" th:id="'citys_'+${pro.areaId}" style="">
+	  	 				<ul>
+	  	 					<li>
+	  	 						<div class="layui-col-md4" th:each="ct:${pro.citys}">
+				  	 				<span>
+				  	 					<input type="checkbox" lay-skin="primary" th:attr="data-cname=${ct.name}" class="J_City" th:value="${ct.areaId}">
+				  	 					<label th:text="${ct.name}"></label>
+				  	 				</span>
+			  	 				</div>
+	  	 					</li>
+	  	 					<li class="close" style="width:280px; height:24px; float:left; line-height:24px; margin-bottom:5px;">
+	  	 						<input type="button" value="关闭" onclick="HideCounty(this);" style="float:right; cursor:pointer;"/>
+	  	 					</li>
+	  	 				</ul>
+	  	 				
+  	 				</div>
+  	 			</div>
+  	 		</div>
+  	 	</div>
+	</div>
+  
+ <div class="layui-row" style="margin-top:20px;margin-left:60px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;">
+        <button class="layui-btn" lay-submit=""  id="saveBtn">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+<script>
+
+$(function() {
+// 	console.log("modelid={}"+$("#modelid").val());
+// 	console.log($("p[id='"+$("#modelid").val()+"']").html());
+// 	console.log($("p[id='"+$("#modelid").val()+"']").parent().next().val());
+//start use
+layui.use('form', function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	$("#saveBtn").click(function() {
+		var text = null;
+		var value=null;
+		var checklist = $(".citys-list").find("input[type='checkbox']:checked");
+		$("#orderEditForm").find(".J_City").each(function() {
+			if($(this).is(':checked')) {
+// 				console.log("$(this)={}"+$(this).val());
+// 				console.log("text()={}"+$(this).attr('data-cname'));
+				if(text ==null) {
+					text = $(this).attr('data-cname');
+				}else{
+					text = text +","+$(this).attr('data-cname');
+				}
+				if(value == null) {
+					value=$(this).val();
+				}else{
+					value = value+","+$(this).val();
+				}
+			}
+		});
+// 		console.log("text="+text);
+// 		console.log("value="+value);
+		if(text == null) {
+			text ="未添加地区";
+		}
+		$("p[id='"+$("#modelid").val()+"']").html(text);
+		$("p[id='"+$("#modelid").val()+"']").parent().next().val(value);
+		$('#closeBtn').click();
+		 return false;
+	});
+	//显示市区
+	ShowCounty = function (obj) {
+		//onclick="jQuery(this).parent().parent().parent().hide();"
+// 		console.log(obj.offsetLeft);
+// 		var pro = $(obj);
+// 		var proId = pro.attr('data-proid');
+// 		console.log(proId);
+// 		var offset = pro.offset();
+// 		var cid = 'citys_'+proId
+// 		console.log(pro.offsetLeft);
+// 		$("#"+cid).css({ position: "absolute", 'top': 20, 'left': 20, 'z-index': 9999 });
+// 		$("#"+cid).css("display","block");
+		if($(obj).parent().parent().hasClass("showCityPop")) {
+			$(obj).parent().parent().removeClass("showCityPop");
+		}else{
+			 $("div").removeClass("showCityPop");
+		     $(obj).parent().parent().addClass("showCityPop");
+		}
+	}
+	//隐藏市区
+    HideCounty = function (obj) {
+		$(obj).parent().parent().parent().parent().removeClass("showCityPop");
+	}
+	
+  	//地区 省份全选
+    form.on('checkbox(J_Group)', function(data){
+    	var $el = $(data.elem);
+    	if($el.parent().hasClass("group_label")) {//地区
+//     		console.log("地区");
+//     		console.log($el.parent());
+//     		console.log($el.parent().next('div'));
+//     		console.log($el.parent().next('div').find("input[type='checkbox']"));
+    		if(data.elem.checked) {
+    			$el.parent().next('div').find("input[type='checkbox']").prop("checked", true);
+    		}else{
+    			$el.parent().next('div').find("input[type='checkbox']").prop("checked", false);
+    		}
+    	}else{//省份
+    		console.log("省份");
+    		if(data.elem.checked) {
+    			$el.parent().next('div').find("input[type='checkbox']").prop("checked", true);
+    		}else{
+    			$el.parent().next('div').find("input[type='checkbox']").prop("checked", false);
+    		}
+    		
+    	}
+    	form.render("checkbox");
+    });   
+	
+	$('#closeBtn').click(function() {
+		layer.close(settingIndex);
+	});
+	
+	        
+});
+});
+//end use
+</script>

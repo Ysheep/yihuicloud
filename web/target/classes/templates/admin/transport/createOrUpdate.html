@@ -1,0 +1,518 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+
+<body>
+<th:block layout:fragment="content">
+<style>
+.way{
+	border:1px solid #000;
+	padding:5px;
+}
+.form-danger{
+    border-color: #FF5722!important;
+}
+</style>
+<form class="layui-form" id="addTempalte">
+<div class="layui-row"  style="margin-top:10px;">
+	 <div class="layui-form-item" style="margin-bottom: 0px">
+		    <label class="layui-form-label" style="width:80px;">模板名称</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="text" name="name" class="layui-input" lay-verify="required"/>
+		    </div>
+	 </div>
+	 <div class="layui-form-item" style="margin-bottom: 0px">
+		    <label class="layui-form-label" style="width:80px;">是否包邮</label>
+		    <div class="layui-input-block" style="width:300px;">
+		         <input type="radio" name="free" value="0" title="自定义运费" id="coustomer" lay-filter="assumer" checked>
+		         <input type="radio" name="free" value="1" title="卖家承担运费" id="own" lay-filter="assumer">
+		          <input name="assumer" type="hidden" value="0">
+		    </div>
+	 </div>
+	 <div class="layui-form-item" style="margin-bottom: 0px">
+		    <label class="layui-form-label" style="width:80px;">计价方式</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="radio" name="piece" value="1" title="按件数" id="piece" lay-filter="changeprice" checked>
+<!-- 		         <input type="radio" name="piece" value="2" title="按重量" id="weight" lay-filter="changeprice"> -->
+		         <input name="pricingMethod" type="hidden" value="1">
+		    </div>
+	 </div>
+	  <div class="layui-form-item" style="margin-bottom: 0px">
+		    <label class="layui-form-label" style="width:80px;">运送方式</label>
+		    <div class="layui-input-block" style="width:300px;">
+		        <label class="layui-form-label" style="width:100%;padding:9px 0px;">除指定地区外，其他地区的运费采用“默认运费”</label>
+		    </div>
+	 </div>
+	 <div class="layui-row carrymethod"  style="width:800px;margin-top:10px;margin-left:60px">
+	 	 <div class="layui-form-item" style="">
+			<input type="checkbox" name="tplType" id="postage" value="0" title="平邮" lay-filter="carryway">
+	 	 </div>
+	 	 <div class="postage way" style="display:none;" data-delivery="postage">
+	 	 		<ul>
+	 	 			<li class="default">
+	 	 				<div class="layui-row default">
+	 	 					<div class="layui-col-md3">
+	 	 					 	 <label >默认运费：</label>
+							     <input name="mail_trans_weight" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text" value="" />
+                       	 		 <label name="lp">件</label>内,
+							  </div>
+							  <div class="layui-col-md3">
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+                        		<label >元</label>
+							  </div>
+							  <div class="layui-col-md3">
+							    <label >每增加</label>
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+							    <label name="lp">件</label>
+							  </div>
+							   <div class="layui-col-md3">
+							    	<label >增加运费:</label>
+                        			<input name="mail_trans_add_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value="" />
+                        			<label >元</label>
+							  </div>
+	 	 				</div>
+	 	 			</li>
+	 	 			<li class="tpl-postage" style="display:none;">
+		 	 			<table class="layui-table" style="margin-top:2px;"  id="opertable" >
+		 	 			<thead>
+	                    <tr id="opertitle" >
+	                      <td>配送区域</td>
+	                      <td width="12%">首<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">续<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">操作</td>
+	                    </tr>
+	                    </thead>
+	                    <tbody mode="postage">
+	                    <tr class="opertr" >
+	                      <td >
+                             <div class="layui-row">
+                             	<div>
+                             	<a  style="float:right;color:blue"  href="javascript:void(0);" onclick="CheckArea(this);" >
+		                      	 	编辑
+                             	</a>
+                             	</div>
+                             	<div>
+                                 	<p class="area" id="postage0">未添加地区</p>
+                             	</div>
+                              	<input type="hidden" value="" name="post">
+                             </div>
+	                      </td>
+	                      <td style="padding-left:0px;padding-right:0px;"><input type="text" class="layui-input"></td>
+	                      <td style="padding-left:0px;padding-right:0px;"><input type="text" class="layui-input"></td>
+	                      <td style="padding-left:0px;padding-right:0px;"><input type="text" class="layui-input"></td>
+	                      <td style="padding-left:0px;padding-right:0px;"><input type="text" class="layui-input"></td>
+	                      <td ><a href="javascript:void(0);" style="color:blue;" onclick="changerule(this,false)">删除</a></td>
+	                    </tr>
+	                    </tbody>
+	                  </table>
+	 	 			</li>
+	 	 			<li>
+	 	 				<a href="javascript:void(0);" onclick="changerule(this,true)" style="color:blue;">为指定地区城市设置运费</a>
+	 	 			</li>
+	 	 		</ul>
+	 	 </div>
+	 	 <div class="layui-form-item" style="">
+			<input type="checkbox" name="tplType" id="express" value="1" title="快递" lay-filter="carryway">
+	 	 </div>
+	 	 <div class="express way" style="display:none;" data-delivery="express">
+	 	 		<ul>
+	 	 			<li class="default">
+	 	 				<div class="layui-row default">
+	 	 					<div class="layui-col-md3">
+	 	 					 	 <label >默认运费：</label>
+							     <input name="mail_trans_weight" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text" value="" />
+                       	 		 <label name="lp">件</label>内,
+							  </div>
+							  <div class="layui-col-md3">
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+                        		<label >元</label>
+							  </div>
+							  <div class="layui-col-md3">
+							    <label >每增加</label>
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+							    <label name="lp">件</label>
+							  </div>
+							   <div class="layui-col-md3">
+							    	<label >增加运费:</label>
+                        			<input name="mail_trans_add_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value="" />
+                        			<label >元</label>
+							  </div>
+	 	 				</div>
+	 	 			</li>
+	 	 			<li class="tpl-express" style="display:none;">
+		 	 			<table class="layui-table" style="margin-top:2px;"  id="opertable" >
+		 	 			<thead>
+	                    <tr id="opertitle" >
+	                      <td>配送区域</td>
+	                      <td width="12%">首<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">续<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">操作</td>
+	                    </tr>
+	                    </thead>
+	                    <tbody mode="express">
+	                    <tr class="opertr" >
+	                      <td >
+                             <div class="layui-row">
+                             	<div>
+                             	<a  style="float:right;color:blue"  href="javascript:void(0);" onclick="CheckArea(this);">
+		                      	 	编辑
+                             	</a>
+                             	</div>
+                             	<div>
+                                 	<p class="area" id="express0">未添加地区</p>
+                             	</div>
+	                              <input type="hidden" value="" name="express">
+                             </div>
+	                      </td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><a href="javascript:void(0);" style="color:blue;" onclick="changerule(this,false)">删除</a></td>
+	                    </tr>
+	                    </tbody>
+	                  </table>
+	 	 			</li>
+	 	 			<li>
+	 	 				<a href="javascript:void(0);" onclick="changerule(this,true)" style="color:blue;">为指定地区城市设置运费</a>
+	 	 			</li>
+	 	 		</ul>
+	 	 </div>
+	 	  <div class="layui-form-item" style="">
+			<input type="checkbox" name="tplType" id="ems" title="EMS" value="2" lay-filter="carryway">
+	 	 </div>
+	 	 <div class="ems way" style="display:none;" data-delivery="ems">
+	 	 		<ul>
+	 	 			<li class="default">
+	 	 				<div class="layui-row default">
+	 	 					 <div class="layui-col-md3">
+	 	 					 	 <label >默认运费：</label>
+							     <input name="mail_trans_weight" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text" value="" />
+                       	 		 <label name="lp">件</label>内,
+							  </div>
+							  <div class="layui-col-md3">
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+                        		<label >元</label>
+							  </div>
+							  <div class="layui-col-md3">
+							    <label >每增加</label>
+							    <input name="mail_trans_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value=""  />
+							    <label name="lp">件</label>
+							  </div>
+							   <div class="layui-col-md3">
+							    	<label >增加运费:</label>
+                        			<input name="mail_trans_add_fee" style="max-height: 20px;max-width: 70px;display: inline;" class="layui-input" type="text"  value="" />
+                        			<label >元</label>
+							  </div>
+	 	 				</div>
+	 	 			</li>
+	 	 			<li class="tpl-ems" style="display:none;">
+		 	 			<table class="layui-table" style="margin-top:2px;"  id="opertable" >
+		 	 			<thead>
+	                    <tr id="opertitle" >
+	                      <td>配送区域</td>
+	                      <td width="12%">首<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">续<label name="lb">件(件)</label></td>
+	                      <td width="12%">运费(¥)</td>
+	                      <td width="12%">操作</td>
+	                    </tr>
+	                    </thead>
+	                    <tbody mode="ems">
+	                    <tr class="opertr" >
+	                      <td >
+                             <div class="layui-row">
+                             	<div >
+                             	<a  style="float:right;color:blue"  href="javascript:void(0);" onclick="CheckArea(this);">
+		                      	 	编辑
+                             	</a>
+                             	</div>
+                             	<div >
+                                 	<p class="area" id="ems0">未添加地区</p>
+                             	</div>
+		                         <input type="hidden" value="" name="ems">
+                            </div>
+	                      </td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><input type="text" class="layui-input"></td>
+	                      <td ><a href="javascript:void(0);" style="color:blue;" onclick="changerule(this,false)">删除</a></td>
+	                    </tr>
+	                    </tbody>
+	                  </table>
+	 	 			</li>
+	 	 			<li>
+	 	 				<a href="javascript:void(0);" onclick="changerule(this,true)" style="color:blue;">为指定地区城市设置运费</a>
+	 	 			</li>
+	 	 		</ul>
+	 	 </div>
+      		
+	 </div>
+</div> 
+<div class="layui-row" style="margin-top:60px;margin-left:300px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" >
+          <button class="layui-btn" lay-submit="" lay-filter="formSubmit" >保存</button>
+    </div>
+  </div>
+</form>
+<script>
+
+var settingIndex;
+layui.use('form', function(){
+	var form = layui.form;
+	form.render();
+	form.on('submit(formSubmit)',function(data) {
+		if (!CheckInput()){//检验表单
+	        return false;
+		}
+		var data = {};
+		data["name"] = $("input[name='name']").val();
+		data["pricingMethod"] = $("input[name='pricingMethod']").val();
+		data["freeDelivery"] = $("input[name='assumer']").val();
+		var carryModel = [];
+		if($("#postage").is(":checked")) {//平邮
+			var definput = $("div[data-delivery='postage']").find("div.default").find(":text");
+			//默认的
+			var postdef = {};
+			postdef['areaId'] = 0;
+			postdef['isDefault'] = 1;
+			postdef['carryWay'] = 0;
+			postdef['firstSum'] = definput.eq(0).val();
+			postdef['secondSum'] = definput.eq(2).val();
+			postdef['firstAmount'] = definput.eq(1).val();
+			postdef['secondAmount'] = definput.eq(3).val();
+			carryModel.push(postdef);
+			if($(".tpl-postage").is(":visible")) {
+				$("tbody[mode='postage']").find("tr").each(function() {
+					var post ={};
+					var inputs = $(this).find(":text");
+					console.log("post="+$(this).find("input[name='post']").val());
+					post['areaId'] = $(this).find("input[name='post']").val();
+					post['isDefault'] = 0;
+					post['carryWay'] = 0;
+					post['firstSum'] = inputs.eq(0).val();
+					post['secondSum'] = inputs.eq(2).val();
+					post['firstAmount'] = inputs.eq(1).val();
+					post['secondAmount'] = inputs.eq(3).val();
+					carryModel.push(post);
+				});
+			}
+			
+		}
+		if($("#express").is(":checked")) {//快递
+			var definput = $("div[data-delivery='express']").find("div.default").find(":text");
+			//默认的
+			var postdef = {};
+			postdef['areaId'] = 0;
+			postdef['isDefault'] = 1;
+			postdef['carryWay'] = 1;
+			postdef['firstSum'] = definput.eq(0).val();
+			postdef['secondSum'] = definput.eq(2).val();
+			postdef['firstAmount'] = definput.eq(1).val();
+			postdef['secondAmount'] = definput.eq(3).val();
+			carryModel.push(postdef);
+			if($(".tpl-express").is(":visible")) {
+				$("tbody[mode='express']").find("tr").each(function() {
+					var post ={};
+					var inputs = $(this).find(":text");
+					console.log("express="+$(this).find("input[name='express']").val());
+					post['areaId'] = $(this).find("input[name='express']").val();
+					post['isDefault'] = 0;
+					post['carryWay'] = 1;
+					post['firstSum'] = inputs.eq(0).val();
+					post['secondSum'] = inputs.eq(2).val();
+					post['firstAmount'] = inputs.eq(1).val();
+					post['secondAmount'] = inputs.eq(3).val();
+					carryModel.push(post);
+				});
+			}	
+		}
+		if($("#ems").is(":checked")) {//ems
+			var definput = $("div[data-delivery='ems']").find("div.default").find(":text");
+			//默认的
+			var postdef = {};
+			postdef['areaId'] = 0;
+			postdef['isDefault'] = 1;
+			postdef['carryWay'] = 2;
+			postdef['firstSum'] = definput.eq(0).val();
+			postdef['secondSum'] = definput.eq(2).val();
+			postdef['firstAmount'] = definput.eq(1).val();
+			postdef['secondAmount'] = definput.eq(3).val();
+			carryModel.push(postdef);
+			if($(".tpl-ems").is(":visible")) {
+				$("tbody[mode='ems']").find("tr").each(function() {
+					var post ={};
+					var inputs = $(this).find(":text");
+					console.log("ems="+$(this).find("input[name='ems']").val());
+					post['areaId'] = $(this).find("input[name='ems']").val();
+					post['isDefault'] = 0;
+					post['carryWay'] = 2;
+					post['firstSum'] = inputs.eq(0).val();
+					post['secondSum'] = inputs.eq(2).val();
+					post['firstAmount'] = inputs.eq(1).val();
+					post['secondAmount'] = inputs.eq(3).val();
+					carryModel.push(post);
+				});
+			}
+		}
+		data['carryModel'] = carryModel;
+// 		console.log("data="+JSON.stringify(data));
+		$.ajax({
+			url:'/admin/template/createTemplate',
+			data:JSON.stringify(data),
+			type:'post',
+			contentType:'application/json',
+			success:function(data) {
+				if(data.code == 200) {
+// 					layer.msg(data.message);
+					layer.msg("数据保存成功！", {time: 1000},function(){
+						window.parent.removeTabfunc("tab_模板新增");
+					});
+// 					window.location.href="/admin/template/index";
+				}else{
+					layer.msg(data.message);
+				}
+			}
+			
+		});
+		return false;
+	});
+	//是否包邮
+	form.on('radio(assumer)',function(data) {
+		 var assumer = data.value;
+		 $("input[name='assumer']").val(assumer);
+	});
+	//计价方式
+	form.on('radio(changeprice)', function(data){
+		  console.log(data.elem); //得到radio原始DOM对象
+		  console.log(data.value);//被点击的radio的value值
+		 var curcheck =  $("input[name='pricingMethod']").val();
+		  var pv = data.value;
+		  if(pv!=curcheck) {
+		 radioindex=layer.confirm('正在切换计价方式,确认继续么?',{
+			  btn: ['是','否']},function() {
+				  var tpltext = null
+				  if(pv == 1) {//按件数
+					  tpltext = "件";
+					  $("label[name='lb']").html("件(件)");
+					  $("input[name='pricingMethod']").val(pv);
+				  }else{//按重量
+					  tpltext = "kg";
+					  $("label[name='lb']").html("重(kg)");
+					  $("input[name='pricingMethod']").val(pv);
+				  }
+				  $("label[name='lp']").html(tpltext);
+				  layer.close(radioindex);
+			  },function() {
+				  var checkvalue = $("#addTempalte").find('input[type=radio]:checked').val();
+				  console.log("checkvalue"+checkvalue);
+				  if(checkvalue!=curcheck) {
+					  $("#addTempalte").find('input[type=radio][value='+curcheck+']').next().find("i").click();//选中value为curcheck的单选框
+				  }
+			  });
+		  }
+	}); 
+	//运送方式的选择
+	form.on('checkbox(carryway)',function(data) {
+	  var el = data.elem;
+	  console.log(el);
+	  var $el = $(el).parent().next('div');
+	  console.log($el);
+	  var value = data.value;
+	  if(data.elem.checked) {
+		  $el.attr('style',"display:block");
+	  }else{
+		  $el.attr('style',"display:none");
+	  }
+	});
+	//选择地区
+	CheckArea = function(obj) {
+		var model = $(obj).parent().next().find('p').attr('id');
+		console.log("mdoel="+model);
+			$.post('/admin/area/settings?modelid='+model,{},function(str) {
+				settingIndex = layer.open({
+					 id:"layerDialog",
+						title:"选择区域",
+						type:1,
+						area:['600px', '450px'],
+						content:str,
+						zIndex:10
+				});
+			});
+	}
+	
+	//添加删除指定地区邮费
+	changerule = function (obj, or) {
+	    var tbody = $(obj).parent().prev().find("tbody");
+	    console.log(tbody);
+	    var rows = tbody.find("tr").length;
+	    console.log(rows);
+	    var id = tbody.attr("mode") + rows;
+		    if (or) {
+		        var div = $(obj).parent().prev();//包含地区规则的li
+		        var tr = div.find("tbody").children().first();//地区规则中的第一条
+		        console.log(tr);
+		        if (div.css('display')=='none') {
+		        	div.attr('style',"display:block");
+		            return false;
+		        } else {
+		            var newtr = tr.clone(true);
+		            newtr.find("p.area").attr("id", id);
+		            newtr.appendTo(tr.parent());
+		            return false;
+		        }
+		    } else {
+		        if ($(obj).parent().parent().parent().children().length > 1) {
+		            $(obj).parent().parent().remove();
+		            return false;
+		        } else {
+		            $(obj).parent().parent().parent().parent().parent().hide();
+		            return false;
+		        }
+		    }
+	}
+	//提交前验证
+	function CheckInput() {
+	    //判断运送方式
+	    var sum = 0;
+	    var isok = true;
+	    var assumer =  $("input[name='assumer']").val();// 是否包邮 0:表示买家承担服务费; 1:表示卖家承担服务费
+	    if(assumer!=1) {//
+		    $("input[name='tplType']").each(function () {
+		        if ($(this).is(":checked"))
+		            sum++;
+		    });
+		    if (sum <= 0) {
+		        layer.msg("请至少选择一种运送方式！");
+		        return false;
+		    }
+	    }
+	    //判断发货时间
+// 	    if ($("#J_prescription").val() == "0") {
+// 	        alert("请设置发货时间！");
+// 	        return false;
+// 	    }
+	    //判断所有可见表单
+    	$("input[type='text']:visible").each(function () {
+	        if ($.trim($(this).val()) == "") {
+	            $(this).focus();
+	            isok = false;
+	            return false;
+	        }
+	        else {
+		        return true;
+	        }
+    	})
+	    return isok;
+	}
+});
+</script>
+</th:block>
+</body>
+</html>

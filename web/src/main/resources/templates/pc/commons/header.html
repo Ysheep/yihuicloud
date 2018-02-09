@@ -1,0 +1,287 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="login">
+	<div class="loginDiv" id="signIn">
+        <a href="javascript:;" class="closeBtn">X</a>
+       <!--  <h2>欢迎您登录亿慧云商城</h2> -->
+        <form class="formWrap">
+            <fieldset>
+                <legend>登&nbsp;&nbsp;录</legend>
+                <p class="userName"><lable for="userName"></lable><input id="userName" type="text" placeholder="用户名/手机号"></p>
+                <p class="passWord"><lable for="passWord"></lable><input id="passWord" type="password" placeholder="密码"></p>
+                <div class="pointOut">
+                    <input type="checkbox"><span>自动登录</span>
+                    <a href="javascript:;" class="loginLink03">忘记密码？</a>
+                </div>
+                <button id="login"><span style="color: #fff;" >登&nbsp;&nbsp;录</span></button>
+                <div class="login-bottom"> 
+                    <ul class="otherLogin">
+                        <li class="qq-login"></li>
+                        <li ><a class="weixin-login" href="https://open.weixin.qq.com/connect/qrconnect?appid=wx2d2671dfc603a318&redirect_uri=https%3A%2F%2Fshop.yihuicloud.com%2Fonlogin&response_type=code&scope=snsapi_login&state=3d6be0a4035d839573b04816624a415e#wechat_redirect" style="width:100%;height:100%;"><img src="../../images/icon_weixin_pc.svg"></a></li>
+                        <li class="weibo-login"></li>
+                    </ul>
+                    <a href="javascript:;" class="loginLink01">立即注册</a>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="loginDiv login-special" id="signUp">
+        <a href="javascript:;" class="closeBtn">X</a>
+       <!--  <h2>欢迎您登录亿慧云商城</h2> -->
+        <form action="" class="formWrap">
+            <fieldset>
+                <legend>注&nbsp;&nbsp;册</legend>
+                <p class="number"><lable for="number"><i>*</i>用户名：</lable><input id="reg_number" type="text" placeholder="请输入您的手机号"></p>
+                <p class="recommend"><lable for="recommend">推荐人：</lable><input id="reg_recommend" type="text" placeholder="请输入推荐人ID"></p>
+                <p class="passWord"><lable for="passWord"><i>*</i>密码：</lable><input id="reg_passWord" type="password" placeholder="密码"></p>
+                <p class="passWord"><lable for="passWord"><i>*</i>确认密码：</lable><input id="reg_passWord2" type="password" placeholder="确认密码"></p>
+                <p class="number pr"><lable for="number"><i>*</i>验证码：</lable><input id="reg_code" type="text" placeholder="验证码"><a href="javascript:;" class="code">获取验证码</a></p>
+                <div class="agreement">
+                    <span id="checkAgree"></span>
+                    <a href="doc/service-agreement.html" target="_blank">我已阅读并同意《亿慧云用户服务协议》</a><!-- 11.24 注册按钮均添加商城服务协议的文档链接 -->
+                </div>
+                <button id="registerBtn">注&nbsp;&nbsp;册</button>
+                <a href="javascript:;" class="loginLink02">已有账号，登录</a>
+            </fieldset>
+        </form>
+    </div>
+    <div class="loginDiv login-special" id="forgetPassword">
+        <a href="javascript:;" class="closeBtn">X</a>
+       <!--  <h2>欢迎您登录亿慧云商城</h2> -->
+        <form action="" class="formWrap">
+            <fieldset>
+                <legend>重置密码</legend>
+                <p class="passWord"><lable for="passWord">新密码：</lable><input id="passWord" type="password" placeholder="密码"></p>
+                <p class="passWord"><lable for="passWord">确认密码：</lable><input id="passWord" type="password" placeholder="确认密码"></p>
+                <p class="phone"><lable for="phone">手机号码：</lable><input id="phone" type="phone" placeholder="请输入手机号码"></p>
+                <p class="number pr"><lable for="number">验证码：</lable><input id="number" type="text" placeholder="验证码"><a href="javascript:;" class="code">获取验证码</a></p>
+                <button>确&nbsp;&nbsp;定</button>
+                <a href="javascript:;" class="loginLink02">直接登录</a>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="top-bar">
+<!-- ===============  顶部通栏 start  =============== -->
+	 <div class="site-top-bar">
+        <div class="site-nav clearfix">
+            <div class="site-nav-left">
+                <p>欢迎光临亿慧云</p>
+                <a href="http://www.yihuicloud.com/">亿慧云官网</a>
+                <p>全国客服热线：400-7788-006</p>
+            </div>
+            <div class="site-nav-right">
+            	<div id="account_center" style="display:none">
+	                <div class="account-nav fr">
+	                   <!--  <a href="user.html" class="account-quick-btn" id="account">显示登录后账号</a> -->
+	                    <a class="account-quick-btn" href="/user/center/customer">会员中心</a>
+	                    <ul class="account-quick">
+	                        <li><a href="/user/orders/my-orders">我的订单</a></li>
+	                        <!-- <li><a href="account-center.html">账号中心</a></li> -->
+	                        <li><a href="/pc/logout">退出登录</a></li>
+	                    </ul>
+	                </div>
+                	<!-- <a href="/user/orders/my-orders">我的订单</a> -->
+                </div>           
+                <div id="login_center" style="display:block">
+	                <a href="javascript:;" class="signUp">免费注册</a>
+	                <a href="javascript:;" class="signIn">登录</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+<!-- ===============  顶部通栏 end  =============== -->
+
+<!-- ===============  header头部logo以及导航栏 start  =============== -->
+    <div class="mod-header">
+        <div class="top-container clearfix">
+            <div class="header-logo fl"><a href="/"><img src="/images/logo.png" alt="亿慧云" height="68"></a></div>
+            <!-- ++++++  2016/12/13 增加搜索框 修改购物车按钮  ++++++  -->
+            <div class="header-cart fr" id="headerCart">
+            </div>
+            <div class="header-search fr">
+                <!-- 搜索跳转到search.html页面，搜索不到就跳转到search_false.html页面 -->
+                <form action="/goods_search" id="searchForm" class="search-form">
+                    <label for="search"></label>
+                    <input type="text" id="keyw" class="search-text" name="keyWord"/>
+                    <input type="button" id="searchBtn"   class="search-btn" value=""  autocomplete="off"/>
+                </form>
+                <ul>
+                    <li><a href="list.html">智能开关<i>约有6件</i></a></li>
+                    <li><a href="#">智能主机<i>约有3件</i></a></li>
+                    <li><a href="#">智能传感<i>约有4件</i></a></li>
+                </ul>
+
+            </div>
+
+        </div>
+    </div>
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+ <!--固定搜索栏--> 
+  <script type="text/javascript" th:inline="javascript">
+	  	isflag = false;
+	  	var  TT = {
+	  			checkLogin: function() {
+	  				 $.ajax({
+		    			 type:"post",
+		    			 url:'/checklogin',
+		    			 data:{},
+		    			 async: true, 
+		    			 success:function(data) {
+		    				 if(data.code==200) {
+		    					 var result = data.result;
+		    					 if(result.flag) {
+		    						$("#account_center").show();
+		    						/* $("#account").text(result.account); */
+		    						$("#login_center").hide();
+		    						$(".signUp").hide();
+		    						isflag = true;
+		    						TT.getCartInfo();
+	// 	    						 alert(result.account);
+		    					 }else{
+		    						 $("#account_center").hide();
+		    						 $("#login_center").show();
+		    						 TT.getCartInfo();
+		    					 }
+		    				 }
+		    			 }
+		    		 });
+	  			},
+	  			
+	  			getCartInfo: function() {
+	  				if(isflag) {
+		  				$.ajax({
+		  					url:'/user/cart/cart',
+		  					type:'post',
+		  					 data:{},
+			    			 async: true, 
+			    			 success:function(data) {
+			    				 if(data.code==200) {
+			    					 var carts = data.result;
+			    					 var headerCart = $("#headerCart").html("");
+			    					 var top = $(" <a href=\"/user/cart/list\" class=\"cart-mini\"><i class=\"cart-icon\"></i> <em>购物车</em><span id=\"cartNum\">("+carts.totalNum+")</span>");
+			    					 top.appendTo(headerCart);
+			    					 var footer = '';
+			    					if(carts.totalNum == 0) {
+			    						footer = $("<div class=\"cart-empty cart-menu\"> <p>您的购物车还没有商品，快去选购吧！</p></div>");
+			    					}else{
+			    						var items = carts.items;//购物车商品
+			    						var cartmenu = $("<div class=\"cart-menu\"></div>") ;
+			    						var carttotal = $("<div class=\"cart-total\"><p>共"+carts.totalNum+"合计<span>"+carts.totalPeice+"元</span></p><a href=\"/user/cart/list\">去结算</a>");
+					                    var goods = "";
+					                    for(var i=0;i<items.length;i++) {
+					                    	var item = items[i]
+					                    	var divtop = $("<div class=\"cart-item oh\"></div>");
+					                    	var dv1 = $("<div class=\"cart-left fl\"><img style=\"width:40px;\" src="+item.goodImage+"></div>")
+					                    	dv1.appendTo(divtop);
+					                    	var dv2 = $("<div class=\"cart-middle fl\"><p>"+item.goodName+"</p><span>"+item.specs!=null?item.specs:''+"</span>");
+					                    	dv2.appendTo(divtop);
+					                    	var dv3 = $(" <div class=\"cart-right fl\"> <i>"+item.price+"元 x"+item.num+"</i></div>");/* <b data-cartId="+item.cartId+" class=\"deleteItem\">x</b> */
+					                    	dv3.appendTo(divtop);
+					                    	divtop.appendTo(cartmenu);
+					                    }
+					                    carttotal.appendTo(cartmenu);
+					                    footer =  cartmenu;
+			    					}
+			    					footer.appendTo(headerCart);
+			    				 }
+			    			 }
+		  				});
+	  				}else{
+	  					var headerCart = $("#headerCart").html("");
+   					 	var top = $(" <a href=\"javascript:;\" class=\"cart-mini\"><i class=\"cart-icon\"></i> <em>购物车</em><span id=\"cartNum\">("+0+")</span>");
+   					 	top.appendTo(headerCart);
+   					 	footer = $("<div class=\"cart-empty cart-menu\"> <p>您还未登录，快去登录选购吧！</p></div>");
+   					 	footer.appendTo(headerCart);
+	  				}
+	  			},
+	  			//购物车删除商品
+// 				deleteItem : function() {
+// 					$('.cart-menu .cart-right').click(function() {
+// 						var _item = $(this);
+// 						var cartId = _item.attr("data-cartid");
+// 						console.log(cartId);
+// 						var _ids = [];
+// 						_ids[0] = cartId
+// 						var data = {}
+// 						data["ids"] = _ids
+// 						$.ajax({
+// 							url:"/user/cart/del",
+// 							data:JSON.stringify(data),
+// 							type:'post',
+// 							contentType:"application/json",
+// 							success:function(data) {
+// 								if(data.code == 200) {
+// 									 TT.getCartInfo();
+// 								}else{
+// 									alert(data.message);
+// 								}
+// 							}
+// 						});
+// 					});
+// 				}
+	  			
+	  	}
+	     $(function(){ 
+	    	 //查询
+	 		$("#searchBtn").click(function(){
+	 			var kword = $("#keyw").val();
+	 			if(kword==null||kword==""){
+					alert("搜索关键字不能为空");
+					return false;
+	 			}
+	 			 if(/[&\|\\\*^$#@\=~`+<>(){};'""'！@#￥……&*（）——+【】；‘’“”!_：，。、《》？]/g.test(kword)){
+	 	 			var rs = kword.replace(/[&\|\\\*^$#@\=~`+<>(){};'""'！@#￥……&*（）——+【】；‘’“”!_：，。、《》？]/g,""); 
+	 	 			$("#keyw").val(rs);
+	 	 	    }
+	 			$("#searchForm").submit();
+	 		});
+	    	//检查登录状态
+	 		TT.checkLogin();
+// 	 		TT.deleteItem();
+	    		
+	    	
+	 	});
+	 </script>
+</div>
+<div th:fragment="header-column">
+	<div class="column">
+		<ul class="column-list">
+			<li><a href="/">首页</a></li>
+			<li><a href="/goods/list.html?isPackage=1">产品套餐</a></li>
+			<li><a href="javascript:;" class="signUp">注册会员</a></li>
+		</ul>
+	</div>
+	</div>
+	<div th:fragment="mm-left">
+		<div class="mm-left">
+			<div class="mm-left-sort">
+				<div class="mm-left-sort-title">分销中心</div>
+				<ul>
+					<li><a href="/user/center/customer" class="li-customer">我的客户</a></li>
+					<li><a href="/user/center/asset" class="li-asset">我的资产</a></li>
+				</ul>
+			</div>
+			<div class="mm-left-sort">
+				<div class="mm-left-sort-title">个人信息中心</div>
+				<ul>
+					<li><a href="/user/center/pinfo" class="li-pinfo">个人资料</a></li>
+					<li><a href="/user/deliver_address/list">收货地址</a></li>
+				</ul>
+			</div>
+			<div class="mm-left-sort">
+				<div class="mm-left-sort-title">订单中心</div>
+				<ul>
+					<li><a href="/user/orders/my-orders">全部订单</a></li>
+					<!-- <li><a href="">我的收藏</a></li> -->
+				</ul>
+			</div>
+		</div>
+</div>
+</body>
+</html>
+    

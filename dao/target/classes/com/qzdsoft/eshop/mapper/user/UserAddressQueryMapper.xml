@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.user.UserAddressQueryMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.user.UserAddress" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="address_id" property="addressId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="address_info" property="addressInfo" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="zip" property="zip" jdbcType="VARCHAR" />
+    <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+    <result column="city_id" property="cityId" jdbcType="INTEGER" />
+    <result column="district_id" property="districtId" jdbcType="INTEGER" />
+    <result column="isdefault" property="isdefault" jdbcType="TINYINT" />
+  </resultMap>
+  <select id="selectaddressById" resultType="com.qzdsoft.eshop.vo.address.pc.AddressInfo">
+  	SELECT
+		ua.address_id addressId
+		,ua.address_info address
+		,ua.province_id provinceId
+		,ua.city_id cityId
+		,ua.district_id districtId
+		,ua.isdefault isDefault
+		,ua.phone mobile
+		,ua.true_name linkMan
+		,ua.zip zip
+		,p.name provinceStr
+		,c.name cityStr
+		,d.name districtStr
+	FROM
+		user_address ua
+	JOIN user u ON u.user_id = ua.user_id
+	LEFT JOIN area p ON ua.province_id = p.area_id
+	LEFT JOIN area c ON ua.city_id = c.area_id
+	LEFT JOIN area d ON ua.district_id = d.area_id
+	WHERE
+	 u.user_id = #{userId}
+	 <if test="addressId!=null and ''!=addressId">
+	 	AND ua.address_id = #{addressId}
+	 </if>
+	 ORDER BY ua.isdefault DESC ,ua.address_id DESC
+  </select>
+  
+    <select id="getLatelyAddress" resultMap="BaseResultMap">
+	  	SELECT
+	  	ua.address_id addressId
+		,ua.address_info address
+		,ua.province_id provinceId
+		,ua.city_id cityId
+		,ua.district_id districtId
+		,ua.isdefault isDefault
+		,ua.phone mobile
+		,ua.true_name linkMan
+		,ua.zip zip
+		FROM
+			`user_address` ua
+		JOIN `user` u ON ua.user_id = u.user_id AND u.user_id = #{userId}
+		GROUP BY ua.address_id DESC  limit 1
+  	</select>
+  	
+  	<select id="selectDefaultAddress" resultType="com.qzdsoft.eshop.vo.address.pc.AddressInfo">
+	SELECT
+		ua.address_id addressId
+		,ua.address_info address
+		,ua.province_id provinceId
+		,ua.city_id cityId
+		,ua.district_id districtId
+		,ua.isdefault isDefault
+		,ua.phone mobile
+		,ua.true_name linkMan
+		,ua.zip zip
+		,p.name provinceStr
+		,c.name cityStr
+		,d.name districtStr
+	FROM
+		user_address ua
+	JOIN user u ON u.user_id = ua.user_id
+	LEFT JOIN area p ON ua.province_id = p.area_id
+	LEFT JOIN area c ON ua.city_id = c.area_id
+	LEFT JOIN area d ON ua.district_id = d.area_id
+	WHERE
+	 u.user_id = #{userId}
+	AND ua.isdefault = 1
+  </select>
+  	
+</mapper>

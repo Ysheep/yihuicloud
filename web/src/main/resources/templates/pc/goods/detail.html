@@ -1,0 +1,446 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<script type="text/javascript">
+   function specClick(obj) {
+// 		alert("goodsId="+$(obj).attr("data-goodsid")+","+"pro&spec="+$(obj).attr("data-specid"));
+// 		var specs =  $(obj).attr("data-specid").split(":");
+// 		alert(specs);
+// 		var propsSize = $("#props"+specs[0]).attr("data-size");//属性长度
+// 		var goodsId = $(obj).attr("data-goodsid");//商品id
+// 		alert(propsSize);
+// 		var $divpros = $(".pro-info-color")
+// 		var sku_specs = '';
+// 		$divpros.each(function() {
+// 			 var $this = $(this);
+// 			 var specId = $this.find("a[class=pro-link-current]").attr("data-specid");
+// 			 if(sku_specs=='') {
+// 				 sku_specs = specId;
+// 			 }else{
+// 				 sku_specs = sku_specs+','+specId
+// 			 }
+// 		});
+// 		console.log(sku_specs);
+ 	$(obj).addClass('pro-link-current').siblings().removeClass('pro-link-current');
+    $(obj).parent().parent().children('span').text("").text($(obj).attr("data-specName"));
+	findskuInfo();
+		
+	}
+</script>
+<script type="text/javascript">
+	var $fsku = $(function() {
+		findskuInfo();
+		//加入购物车
+		$("#addCart").click(function() {
+			if(!isflag) {
+				$('.signIn,.tip-login').click();
+				return;
+			}
+			var goodsId = $("#goodsId").val();
+			var skuId = $("#skuId").val();
+			if(typeof(skuId) == 'undefined' || skuId==null || skuId=='') {
+				if($("#goodsId").attr("data-prosize")>0) {
+					alert("请选择需要的商品");
+					return;
+				}
+				skuId = $("#goodsskuId").val();
+			}
+			var num = $(".num").val();
+			$.post('/user/cart/add',{"skuId":skuId,"num":num},function(data){
+				if(data.code=200) {
+					alert("成功");
+// 					$("#cartNum").text('('+1+')');
+					TT.getCartInfo();
+				}else{
+					alert(data.message);
+				}
+			});
+		});
+		//立即购买
+		$("#payNow").click(function() {
+			if(!isflag) {
+				$('.signIn,.tip-login').click();
+				return;
+			}
+			var goodsId = $("#goodsId").val();
+			var skuId = $("#skuId").val();
+			if(typeof(skuId) == 'undefined' || skuId==null || skuId=='') {
+				if($("#goodsId").attr("data-prosize")>0) {
+					alert("请选择需要的商品");
+					return;
+				}
+				skuId = $("#goodsskuId").val();
+			}
+			var num = $(".num").val();
+			var data = {};
+			var goods = [];
+			var good = {};
+			good.skuId = skuId;
+			good.num = num;
+			good.goodsId = goodsId;
+			goods.push(good);
+			data["orderType"] = 0;
+			data["goods"] = goods;
+			console.log(JSON.stringify(data));
+			$.ajax({
+				url:'/user/orders/orderAdd',
+				data:JSON.stringify(data),
+				contentType:"application/json",
+				type:'post',
+				success:function(data) {
+					if(data.code == 200) {
+						window.location.href="/user/orders/firm-order?orderId="+data.result;
+					}else{
+						alert(data.message);
+					}
+				}
+			});
+		});
+	})
+	//获取sku信息
+	function findskuInfo() {
+		var goodsId = $("#goodsId").val();
+		var $divpros = $(".pro-info-color")
+		var sku_specs = '';
+		$divpros.each(function() {
+			 var $this = $(this);
+			 var specId = $this.find("a[class=pro-link-current]").attr("data-specid");
+			 if(sku_specs=='') {
+				 sku_specs = specId;
+			 }else{
+				 sku_specs = sku_specs+','+specId
+			 }
+		});
+		if(sku_specs!='') {
+			$.get('/goods/skuGoods?goodsId='+goodsId+'&specsIds='+sku_specs,{},function(data){
+				if(data.code == 200) {
+					if(data.result.imageUrl!=null && data.result.imageUrl!='') {
+						$("#middleImage").attr("src",data.result.imageUrl);
+					}
+					if(data.result!=null) {
+						$("#skuId").val(data.result.skuId);
+						$("#goodsprice").text(data.result.price);
+					}
+				}
+			});
+		}
+	}
+</script>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  面包屑导航 start  =============== --> 
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-con">
+            <a href="/">首页</a><!-- &nbsp;&nbsp;>&nbsp;&nbsp;<a href="list.html">智能开关</a>&nbsp;&nbsp;>&nbsp;&nbsp;<span>智能一键触控开关</span> -->
+        </div>
+    </div>
+
+<!-- ===============  商品详情 start  =============== --> 
+	<input type="hidden" id="goodsId" th:value="${detail.id}" th:attr="data-prosize=${#lists.size(detail.props)}">
+	<input type="hidden" id="goodsskuId" th:value="${detail.skuId}">
+	<input type="hidden" id="skuId" value="">
+    <div class="pro-detail clearfix">
+        <div class="pro-view">
+            <div class="pro-view-middle">
+                <ul>
+                    <li th:each="img,iterStat:${detail.images}" th:remove="${iterStat.index} == 0?'none':'all'" ><img id="middleImage" th:src="${img}" alt=""/></li>
+                </ul>
+            </div>
+            <div class="pro-view-small" style="margin-top:15px;">
+                <ul class="clearfix" >
+                    <li th:each="img,iterStat:${detail.images}" th:class="${iterStat.index} == 0?'view-current':''" th:attr="data-url=${img}"><img th:src="${img}" alt="" width="76" /></li>
+                </ul>
+            </div>
+        </div>
+        <div class="pro-info">
+            <dl>
+                <dt class="pro-info-name" th:text="${detail.name}"></dt>
+                <dd class="pro-info-subtitle" th:text="${detail.descript}"></dd>
+                <dd class="pro-info-price" id="goodsprice" th:text="${detail.price}"></dd>
+                <dd class="pro-info-num" th:remove="${detail.decode}!=null?'none':'all'">
+                    <p>产品编码：<span th:text="${detail.decode}"></span></p>
+                </dd>
+                <dd class="pro-info-color" th:each="pro:${detail.props}" th:id="'props'+${pro.prop.code}" th:attr="data-size=${#lists.size(detail.props)}">
+                    <p th:text="${pro.prop.value}+'&nbsp;'" style="display: inline-block;"></p>
+                    <span th:each="spec,iterStat:${pro.specs}" th:remove="${iterStat.index} == 0?'none':'all'" th:text="${iterStat.index} == 0?${spec.specName}:''"></span>
+                    <div class="pro-info-color-link clearfix" >
+                        <!-- 这几个a点击就跳转到相应颜色的详情页啦0.0 -->
+                        <!-- 每个当前的页面对应的产品颜色的a都加上pro-link-current类 -->
+                        <a href="javascript:void(0);" onclick="specClick(this)" th:each="spec,iterStat:${pro.specs}" 
+                        th:class="${iterStat.index} == 0?'pro-link-current':''" 
+                        th:attr="data-specid=${pro.prop.code}+':'+${spec.specId},data-goodsId=${detail.id},data-specName=${spec.specName}">
+                        <img th:remove="${spec.imageUrl}!=null?'none':'all'" th:src="${spec.imageUrl}" th:alt="${spec.specName}" width="38" th:title="${spec.specName}"/><span th:text="${spec.imageUrl}!=null?'':${spec.specName}"></span></a>
+                    </div>
+                </dd>
+                <dd class="pro-info-sum clearfix">
+                    <p>数量：</p>
+                    <div class="mod-modifier">
+                        <a href="javascript:;" class="modifier-sub">-</a>
+                        <input type="text" value="1" class="num" readonly/>
+                        <a href="javascript:;" class="modifier-add">+</a>
+                    </div> 
+                </dd>
+                <dd class="pro-info-cart clearfix">
+                    <a href="javascript:;" class="pro-info-add" id="addCart">加入购物车</a><a href="javascript:;" class="pro-info-pay" id="payNow">立即购买</a>
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <!-- ===============  跟随导航 start  =============== --> 
+    <div class="nav-height" id="navHeight">
+            <div class="nav-wrap" id="nav-wrap">
+                <div class="nav-mobile">Click</div>
+                <ul class="clearfix">
+                    <li><a href="javascript:;" id="infotab" class="active">详细描述</a></li>
+                    <li><a href="javascript:;" id="paramtab" class="">规格参数</a></li>
+                    <li><a href="javascript:;" id="commentab" class="">累计评价</a></li>
+                    <li><a href="javascript:;" id="questiontab" class="">Q&A</a></li>
+                </ul>
+            </div>
+    </div>
+    <div id="section1" class="section-content">
+    	<div th:remove="${detail.videoUrl==null?'all':'none'}">
+	    	<video th:attr="src=${detail.videoUrl}" controls="controls"></video>
+    	</div>
+        <div class="goods-desc"  th:utext=${detail.detail}>
+        </div>
+    </div>
+    <div id="section2" class="section-content">
+       <div class="goods-detail-info">
+            <h2><span>规格参数</span></h2>
+            <table class="standard-table">
+                         <tbody>
+                             <!-- <tr th:each="param:${goodsParam}">
+                                 <th th:text="${param.code}"></th> 
+                                 <td th:text="${#strings.replace(param.value,'\n','<br />')}"></td> 
+                             </tr>  -->
+                        </tbody> 
+            </table>
+        </div>
+    </div>
+    <div id="section3" class="section-content" data-detail="content">
+        <div class="rate-grid">
+            <table>
+                <tr th:each="item:${goodsComment}">
+                    <td class="col-master">
+                        <div class="rate-content">
+                            <div class="rate-txt" th:text="${item.content}"></div>
+                            <div class="rate-photos">
+                                <ul class="rate-photos-list" >
+                                    <li th:each="image:${item.imageUrl}">
+                                        <img th:attr="src=${image}" alt="">
+                                    </li>
+                                </ul>
+		                        <div class="photo-viewer" th:each="image1:${item.imageUrl}">
+		                            <img th:attr="src=${image1}" style="width: 302px; height: 402px;">
+		                        </div>
+                            </div>
+                        </div>
+                        <div class="rate-date" th:text="${item.ctime}"></div>
+                    </td>
+                    <td class="col-author">
+                        <div class="rate-user-info" style="width:70px;" th:text="${item.userName}"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="section4" class="section-content">
+        <div class="qa">
+            <div class="qa-tit">提出你的疑惑，让买过的淘友来帮你解答吧！<span class="tiwen">去提问</span> </div>
+            <div class="qa-model">
+                <div class="qa-wrap">  
+                  <div class="qa-hd">去提问</div> 
+                  <div class="qa-bd">
+                    <div class="qa-content">
+                        <div class="qa-ask">
+                            <label>问题将<strong>匿名</strong>推送到已买到的用户</label>
+                            <div class="textarea-wrapper">
+                                <textarea class="qa_question" placeholder="写下你的问题，输入 4 ~ 25 个字哦~"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="qa-ft">
+                    <button class="qa-btn primary" id="publish">发布</button>
+                    <button class="qa-btn secondary">取消</button>
+                  </div>
+                </div>
+                <a class="qa-x" href="javascript:;" title="关闭">×</a>             
+            </div>
+            <div class="qa-body">
+                <!-- <div class="qa-item" th:each="question:${goodsQuestion}">
+                    <div class="qa-item-who" th:text="${question.userName}"></div>
+                    <div class="qa-item-cont">
+                        <div class="qa-item-q">
+                            <span class="icon-type">问</span>
+                            <div class="q-detail">
+                                <div class="q-detail-cont" th:text="${question.content}"></div>
+                                <div class="q-detail-info-time" th:text="${question.ctime}"></div>
+                            </div>
+                        </div>
+                        <div class="qa-item-a" th:each="answer:${question.answer}">
+                            <span class="icon-type">答</span>
+                            <div class="a-detail">
+                                <div class="a-detail-cont" th:text="${answer.content}"></div>
+                                <div class="a-detail-info">
+                                    <div class="a-detail-info-author" th:text="${answer.userName}"></div>
+                                    <div class="a-detail-info-time" th:text="${answer.ctime}"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="qa-item-more">共<span th:text="${question.count}"></span>个回答</div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+<script>
+	var itemControl = {
+			param : {
+				paramUrl : "/goods"
+			},
+			//参数请求flag
+			haveParam:false,
+			haveQuestion:false,
+			getItemParam : function(goodsId) {
+				if(!itemControl.haveParam) {
+					$.get(itemControl.param.paramUrl+'/param?goodsId='+goodsId,function(data) {
+						if(data.code=200) {
+							var params =data.result;
+							if(params.length>0) {
+								$('.standard-table').html("");
+								var tbody = $("<tbody></tbody>");
+								tbody.appendTo($('.standard-table'));
+								for(var i=0;i<params.length;i++) {
+									var param = params[i];
+									var tr = $("<tr></tr>");
+									var th = $("<th>"+param.code+"</th>")
+									th.appendTo(tr);
+									var td = $("<td>"+param.value+"</td>")
+									td.appendTo(tr);
+									tr.appendTo(tbody);
+								}
+							}
+							itemControl.haveParam = true;
+						}
+					});
+				}
+			},
+			getItemQuestion : function(goodsId) {
+				if(!itemControl.haveQuestion){
+					$.get(itemControl.param.paramUrl+'/question?goodsId='+goodsId,function(data) {
+						if(data.code=200) {
+							var goodsQuestion = data.result;
+							$(".qa-body").html("");
+							var	html ="";
+							$.each(goodsQuestion,function(i,question){
+								 ques = "<div class=\"qa-item\"><div class=\"qa-item-who\">"+question.userName+"</div>"
+			                    		+"<div class=\"qa-item-cont\"><div class=\"qa-item-q\"><span class=\"icon-type\">问</span><div class=\"q-detail\">"
+			                    		+"<div class=\"q-detail-cont\">"+question.content+"</div><div class=\"q-detail-info-time\">"+question.ctime+"</div></div></div>";
+			                     var ans = "";
+			            		 $.each(question.answer,function(index,answer){
+			            			 ans = ans+"<div class=\"qa-item-a\"><span class=\"icon-type\">答</span><div class=\"a-detail\"><div class=\"a-detail-cont\">"+answer.content
+			            			 +"</div><div class=\"a-detail-info\"><div class=\"a-detail-info-author\">"+answer.userName+"</div><div class=\"a-detail-info-time\">"+answer.ctime+"</div></div></div></div>";
+			            		 });
+			                     html = html+ques+ans+"<div class=\"qa-item-more\">共"+question.count+"个回答<span onclick=\"answer(this);\">回答</span></div> "
+			                     +"<div class=\"qa-a\"><textarea name='"+question.questionId+"' cols=\"30\" rows=\"10\" placeholder=\"请写下你的回答\"></textarea><button onclick=\"submitAnswer(this);\">提交</button></div></div></div>";
+			                        
+							});
+							$(".qa-body").append(html);
+							itemControl.haveQuestion = true;
+						}
+					});
+				}
+			},
+	}
+	function submitAnswer(obj){
+		var id = $(obj).prev().attr("name");
+		var content = $(obj).prev().val();
+		if(id==''||content==''){
+			return false;
+		}
+		$.ajax({
+			type:'POST',
+			url:'/goods/saveanswer',
+			data:{"id":id,"content":content},
+			dataType:'json',
+			success:function(data){
+				if(data.code==200){
+					itemControl.haveQuestion = false;
+					$("#questiontab").click();
+				}
+			}
+		});
+	}
+		function answer(obj){
+			if(!isflag) {
+				$('.signIn,.tip-login').click();
+				return false;
+			}
+		    $(obj).parent().siblings('.qa-a').toggle();
+		}
+	$(function() {
+		var goodsId =$("#goodsId").val();//商品id
+		$("#paramtab").bind("click",function() {
+			itemControl.getItemParam(goodsId);
+		});
+		$("#questiontab").bind("click",function() {
+			itemControl.getItemQuestion(goodsId);
+		});
+		$("#publish").click(function(){
+			if(!isflag) {
+				alert("请先登录!");
+				$('.signIn,.tip-login').click();
+				return ;
+			}
+			var content = $(".qa_question").val();
+			if(content.length<4||content.length>25){
+				alert("输入 4 ~ 25 个字哦~");return false;
+			}
+			$.ajax({
+				type: "POST",
+				url:"/goods/addQuestion",
+				data:{'goodsId':goodsId,'content':content},
+				dataType:"json",
+				success:function(data){
+					if(data.code==200){
+						$('#section4 .qa .qa-model .qa-x').click();
+						itemControl.haveQuestion = false;
+						$("#questiontab").click();
+					}else{
+						alert("发布异常，请重新发布");
+					}
+				}
+			});
+		});
+	});
+	
+</script>
+</body>
+</html>
+
+
+

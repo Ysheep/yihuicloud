@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.deliverytemplate.DeliveryTemplateMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.deliverytemplate.DeliveryTemplate" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="template_id" property="templateId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="addr" property="addr" jdbcType="VARCHAR" />
+    <result column="free_delivery" property="freeDelivery" jdbcType="SMALLINT" />
+    <result column="pricing_method" property="pricingMethod" jdbcType="SMALLINT" />
+    <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="is_incl_postage_byif" property="isInclPostageByif" jdbcType="SMALLINT" />
+  </resultMap>
+</mapper>

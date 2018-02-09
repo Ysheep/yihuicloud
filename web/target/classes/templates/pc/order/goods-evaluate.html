@@ -1,0 +1,178 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+   <div th:include="pc/commons/header :: top-bar "></div>
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  cart  start  =============== --> 
+<div class="evaluate cf">
+	<div class="evaluate-nav">
+		评价
+    </div>
+    <p>请您购买的商品进行评价~</p>
+   	<input type="hidden" name="orderId" th:value="${order.orderId}" />
+    <div class="evaluate-cont" th:each="goodsInfo:${order.items}">
+    	<input type="hidden" name="skuId" th:value="${goodsInfo.skuId}" />
+    	<input type="hidden" name="goodsId" th:value="${goodsInfo.goodsId}" />
+        <div class="gol-item">
+            <a th:attr="href='/user/orders/detail?orderId='+${order.orderId}">
+                <img th:attr="src=${goodsInfo.image}" alt="" />
+                <p th:text="${goodsInfo.goodName}"></p>
+                <em th:text="${'￥'+goodsInfo.price}"></em>
+                <i th:text="${'X'+goodsInfo.num}">X1</i>
+            </a>                   
+        </div>
+        <textarea name="" id="" cols="30" rows="10" placeholder="您的建议或意见"></textarea>  
+        <div class="evaluate-upload">
+	        <!-- <input type="file" name="upload" th:attr="id=${'file'+goodsInfo.skuId}"/> -->
+	        <input type="button" name="upload" class="layui-btn" th:attr="id=${'file'+goodsInfo.skuId}" />
+            <ul class="upload-list">
+                <!-- <li value="1"><img src="/images/rate001.jpg"><img class="delete" src="/images/delete.png"></li> -->
+            </ul>
+        </div>
+    </div>
+    <button id="comment">发表评价</button>
+    <script type="text/javascript" th:src="@{/layerui/layui.js}"></script>
+    <script>
+    	//图片上传
+    	layui.use('upload', function(){
+		  var upload = layui.upload;
+		   
+		  //执行实例
+		  
+		  $("input[name='upload']").each(function (index,item) {
+    		var id = "#"+$(item).attr("id");
+            //上传图片
+			  var uploadInst = upload.render({
+			    elem: id //绑定元素
+			    ,url: '/admin/goods/commentUpload' //上传接口
+			    ,done: function(res){
+			      //上传完毕回调
+			      if(res.code==200){
+			    	  $(this.elem).parent().find(".upload-list").append("<li value="+res.result.code+"><img src="+res.result.value+"><img class=\"delete\" src=\"/images/delete.png\"></li>");
+			      }
+			    }
+			    ,error: function(){
+			      //请求异常回调
+			    }
+			  });
+       		});
+		  
+		  $(".upload-list").on("click","img",function(){
+			  $(this).parent().remove();
+			  alert('删除成功！');
+		  });
+		  
+		  $(".upload-list").on("mouseenter mouseleave",'li',function(){
+			   $(this).children('.delete').toggle();
+			});
+
+		  //提交
+		  $("#comment").bind("click",function(){
+	    		var evaluate = $(".evaluate-cont");
+	    		var items = {};
+	    		var comments = [];
+	    		items["orderId"]=$("input[name='orderId']").val();
+	    		$(".evaluate-cont").each(function(index,item){
+	    			var skuId = $(item).find("input[name='skuId']").val();
+	    			var goodsId = $(item).find("input[name='goodsId']").val();
+	    			var content = $(item).find("textarea").val();
+	    			var images = $(item).find(".evaluate-upload li");
+	    			var ids = "";
+	    			images.each(function(i,img){
+	    				var id = $(img).attr("value");
+	    				if(i==0){
+		    				ids=ids+id;
+	    				}else{
+							ids=ids+","+id;    					
+	    				}
+	    			});
+	    			var item = {
+	    					skuId:skuId,
+	    					goodsId:goodsId,
+	    					conent:content,
+	    					ids:ids
+	    			};
+	    			comments.push(item);
+	    		});
+	    		items["items"]=comments;
+	    		$.ajax({
+	    			type:"POST",
+	    			url:'/user/orders/commentsave',
+	    			data:JSON.stringify(items),
+	    			dataType:'json',
+	    			contentType:'application/json',
+	    			success:function(data){
+	    				if(data==200){
+	    					//保存成功
+	    				}
+	    			}
+	    		});
+	    	});
+		  
+		});
+    	
+    	
+    	
+    	/* $("a[name='upload']").click(function () {
+    		var id = $(this).prev().attr("id");
+    		if($(this).prev().val().length<=0){return false};
+            //上传图片
+            ajaxFileUpload(id);
+        });
+    function ajaxFileUpload(id) {
+            $.ajaxFileUpload
+            (
+                {
+                    url: '/admin/goods/commentUpload', //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: id, //文件上传域的ID
+                    dataType: 'json', //返回值类型 一般设置为json
+                    success: function (data, status)  //服务器成功响应处理函数
+                    {
+                    	
+                    },
+                    error: function (data, status, e)//服务器响应失败处理函数
+                    {
+                        alert(e);
+                    }
+                }
+            )
+            return false;
+        } */
+    	
+      
+    </script>
+</div>
+<!-- ===============  cart  end  =============== --> 
+
+<!-- ===============  footer页脚 start  =============== --> 
+       <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+
+</body>
+</html>
+
+
+

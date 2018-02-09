@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzdsoft.eshop.mapper.log.WalletLogMapper">
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.log.WalletLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="log_id" jdbcType="INTEGER" property="logId" />
+    <result column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+    <result column="split_money" jdbcType="DECIMAL" property="splitMoney" />
+    <result column="is_freeze" jdbcType="SMALLINT" property="isFreeze" />
+    <result column="type" jdbcType="SMALLINT" property="type" />
+    <result column="status" jdbcType="SMALLINT" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <select id="findWallet" resultType="com.qzdsoft.eshop.vo.log.WalletLogInfo">
+  	SELECT
+	  	split_money money,
+	  	DATE_FORMAT(pay_time,'%Y-%m-%d') 'time',
+	  	status,
+	  	type,
+	  	remark
+  	FROM wallet_log 
+  	WHERE 1=1
+	AND user_id=#{userId}
+  	
+  </select>
+</mapper>

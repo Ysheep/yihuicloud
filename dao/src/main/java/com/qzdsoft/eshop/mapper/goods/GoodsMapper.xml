@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.GoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goods.Goods" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="goods_id" property="goodsId" jdbcType="INTEGER" />
+    <result column="class_id" property="classId" jdbcType="INTEGER" />
+    <result column="template_id" property="templateId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="descript" property="descript" jdbcType="VARCHAR" />
+    <result column="decode" property="decode" jdbcType="VARCHAR" />
+    <result column="purchase_num" property="purchaseNum" jdbcType="INTEGER" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="ctime" property="ctime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="detail" property="detail" jdbcType="LONGVARCHAR" />
+    <result column="is_recommend" property="isRecommend" jdbcType="SMALLINT" />
+    <result column="system_id" property="systemId" jdbcType="INTEGER" />
+    <result column="vedio_id" property="vedio" jdbcType="INTEGER" />
+    <result column="is_package" property="isPackage" jdbcType="SMALLINT" />
+    <result column="package_index_show" property="packageIndexShow" jdbcType="SMALLINT" />
+  </resultMap>
+  
+  <select id="selectBySkuid" resultType="com.qzdsoft.eshop.vo.goods.GoodsDetailInfo">
+  	SELECT
+		g.goods_id id,
+		cg.sku_id skuId,
+		g.`name` `name`,
+		g.descript descript,
+		g.decode decode,
+		cg.price price,
+		cg.sole_amount purchaseNum,
+		g.detail detail
+	FROM
+		`counter_goods` cg
+	JOIN counter c ON cg.counter_id = c.counter_id AND c.counter_code = #{counterNo}
+	JOIN goods_sku gs ON cg.sku_id = gs.sku_id
+	JOIN goods g ON gs.goods_id = g.goods_id
+	WHERE
+		cg.sku_id = #{skuId}
+  </select>
+</mapper>

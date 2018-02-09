@@ -1,0 +1,269 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+
+<body>
+
+<th:block layout:fragment="content">
+<div>
+  <form class="layui-form search" id="searchForm">
+  <div class="layui-form-item layui-elem-quote">
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;">商品名称</label>
+      <div class="layui-input-inline" style="width:140px">
+        <input type="text" name="name" class="layui-input" placeholder="请输入名称"/>
+      </div>
+    </div>
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;">是否推荐</label>
+      <div class="layui-input-inline" style="width:140px">
+        	<select name="isRecommend">
+        		<option value="">请选择</option>
+        		<option value="0">不推荐</option>
+        		<option value="1">推荐</option>
+        	</select>
+      </div>
+    </div>
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;">是否套餐</label>
+      <div class="layui-input-inline" style="width:140px">
+        	<select name="isPackage">
+        		<option value="">请选择</option>
+        		<option value="0">否</option>
+        		<option value="1">是</option>
+        	</select>
+      </div>
+    </div>
+    <div class="layui-inline">
+      <div class="layui-input-inline" style="width:150px;">
+        <button class="layui-btn" id="searchBtn" type="button" authcode="66">查询</button>
+        <button class="layui-btn" id="addBtn" type="button" authcode="67">新增</button>
+      </div>
+    </div>
+    
+  </div>
+ </form>
+</div>
+
+<table class="layui-table"  id="tab" lay-filter="tab"></table>
+<script>
+var ins,page,trobj,editdialogindex,table;
+$(function(){ 
+	
+	layui.use(['table','layer','element'], function(){
+		var element = layui.element;
+		var form = layui.form;
+		table = layui.table;
+		ins =table.render({ //其它参数在此省略
+		 elem:"#tab",
+		 url: '/admin/goods/data',
+		 cols:[[
+		      {field:'name',fixed:'left', width:180,title:'商品名称'},
+		      {field:'className', width:180,title:'分类'},
+		      {field:'purchaseNum',width:177,title:'购买数量'},
+		      {field:'price',width:120,title:'价格'},
+		      {field:'ctime',width:177,title:'创建时间'},
+		      {field:'startTime',width:177,title:'上架时间'},
+		      {field:'endTime',width:177,title:'下架时间'},
+		      {field:'deleteStatus',width:177,title:'状态'},
+		      {field:'lock', title:'是否明星产品', width:130, templet: '#checkboxTpl', unresize: true,fixed:'right'},
+		      {align:'center',fixed:'right',width:420, toolbar:'#toolbar',title:'操作'}
+		 ]]
+		,id:'goodstable'
+	    ,page: true //是否显示分页
+	    ,even:true
+	    ,limits: [10,20,50]
+	    ,limit:10 //每页默认显示的数量
+		  //where:{phone:phone}
+		  //method: 'post'
+		 ,done:function(res,curr,count){
+			 console.log(res);
+			 page = curr;
+			    //得到当前页码
+			    console.log(curr); 
+			    
+			    //得到数据总量
+			    console.log(count);
+		 }
+		});
+		
+		table.on("tool(tab)",function(obj){
+			var data = obj.data; //获得当前行数据
+			var layEvent = obj.event; //获得 lay-event 对应的值
+			trobj = obj;
+			var tr = obj.tr; //获得当前行 tr 的DOM对象
+			if(layEvent=='edit'){
+				window.parent.addTabFrame('/admin/goods/edit?id='+data.goodsId,"商品修改"+data.goodsId,"商品修改");
+			}else if(layEvent=='del'){
+				   layer.confirm('删除后不可恢复,确定删除该商品', {icon: 3, title:'提示'}, function(index){
+				    		 //向服务端发送删除指令
+				    		$.post('/admin/goods/del?id='+data.goodsId,{},function(result) {
+				    			if(result.code == 200) {
+				    				trobj.del(); //删除对应行（tr）的DOM结构
+								    layer.close(index);
+								    layer.msg(result.message,{icon: 6});
+				    			}else{
+				    			 layer.msg(result.message,{icon: 0});
+				    			 layer.close(index);
+				    			} 
+				    		});
+				      });
+					return false;
+			}else if(layEvent=='xj'){
+			   layer.confirm('确定下架该商品', {icon: 3, title:'提示'}, function(index){
+		    		 //向服务端发送删除指令
+		    		$.post('/admin/goods/sxjgoods?goodsId='+data.goodsId+'&type=1',{},function(result) {
+		    			if(result.code == 200) {
+		    				$.reloadData("searchBtn");
+						    layer.close(index);
+						    layer.msg(result.message,{icon: 6});
+		    			}else{
+		    			 layer.msg(result.message,{icon: 0});
+		    			 layer.close(index);
+		    			} 
+		    		});
+		      });
+			return false;
+		}else if(layEvent=='sj'){
+			$.post('/admin/goods/sjgoods?goodsId='+data.goodsId, {}, function(str){
+				editdialogindex = layer.open({
+									id:"editDialog",
+									title:"商品上架",
+								    type: 1,
+								    area: ['380px', '225px'],
+								    content: str, //注意，如果str是object，那么需要字符拼接。
+								    zIndex:10
+								  });
+					});
+		}else if(layEvent=='setIndex'){
+				   layer.confirm('确定该商品首页展示', {icon: 3, title:'提示'}, function(index){
+			    		 //向服务端发送删除指令
+			    		$.post('/admin/goods/isPackageShow?goodsId='+data.goodsId+'&type=1',{},function(result) {
+			    			if(result.code == 200) {
+							    layer.close(index);
+							    layer.msg(result.message,{icon: 6});
+								    $.reloadData("searchBtn");
+			    			}else{
+			    			 layer.msg(result.message,{icon: 0});
+			    			 layer.close(index);
+			    			} 
+			    		});
+			      });
+				return false;
+		}else if(layEvent=='setNoIndex'){
+			   layer.confirm('确定该商品首页不展示', {icon: 3, title:'提示'}, function(index){
+		    		 //向服务端发送删除指令
+		    		$.post('/admin/goods/isPackageShow?goodsId='+data.goodsId+'&type=0',{},function(result) {
+		    			if(result.code == 200) {
+						    layer.close(index);
+						    layer.msg(result.message,{icon: 6});
+						    $.reloadData("searchBtn");
+		    			}else{
+		    			 layer.msg(result.message,{icon: 0});
+		    			 layer.close(index);
+		    			} 
+		    		});
+		      });
+			return false;
+		}else if(layEvent=="setParams"){
+				$.post('/admin/goods/properties?id='+data.goodsId, {}, function(str){
+					specdex = layer.open({
+										id:"editDialog",
+										title:data.name+"参数设置",
+									    type: 1,
+									    area: ['400px', '425px'],
+									    content: str, //注意，如果str是object，那么需要字符拼接。
+									    zIndex:10
+									  });
+									});
+			}else if(layEvent=='setPro'){
+				console.log("opend serPro");
+				$.post('/admin/goods/pro_config?goodsId='+data.goodsId, {}, function(str){
+					prosindex = layer.open({
+										id:"editDialog",
+										title:data.name+"属性设置",
+									    type: 1,
+									    area: ['600px', '425px'],
+									    content: str, //注意，如果str是object，那么需要字符拼接。
+									    zIndex:10
+									  });
+									});
+			}
+});
+		
+		$("#searchBtn").click(function(){
+			var table = layui.table;
+		    ins.reload({url: '/admin/goods/data',where:$("#searchForm").serializeJson()})
+		    return false;
+		});
+		$("#addBtn").click(function() {
+			window.parent.addTabFrame('/admin/goods/edit',"商品新增"+$(this).attr("authcode"),"商品新增");
+		});
+		
+		  form.on('checkbox(lockDemo)', function(obj){
+// 			  	var $checkStatus = table.checkStatus('goodstable');
+// 			  	 var checkdata = $checkStatus.data;
+// 			  	var spCodesTemp = "";
+// 			  	$("input[name='lock']:checked").each(function(i) {
+// 			  		 if(0==i){
+// 			  	        spCodesTemp = $(this).val();
+// 			  	       }else{
+// 			  	        spCodesTemp += (","+$(this).val());
+// 			  	       }
+// 			  	});
+// 			  	layer.msg(spCodesTemp);
+// 			    layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+			    var goodsId = this.value;
+			    var isRecommend = 1;
+			    if(!obj.elem.checked) {
+			    	isRecommend = 0
+			    }
+// 			    layer.msg("isRecommend="+isRecommend);
+			    $.get('/admin/goods/isrecommend?goodsId='+goodsId+"&isRecommend="+isRecommend,{},function(result) {
+			    	if(result.code == 200) {
+			    		layer.msg(result.message,{icon: 6});
+			    	}else{
+			    		layer.msg(result.message,{icon: 0});
+			    	}
+			    });
+			});
+	});
+		
+}); 
+
+</script>
+<script type="text/html" id="toolbar">
+		<a class="layui-btn layui-btn-xs" lay-event="edit" authcode="68">修改</a>
+	{{#  if(d.status == 1){ }}
+		<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="sj" authcode="69">上架</a>
+	{{#  } else { }}
+		<a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="xj" authcode="69">下架</a>
+	{{#  } }}
+		<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" authcode="70">删除</a>
+		<a class="layui-btn layui-btn-xs" lay-event="setParams" authcode="75">参数设置</a>
+		<a class="layui-btn layui-btn-xs" lay-event="setPro">属性设置</a>
+{{#  if(d.isPackage == 1){ }}
+	{{#  if(d.packageIndexShow == 0){ }}
+		<a class="layui-btn layui-btn-xs" lay-event="setIndex" authcode="70">首页套餐展示</a>
+	{{#  } else { }}
+		<a class="layui-btn layui-btn-xs" lay-event="setNoIndex" authcode="70">首页套餐不展示</a>
+	{{#  } }}
+{{#  } }}
+	
+</script>
+<script type="text/html" id="isUsed">
+  {{#  if(d.classType ==0){ }}
+    	
+  {{#  } else { }}
+   
+  {{#  } }}
+</script>
+<script type="text/html" id="checkboxTpl">
+  <input type="checkbox" name="lock" value="{{d.goodsId}}" title="是" lay-filter="lockDemo" {{d.isRecommend == 1? 'checked':''}} >
+</script>
+
+<!--<div th:replace="/department/model::modelDiv"></div>-->
+</th:block>
+</body>
+</html>

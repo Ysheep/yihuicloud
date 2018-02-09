@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goodsclass.GoodsPropertiesMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goodsclass.GoodsProperties" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="property_id" property="propertyId" jdbcType="INTEGER" />
+    <result column="class_id" property="classId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="delete_status" property="deleteStatus" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <!-- 查分类属性 -->
+  <select id="findGoodsClassPro" resultType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassProInfo" parameterType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassQuery">
+  	SELECT
+	a.property_id propertyId,
+	a. NAME,
+	a.delete_status deleteStatus,
+	b.NAME className
+	FROM
+		`goods_properties` a
+	LEFT JOIN goods_class b ON a.class_id = b.class_id
+	WHERE 1=1 and a.class_id = #{classId}
+	<if	test="name != null and name != ''">
+		AND a.name=#{name}
+	</if>
+	<if	test="status != null">
+		AND a.delete_status=#{status}
+	</if>
+	ORDER BY a.class_id DESC
+  </select>
+  
+  
+  
+  
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goodsclass.GoodsClassMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goodsclass.GoodsClass" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="class_id" property="classId" jdbcType="INTEGER" />
+    <result column="pid" property="pid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="delete_status" property="deleteStatus" jdbcType="SMALLINT" />
+    <result column="image_id" property="imageId" jdbcType="INTEGER" />
+    <result column="show_index" property="showIndex" jdbcType="SMALLINT" />
+     <result column="seq" property="seq" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+  <resultMap id="billMap" type="com.qzdsoft.eshop.vo.goodsclass.GoodsClassImage" >
+    <result column="code" property="code" jdbcType="INTEGER" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="imageurl" property="imageurl" jdbcType="VARCHAR" />
+    <collection property="childs" column="code" javaType="List" ofType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassImage" select="selectChilds"></collection>
+  </resultMap>
+  
+  <resultMap id="showindexMap" type="com.qzdsoft.eshop.vo.goodsclass.pc.ShowIndexClassInfo" >
+    <result column="code" property="code" jdbcType="INTEGER" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="imageurl" property="imageurl" jdbcType="VARCHAR" />
+    <collection property="goods" column="code" javaType="List" ofType="com.qzdsoft.eshop.vo.goods.pc.GoodsListInfo" select="selectgoodsList"></collection>
+  </resultMap>
+  
+  
+  <select id="findGoodsClass" resultType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassInfo" parameterType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassQuery">
+  	SELECT
+		a.class_id classId,
+		a.pid pid,
+		b. NAME pidName,
+		a. NAME name,
+		a.delete_status deleteStatus,
+		a.image_id imageId,
+		ac.url imageUrl,
+		a.show_index showIndex,
+		a.seq seq
+	FROM
+		`goods_class` a
+	LEFT JOIN goods_class b ON a.pid = b.class_id
+	LEFT JOIN accessory ac ON  a.image_id = ac.accessory_id
+	WHERE 1=1 
+	<if	test="name != null and name != ''">
+		AND a.name LIKE CONCAT('%',CONCAT(#{name},'%'))
+	</if>
+	<if	test="status != null">
+		AND a.delete_status=#{status}
+	</if>
+	ORDER BY a.class_id DESC
+  </select>
+  <select id="selectById" resultType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassInfo">
+  	SELECT
+		a.class_id classId,
+		a.pid pid,
+		b. NAME pidName,
+		a. NAME,
+		a.delete_status deleteStatus,
+		a.image_id imageId,
+		a.icon_id iconId,
+		ac.url imageUrl,
+		ic.url iconUrl,
+		a.show_index showIndex,
+		a.seq seq
+	FROM
+		`goods_class` a
+	LEFT JOIN goods_class b ON a.pid = b.class_id 
+	LEFT JOIN accessory ac ON  a.image_id = ac.accessory_id
+	LEFT JOIN accessory ic ON  a.icon_id = ic.accessory_id
+	WHERE
+	 a.class_id = #{classId}
+  </select>
+  
+ <select id="findForZtree" parameterType="int" resultType="com.qzdsoft.eshop.vo.res.ZtreeNode">
+ 	SELECT
+		gc.`name` name,
+		gc.class_id id,
+		gc.pid pId
+	FROM
+		goods_class gc
+	WHERE 1=1
+	AND gc.delete_status = 0
+	ORDER BY gc.class_id DESC
+	</select>
+	
+	<select id="isSubordinate" resultMap="BaseResultMap">
+		SELECT
+			gs.class_id classId,
+			gs.pid pid,
+			gs. NAME name,
+			gs.delete_status deleteStatus,
+			gs.image_id imageId,
+			gs.show_index showIndex
+		FROM
+			`goods_class` gs
+		WHERE 
+		gs.pid = #{pid}
+		AND gs.class_id = #{classId}
+	</select>
+	
+  <select id="selectAllClass" resultMap="billMap">
+  	SELECT 
+  		gc.class_id code,
+  		gc.name value,
+  		ac.url imageurl
+  	FROM
+  		goods_class gc 
+  	LEFT JOIN accessory ac ON gc.icon_id = ac.accessory_id 
+  	WHERE  gc.pid IS NULL
+  	AND gc.delete_status = 0
+  	ORDER BY gc.seq,gc.class_id
+  </select>
+  <select id="selectChilds" resultType="com.qzdsoft.eshop.vo.goodsclass.GoodsClassImage">
+	SELECT 
+  		gc.class_id code,
+  		gc.name value,
+  		ac.url imageurl
+  	FROM
+  		goods_class gc 
+  	LEFT JOIN accessory ac ON gc.icon_id = ac.accessory_id 
+  	WHERE gc.pid = #{code}
+  	AND gc.delete_status = 0 
+  	ORDER BY gc.seq,gc.class_id
+  </select>
+  <select id="selectShowIndexClass" resultMap="showindexMap">
+  	SELECT 
+  		gc.class_id code,
+  		gc.name value,
+  		ac.url imageurl
+  	FROM
+  		goods_class gc 
+  	LEFT JOIN accessory ac ON gc.image_id = ac.accessory_id 
+  	WHERE  gc.show_index = 1
+  	AND gc.delete_status = 0
+  	ORDER BY gc.seq,gc.class_id
+  </select>
+  <select id="selectgoodsList" resultType="com.qzdsoft.eshop.vo.goods.pc.GoodsListInfo">
+  	SELECT
+		g.`name` name,
+		g.goods_id goodsId,
+		ac.url imageUrl,
+		g.price price,
+		g.descript descript
+	FROM
+		goods g
+	JOIN goods_img ig ON ig.goods_id = g.goods_id AND ig.is_master_img=1
+	JOIN accessory ac ON ac.accessory_id = ig.accessory_id
+  	WHERE 
+  	g.start_time &lt;=now() AND g.end_time &gt;=now()
+  	AND g.class_id = #{code}
+	ORDER BY g.goods_id DESC
+  </select>
+</mapper>

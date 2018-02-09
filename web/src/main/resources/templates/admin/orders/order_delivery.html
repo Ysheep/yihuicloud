@@ -1,0 +1,101 @@
+<style>
+.layui-input-block{
+margin-left:120px;
+}
+.layui-layer-page .layui-layer-content {
+	position: relative;
+	overflow: visible !important;
+}
+</style>
+<form class="layui-form" action="" id="orderEditForm" style="position: absolute;">
+<input type="hidden" name="orderId" th:value="${orderinfo.orderId}">
+<input type="hidden" name="expressId" th:value="${orderinfo.expressId}">
+<div class="layui-row"  style="margin-top:10px;"> 	
+	
+	<div class="layui-form-item" style="">
+  			<label class="layui-form-label" style="width:80px;">订单号</label>
+  			<div>
+		         <span class="layui-form-label"  th:text="${orderinfo.orderNO}"></span>
+		    </div>
+	 </div>
+	 <div class="layui-form-item" style="">
+  			<label class="layui-form-label" style="width:80px;">收件人</label>
+  			<div class="layui-input-block" style="width:300px;">
+  				 <span  style="line-height:36px;"  th:text="${orderinfo.trueName}+'('+${orderinfo.phone}+')'"></span>
+		    </div>
+	 </div>
+	  <div class="layui-form-item" style="">
+  			<label class="layui-form-label" style="width:80px;">收件地址</label>
+  			<div class="layui-input-block" style="width:300px;">
+  				 <span style="display:block;" th:text="${orderinfo.addInfo}"></span>
+		    </div>
+	 </div>
+	 
+ 
+  	  <div class="layui-form-item" style="">
+		    <label class="layui-form-label required" style="width:80px;">快递公司</label>
+		    <div class="layui-input-block" style="width:300px;">
+	         	<select name="companyId" lay-verify="required" lay-search>
+		      		<option value="">请选择快递公司</option>
+		      		<option th:each="ec:${express}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${orderinfo.companyId} == ${ec.code}"></option>
+		      	</select>
+		    </div>
+	   </div>
+  	 	
+	  <div class="layui-form-item" style="">
+		    <label class="layui-form-label" style="width:80px;">快递单号</label>
+		    <div class="layui-input-block" style="width:300px;">
+		         <input type="text" name="expressNo" class="layui-input" lay-verify="required" th:value="${orderinfo.expressNo}"/>
+		    </div>
+	   </div>
+  
+  		
+</div>
+  
+ <div class="layui-row" style="margin-top:40px;margin-left:80px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;">
+          <button class="layui-btn" lay-submit="" lay-filter="formSubmit" >提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+<script>
+
+//start use
+layui.use('form', function(){
+	
+	  var form = layui.form; 
+	//只有执行了这一步，部分表单元素才会自动修饰成功
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		var params =$("#orderEditForm").serializeJson();
+		$.ajax({url:'/admin/orders/deliveryconfirm',
+			data:$("#orderEditForm").serializeJson(),
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					$.reloadData("searchBtn");
+					layer.closeAll();
+				}else{
+					layer.close(loadIndex);
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	$('#closeBtn').click(function() {
+		layer.close(editdialogindex);
+	});
+	
+	        
+});
+//end use
+</script>
+
+ 

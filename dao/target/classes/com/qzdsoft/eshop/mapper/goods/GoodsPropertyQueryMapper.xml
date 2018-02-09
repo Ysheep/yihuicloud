@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goods.GoodsPropertyQueryMapper" >
+  <!-- 查分类属性 -->
+  <select id="selectGoodsProps" resultType="string" parameterType="list">
+  	SELECT
+		CONCAT(p.`name`,':',sp.`name`)
+	FROM
+		goods_properties p
+	JOIN goods_properties_spec sp ON sp.property_id = p.property_id
+	WHERE
+	sp.spec_id IN
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	#{item}
+	</foreach>
+  </select>
+</mapper>
+

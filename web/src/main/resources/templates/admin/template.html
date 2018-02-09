@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" lang="en">
+<head th:replace="fragments/head::head"></head>
+<body class="gray-bg">
+<div layout:fragment="content" id="content">
+
+</div>
+
+
+<script type="javascript">
+    $(function() {
+        $("button[data-toggle=modal]").on('click', function() { modalReset(); });
+    });
+</script>
+
+</body>
+</html>

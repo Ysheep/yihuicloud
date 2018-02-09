@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.sys.ResourceQueryMapper" >
+	<select id="selectData" resultType="com.qzdsoft.eshop.vo.res.ResourceInfo">
+		SELECT
+			r.resource_id resourceId
+			,r.pid pid
+			,r.name name
+			,r.url url
+			,r.type type
+			,r.ctime ctime
+			,p.name pName
+		FROM resource r
+		LEFT JOIN resource p on r.pid = p.resource_id
+		WHERE 1 = 1
+		<if test="null != name and '' != name">
+			AND (r.name LIKE CONCAT(#{name},"%") OR p.name LIKE CONCAT(#{name},"%"))
+		</if>
+		<if test="null != url and '' != url">
+			AND r.url LIKE CONCAT(#{url},"%")
+		</if>
+		<if test="null != type and '' != type">
+			AND r.type =  #{type}
+		</if>
+		ORDER BY r.resource_id DESC
+	</select>
+	
+	<select id="selectByResounrceId" resultType="com.qzdsoft.eshop.vo.res.ResourceInfo">
+		SELECT
+			r.resource_id resourceId
+			,r.pid pid
+			,r.name name
+			,r.url url
+			,r.type type
+			,r.ctime ctime
+			,p.name pName
+		FROM resource r
+		LEFT JOIN resource p on r.pid = p.resource_id
+		WHERE 1 = 1
+		<if test="null != resourceId and '' != resourceId">
+		AND	r.resource_id = #{resourceId}
+		</if>
+	</select>
+	
+	<select id="findForZtree" parameterType="int" resultType="com.qzdsoft.eshop.vo.res.ZtreeNode">
+	 	SELECT
+			r.`name` name,
+			r.resource_id id,
+			r.pid pId
+		FROM
+			resource r
+		WHERE 1=1
+		 <if test="null != type">
+		 AND r.type = ${type}
+		 </if>
+		ORDER BY r.resource_id DESC
+ 	</select>
+ 	
+ 	<select id="queryAllMenu" resultType="com.qzdsoft.eshop.vo.res.MenuInfo">
+ 		SELECT
+			b.`name` name,
+			b.resource_id id,
+			b.pid supperid,
+			b.url url
+		FROM
+			resource b
+		WHERE 
+			b.type=0
+		ORDER BY b.pid
+ 	</select>
+ 	
+ 	<select id="queryMenuByRole" resultType="com.qzdsoft.eshop.vo.res.MenuInfo">
+ 		SELECT
+			b.`name` name,
+			b.resource_id id,
+			b.pid supperid,
+			b.url url
+		FROM
+			resource b
+		JOIN role_res rr ON rr.resource_id = b.resource_id AND rr.role_id = #{roleId}
+		WHERE 
+			b.type=0
+		ORDER BY b.pid
+ 	</select>
+ 	
+</mapper>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+     <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="/">首页</a></li>
+		<!-- <li><a href="column/physical-examination.html">体检报告</a></li>
+		<li><a href="column/doctor.html">医生解读</a></li>
+		<li><a href="column/business.html">入驻商家</a></li>
+		<li><a href="column/lecture.html">健康讲座</a></li>
+		<li><a href="column/bbs.html">互动吧</a></li>
+		<li><a href="asset.html">互助金</a></li>
+		<li><a href="asset.html">保险金</a></li> -->
+		<li><a href="/list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  收货地址  start  =============== --> 
+<div class="address">
+	<div class="address-nav">
+		收货地址&nbsp;>>&nbsp;<a class="nav-back">返回</a>
+	</div>
+	<div class="goods-add" id="addressList">
+        <div class="goods-add-list" th:each="ad:${ads}">
+            <a th:href="${orderId}!=null?'/user/orders/firm-order?orderId='+${orderId}+'&addressId='+${ad.addressId}:'javascript:void(0);'" class="gdl-link">
+                <span class="gdl-tit" th:text="${ad.linkMan}">XXX</span>
+                <span class="gdl-add" th:text="${ad.address}">广东省深圳市宝安区留仙二路</span>
+            </a>
+            <div class="gdl-item">
+                <i th:remove="${ad.isDefault}==1?'none':'all'">默认地址</i>
+                <a href="javascript:void(0);"   th:attr="data-addressId=${ad.addressId}" data-action='default' th:remove="${ad.isDefault}==1?'all':'none'">设为默认</a>
+                <a href="javascript:void(0);"  th:attr="data-addressId=${ad.addressId}" data-action='delete'>删除</a>
+                <a th:href="@{${'edit'}(id=${ad.addressId})}">编辑</a>
+            </div>
+        </div>
+    </div>
+    <a href="add" class="gdl-btn">新增收货地址</a>
+</div>
+<!-- ===============  收货地址  end  =============== --> 
+
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+	$(function() {
+		$("#addressList").bind('click',function(ev) {
+			var event = ev?ev:window.event;
+			var target = ev.target?ev.target:ev.srcElement;// 获取触发事件的目标对象
+			var claction = $(target).attr("data-action");
+			var addressId = $(target).attr("data-addressId");
+			console.log(claction);
+			if(claction == "default") {
+				$.get('/user/deliver_address/ad_fault?id='+addressId,{},function(data) {
+					if(data.code==200) {
+						window.location.href = "/user/deliver_address/list";
+					}else{
+						alert(date.message);
+					}
+				});
+			}else{
+				$.get('/user/deliver_address/ad_delete?id='+addressId,{},function(data) {
+					if(data.code==200) {
+						window.location.href = "/user/deliver_address/list";
+					}else{
+						alert(date.message);
+					}
+				});
+			}
+		});
+	});
+	
+	</script>
+</body>
+</html>
+
+
+

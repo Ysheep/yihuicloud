@@ -1,0 +1,182 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+
+   <div th:include="pc/commons/header :: top-bar "></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+ <div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  我的订单  start  =============== --> 
+<div class="goods-order">
+    <ul class="gd-list-title">
+        <li th:class="${status}==0?'od-current':''"><a href="/user/orders/my-orders">所有订单</a></li>
+        <li th:class="${status}==1?'od-current':''"><a href="/user/orders/my-orders?orderStatus=1">待付款</a></li>
+        <li th:class="${status}==2?'od-current':''"><a href="/user/orders/my-orders?orderStatus=2">待发货</a></li>
+        <li th:class="${status}==3?'od-current':''"><a href="/user/orders/my-orders?orderStatus=3">待收货</a></li>
+        <li th:class="${status}==4?'od-current':''"><a href="/user/orders/my-orders?orderStatus=4">待评价</a></li>
+    </ul>
+    <ul class="goods-odr-list" th:remove="${#lists.size(data.data)} eq '0'?'all':'none'">
+        <li th:each="order:${data.data}">
+            <div class="gol-tit">
+                <h3 th:text="'订单号：'+${order.orderNo}"></h3>
+                <span th:text="${order.status}"></span>
+            </div>
+            <div class="gol-item" th:each="good:${order.items}">
+                <a th:href="@{${'/user/orders/detail'}(orderId=${order.orderId})}">
+                    <img th:src="${good.image}" alt="" />
+                    <p th:text="${good.goodName}"></p>
+                    <em th:text="'¥ '+${good.price}"></em>
+                    <i th:text="'X'+${good.num}"></i>
+                </a>                   
+            </div>
+            <div class="gol-item-price">
+                <p ><span th:text="'共'+${order.goodsNum}+'件商品，合计'"></span><span th:text="${order.actualTotal}+'元'"> 1999</span></p>
+            </div>
+            <div class="gol-item-btn">
+                <a th:href="@{${'/user/orders/firm-order'}(orderId=${order.orderId})}" th:remove="${order.orderStatus} == 0?'none':'all'" class="gol-pay">付款</a>
+                <a href="javascript:;" id="cancelOrder" th:attr="data-orderId=${order.orderId},operate-type='cancel'" th:remove="${order.orderStatus} == 0?'none':'all'" class="gol-pay" >取消订单</a>
+            	<a th:href="@{${'/user/orders/goodsEvaluate'}(orderId=${order.orderId})}" th:remove="${order.orderStatus} == 5?'none':'all'" class="gol-delete">立即评价</a>
+				<a href="#" th:remove="${order.orderStatus} == 4?'none':'all'" class="gol-delete gol-confirm" th:attr="data-orderId=${order.orderId},operate-type='confirm'">确认收货</a>
+                <a th:href="@{${'/user/orders/deliver'}(orderId=${order.orderId})}" th:remove="${order.orderStatus} == 4?'none':'all'" class="gol-pay">查看物流</a>
+                <a href="javascript:;" class="gol-delete gol-tip" th:remove="${order.orderStatus} == 1?'none':'all'" th:attr="data-orderId=${order.orderId},operate-type='remind'">提醒发货</a>
+                <a th:href="@{${'/user/orders/apply-refund'}(orderId=${order.orderId})}" th:attr="data-orderId=${order.orderId},operate-type='refund'" class="gol-refund" th:remove="${order.orderStatus }== 1?'none':'all'">退款</a>
+                <a th:href="@{${'/user/orders/apply-refund'}(orderId=${order.orderId})}" th:attr="data-orderId=${order.orderId},operate-type='refund'" class="gol-refund" th:remove="${order.orderStatus }== 4?'none':'all'">退款</a>
+                <a th:href="@{${'/user/orders/apply-refund'}(orderId=${order.orderId})}" th:attr="data-orderId=${order.orderId},operate-type='refund'" class="gol-refund" th:remove="${order.orderStatus }== 5?'none':'all'">退款</a>
+                <a href="javascript:;"  th:attr="data-orderId=${order.orderId},operate-type='del'" class="gol-delete" th:remove="${order.orderStatus }== 7?'none':'all'">删除订单</a>
+            </div>
+        </li>
+    </ul>
+    <ul class="goods-odr-list" class="goods-odr-list" th:remove="${#lists.size(data.data)} eq '0'?'none':'all'">
+    	<p class="empty-filter-info"  style="text-align:  center;height:  50px;line-height:  50px;font-size: 20px;">未有订单数据!</p>
+    </ul>
+</div>
+<div class="page" th:remove="${data.totalPageNum}==0?'all':'none'">
+	    <div class="table-pagination">
+	    	<ul class="pagination">
+	    	<li th:text="'第'+${data.nowPager}+'/共'+${data.totalPageNum}+'页'"></li>
+	    		<li th:class="${data.nowPager} eq '1'? 'disabled' : ''">
+	    			<a th:if="${ not data.firstPage}" th:href="@{${'/user/orders/my-orders'}(orderStatus=${status},page=${data.nowPager-1})}">上一页</a>
+	    			<a th:if="${  data.firstPage}" href="javascript:void(0);">上一页</a>
+	    		</li>
+<!-- 	    		<li th:each="pageNo : ${#numbers.sequence(1, data.totalPageNum )}" th:class="${data.nowPager eq pageNo}? 'active' : ''"> -->
+<!-- 	    			<a th:if="${data.nowPager  eq pageNo}" href="javascript:void(0);" th:class="${data.nowPager eq pageNo}? 'curr' : ''"> -->
+<!-- 	                	<span th:text="${pageNo}"></span> -->
+<!-- 	            	</a> -->
+<!-- 	            	<a th:if="${not (data.nowPager  eq pageNo)}" th:href="@{${'/goods_search'}(keyWord=${keyWord},page=${pageNo})}"> -->
+<!-- 	                	<span th:text="${pageNo}"></span> -->
+<!-- 	            	</a> -->
+<!-- 	    		</li> -->
+	    		<li th:class="${data.nowPager  ge data.totalPageNum} ? 'disabled' : ''">
+		            <a th:if="${not data.lastPage}" th:href="@{${'/user/orders/my-orders'}(orderStatus=${status},page=${data.nowPager+1})}">下一页</a>
+		            <a th:if="${data.lastPage}" href="javascript:void(0);">下一页</a>
+	        	</li>
+	        	<li th:class="${data.nowPager  ge data.totalPageNum} ? 'disabled' : ''">
+	        		<a th:if="${not data.lastPage}" th:href="@{${'/user/orders/my-orders'}(orderStatus=${status},page=${data.totalPageNum})}">末页</a>
+	        		<a th:if="${data.lastPage}" href="javascript:void(0);">末页</a>
+	        	</li>
+	    	</ul>
+	    </div>
+    </div>
+<!-- ===============  我的订单  end  =============== --> 
+
+
+<!-- ===============  footer页脚 start  =============== --> 
+       <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+		var myOrders = {
+				//取消订单
+				cancelOrder : function(orderId) {
+						$.post('/user/orders/cancel-order',{'orderId':orderId},function(data) {
+							if(data.code == 200) {
+								location.reload();
+							}else{
+								alert(data.message);
+							}
+						});
+				},
+				deleteOrder : function(orderId) {
+					$.post('/user/orders/delete-order',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							location.reload();
+						}else{
+							alert(data.message);
+						}
+					});
+				},
+				confirmOrder : function(orderId){
+					$.post('/user/orders/confirm-order',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							alert("确认收货成功！");
+						}else{
+							alert(data.message);
+						}
+					});
+				},
+				remindOrder : function(orderId){
+					$.post('/user/orders/remind-deliver',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							alert("已提醒发货！");
+						}else{
+							alert(data.message);
+						}
+					});
+				},
+				applyRefund : function(orderId) {
+					$.post('/user/orders/apply-refund',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							location.reload();
+						}else{
+							alert(data.message);
+						}
+					});
+				}
+		}
+		
+		$(function() {
+			
+			$("a").bind("click",function() {
+				var item = $(this)
+				var orderId = item.attr("data-orderId")
+				var operateType = item.attr("operate-type")
+				console.log(orderId+"="+operateType);
+				if(operateType == 'cancel') {
+					myOrders.cancelOrder(orderId);
+				}else if(operateType == 'del') {
+					myOrders.deleteOrder(orderId);
+				}else if(operateType == 'confirm') {
+					myOrders.confirmOrder(orderId);
+				}else if(operateType == 'remind') {
+					myOrders.remindOrder(orderId);
+				}
+// 				else if(operateType == 'refund') {
+// 					myOrders.applyRefund(orderId);
+// 				}
+			});
+			
+		});
+	</script>
+</body>
+</html>

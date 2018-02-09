@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+        <meta name="keywords" content="亿慧云智能科技（深圳）多用户商城系统V2016" />
+        <meta name="description" content="亿慧云智能科技（深圳）多用户商城系统V2016" />
+        <meta name="generator" content="亿慧云智能科技（深圳）股份有限公司" />
+        <meta name="author" content="亿慧云智能科技（深圳）股份有限公司">
+		<title>亿慧云智能商城</title>
+        <link rel="shortcut icon" href="favicon.ico" />
+        <link rel="stylesheet" type="text/css" th:href="@{/style/css/base.css}" />
+        <link rel="stylesheet" type="text/css" th:href="@{/style/css/style.css}" />
+        <script type="text/javascript" th:src="@{/style/scripts/jquery-1.11.1.min.js}"></script>
+        <script type="text/javascript" th:src="@{/style/scripts/main.js}"></script>
+	</head>
+<body>
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div class="site-top-bar">
+        <div class="site-nav clearfix">
+            <div class="site-nav-left">
+                <p>欢迎光临亿慧云</p>
+                <a href="http://www.yihuicloud.com/">亿慧云官网</a>
+                <p>全国客服热线：400-7788-006</p>
+            </div>
+            <div class="site-nav-right">
+                <div class="account-nav fr">
+                    <a href="customer.html" class="account-quick-btn">会员中心</a>
+                    <ul class="account-quick">
+                        <li><a href="my-order.html">我的订单</a></li>
+                        <!-- <li><a href="account-center.html">账号中心</a></li> -->
+                        <li><a href="index.html">退出登录</a></li>
+                    </ul>
+                </div>          
+            </div>
+            
+        </div>
+    </div>
+
+<!-- ===============  顶部通栏 end  =============== -->
+
+<!-- ===============  header头部logo以及导航栏 start  =============== -->
+    <div class="mod-header">
+        <div class="top-container clearfix">
+            <div class="header-logo fl"><a href=""><img src="images/logo.png" alt="亿慧云" height="68"></a></div>
+
+            <!-- ++++++  2016/12/13 增加搜索框 修改购物车按钮  ++++++  -->
+            <div class="header-cart fr">
+                <a href="cart.html" class="cart-mini">
+                    <i class="cart-icon"></i>
+                    <em>购物车</em>
+                    <span>(0)</span>
+                </a>
+                <div class="cart-empty">  <!-- 购物车空时显示 -->
+                    <p>您得购物车还没有商品，快去选购吧！</p>
+                </div>
+                <div class="cart-menu">  <!-- 购物车内有商品时显示 -->
+                    <div class="cart-item oh">
+                        <div class="cart-left fl">
+                            <img src="images/order-pic (2).png" alt=""  width="40" />
+                        </div>                        
+                        <div class="cart-middle fl">
+                            <p>智能四合一传感器智能四合一传感器</p>
+                            <span>黑色</span>
+                        </div>
+                        <div class="cart-right fl">
+                            <i>560.00元 x 1 </i>
+                            <b>x</b>
+                        </div>
+                    </div>
+                    <div class="cart-item oh">
+                        <div class="cart-left fl">
+                            <img src="images/order-pic (2).png" alt=""  width="40" />
+                        </div>                        
+                        <div class="cart-middle fl">
+                            <p>智能四合一传感器智能四合一传感器</p>
+                            <span>黑色</span>
+                        </div>
+                        <div class="cart-right fl">
+                            <i>560.00元 x 1 </i>
+                            <b>x</b>
+                        </div>
+                    </div>
+                    <div class="cart-total">
+                        <p>共2件商品，合计<span>1120.00元</span></p>
+                        <a href="cart.html">去结算</a>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="header-search fr">
+                <form action="" class="search-form">
+                    <label for="search"></label>
+                    <input type="text" id="search" class="search-text" />
+                    <input type="submit" class="search-btn" value="" />
+                </form>
+                <ul>
+                    <li><a href="list.html">智能开关<i>约有6件</i></a></li>
+                    <li><a href="#">智能主机<i>约有3件</i></a></li>
+                    <li><a href="#">智能传感<i>约有4件</i></a></li>
+                </ul>
+
+            </div>
+       <!--  旧版购物车 -->
+          <!--  <div class="header-tools pt30 fr">
+              <div class="topshopcart fr">
+                  <a href="shopping-cart.html" class="header-cart tc" data-monitor="home_title_shopcart">
+                      <i class="icon"></i>我的购物车
+                      <span class="cart-size">(0)</span>
+                  </a>
+                  <div class="popup tc">
+                      <div class="cart-tips">请 <a class="tip-login" href="#" onclick="return false;" data-monitor="home_title_shopcartlogin">登录</a> 后查看您的购物车。</div>
+                      <div class="cart-info">您的购物车内还没有商品，赶快去选购吧！</div>
+                      <div class="cart-full clearfix">
+                          <div class="full-list clearfix">
+                              <div class="cart-little-img fl" ><a href="detail.html"><img src="images/goods-detail01.jpg" alt="" width="60" /></a></div>a链接到对应的商品详情页
+                              <div class="full-con fl">
+                                  <p><a href="detail.html">亿慧云智能门锁 家用智能防盗门锁 电子密码锁家用智能防盗门锁 电子密码锁</a></p>a链接到对应的商品详情页
+                                  <p class="mt10"><span>¥8888.00</span>x1</p>
+                              </div>
+                          </div>
+                          <div class="full-list clearfix">
+                              <div class="cart-little-img fl" ><a href="detail.html"><img src="images/goods-detail01.jpg" alt="" width="60" /></a></div>
+                              <div class="full-con fl">
+                                  <p><a href="detail.html">亿慧云智能门锁 家用智能防盗门锁 电子密码锁家用智能防盗门锁 电子密码锁</a></p>
+                                  <p class="mt10"><span>¥8888.00</span>x1</p>
+                              </div>
+                          </div>
+                          <div class="full-go">
+                              <p class="fl">共<span>1</span>件商品，金额合计：<span>¥8888.88</span></p>
+                              <a href="balance.html" class="full-balance fr">去结算</a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div> -->
+
+        </div>
+    </div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+        <li><a href="">首页</a></li>
+		<!-- <li><a href="column/physical-examination.html">体检报告</a></li>
+		<li><a href="column/doctor.html">医生解读</a></li>
+        <li><a href="column/business.html">入驻商家</a></li>
+        <li><a href="column/lecture.html">健康讲座</a></li>
+		<li><a href="column/bbs.html">互动吧</a></li>
+		<li><a href="asset.html">互助金</a></li>
+		<li><a href="asset.html">保险金</a></li> -->
+		<li><a href="list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+<!-- ===============  banner广告  start  =============== --> 
+    <div class="banner">
+        <div class="con">
+            <ul>
+                <li><a href="detail.html" target="_blank"><img src="images/banner01.png" alt="" width="1920" /></a></li>
+                <li><a href="detail.html" target="_blank"><img src="images/banner02.png" alt="" width="1920" /></a></li>
+                <li><a href="detail.html" target="_blank"><img src="images/banner03.png" alt="" width="1920" /></a></li>
+                <li><a href="detail.html" target="_blank"><img src="images/banner04.png" alt="" width="1920" /></a></li>
+            </ul>
+            <ol class="w100">
+                <li class="current"></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ol> 
+            <a href="javascript:;" class="leftBtn"></a>
+            <a href="javascript:;" class="rightBtn"></a> 
+        </div>  
+        <!-- ++++++ 2016/12/14 添加导航 ++++++ -->
+        <div class="cate-nav-wrap">
+            <div class="cate-nav">
+                <div class="cate-nav-list">
+                    <a href="#">全部智能单品</a>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">中控系统</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (3).png" alt="" />
+                            <span>智能网关</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能开关</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (4).png" alt="" />
+                            <span>智能照明开关</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (5).png" alt="" />
+                            <span>智能情景开关</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (7).png" alt="" />
+                            <span>智能窗帘开关</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能插座</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (6).png" alt="" />
+                            <span>智能墙面插座</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能照明</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (12).png" alt="" />
+                            <span>智能七彩灯</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能安防</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (8).png" alt="" />
+                            <span>智能指纹锁</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (9).png" alt="" />
+                            <span>智能IP摄像机</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (10).png" alt="" />
+                            <span>紧急按钮</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (11).png" alt="" />
+                            <span>智能门磁</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能传感</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (13).png" alt="" />
+                            <span>智能四合一传感</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (14).png" alt="" />
+                            <span>智能空气质量传感</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (15).png" alt="" />
+                            <span>智能红外转发</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (16).png" alt="" />
+                            <span>智能风光雨</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能电机</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (17).png" alt="" />
+                            <span>智能卷帘电机</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (18).png" alt="" />
+                            <span>智能平开帘电机</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (19).png" alt="" />
+                            <span>智能推窗电机</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (20).png" alt="" />
+                            <span>机械手及控制器</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (21).png" alt="" />
+                            <span>智能电磁阀</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="cate-nav-list">
+                    <a href="#">智能生活</a>
+                    <ul class="cate-nav-info">
+                        <li><a href="#">
+                            <img src="images/order-pic (22).png" alt="" />
+                            <span>智能语音机器人</span>
+                        </a></li>
+                        <li><a href="#">
+                            <img src="images/order-pic (23).png" alt="" />
+                            <span>智能手表</span>
+                        </a></li>  
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ++++++ 2016/12/14 添加镱嘉智能产品套餐 ++++++ -->
+    <div class="home-pack-wrap">
+        <ul class="home-server pr">
+            <li class="home-server-item01"><a href="http://www.yihuicloud.com/cooperation.html" class="haha">招商加盟</a></li>
+            <li class="home-server-item02"><a href="http://www.yihuicloud.com/skill.html">技术支持</a></li>
+            <li class="home-server-item03">
+                <a href="#">官方微信</a>
+                <span class="server-erweima"></span>
+            </li>
+            <li class="home-server-item04"><a href="http://www.yihuicloud.com/skill.html">APP下载</a></li>
+        </ul>
+        <ul class="home-package">
+            <li><a href="#"><img src="images/smart-package01.jpg" alt="" /></a></li>
+            <li><a href="#"><img src="images/smart-package02.jpg" alt="" /></a></li>
+            <li><a href="#"><img src="images/smart-package03.jpg" alt="" /></a></li>
+        </ul>
+    </div>
+    
+<!-- ===============  banner广告 end  =============== --> 
+
+<!-- ===============  智能套餐 start  =============== --> 
+    <div class="star-products">   <!-- 这个模块用于展示最有特色的四个产品，跟普通的单个产品一样的语法一样就好 -->
+        <h2 class="category-title">亿慧云明星单品</h2>
+        <ul>
+            <li><a href="detail.html" target="_blank">
+                <img src="images/pro-pic008.png" alt="" />
+                <h3>智能管家机器人</h3>
+                <p>最懂你的智能管家机器人</p>
+                <span>¥4980.00元</span>
+            </a></li>
+            <li><a href="detail.html" target="_blank">
+                <img src="images/pro-pic009.png" alt="" />
+                <h3>智能穿戴传感器</h3>
+                <p>智能手表是一款智能穿戴产品，它具备苹果智能穿戴所有的功能，是目前国内最顶级的智能集成的传感设备</p>
+                <span>¥3500.00元</span>
+            </a></li>
+            <li><a href="detail.html" target="_blank">
+                <img src="images/pro-pic03.png" alt="" />
+                <h3>智能四合一传感器</h3>
+                <p>智能四合一传感器是集成人体红外侦测、温度、湿度、亮度为一体的新型传感器</p>
+                <span>¥560.00元</span>
+            </a></li>
+            <li ><a href="detail.html" target="_blank">
+                <img src="images/pro-pic04.png" alt="" />
+                <h3>智能空气质量传感器</h3>
+                <p>智能空气质量检测器用于具有半封闭场所，对空气质量进行就地监测</p>
+                <span>¥760.00元</span>
+            </a></li>
+        </ul>
+    </div>
+<!-- ===============  智能套餐 end  =============== --> 
+
+<!-- ===============  全部商品 start  =============== --> 
+
+    <!-- ++++++ 2016/12/14 单品结构修改，添加分类 ++++++ -->
+    <div class="all-products-wrap">
+       <div class="all-products">
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">中控系统</h2>
+                <!-- <a href="#" class="goods-more-btn fr">查看更多</a> -->
+            </div>
+            
+            <ul><!-- 这个比较特殊呀，目前就一个产品，就只有躺一张扁图咯 -->
+                <li><a href="list.html">
+                    <img src="images/goods-ban08.jpg" alt="" />
+                </a></li>
+                <li class="goods-ban-special"><a href="detail.html"><img src="images/goods-special.jpg" alt="" /></a></li>
+                <!-- <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic01.png" alt="" />
+                    <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥8888.88元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic01.png" alt="" />
+                    <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥8888.88元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic01.png" alt="" />
+                    <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥8888.88元</span>
+                </a></li> -->
+            </ul>
+        </div>
+    
+        <div class="all-products"> 
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">智能开关</h2>
+                <a href="list.html" class="goods-more-btn fr">查看更多</a><!-- 点击进入开关的分类页 下面都是一样的-->
+            </div>
+            
+            <ul>
+                <li><a href="detail.html"><!-- 第一张是图片呀，要能随时更新更换的 -->
+                    <img src="images/goods-ban01.jpg" alt="" />
+                </a></li>
+                <li><a href="detail.html" target="_blank"> <!-- 首页的这些分类要我们自己能控制显示哪些产品 -->
+                    <img src="images/pro-pic003.png" alt="" />
+                    <h3>智能照明开关</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥480.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic002.png" alt="" />
+                    <h3>智能情景开关</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥480.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic001.png" alt="" />
+                    <h3>智能窗帘开关</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥480.00元</span>
+                </a></li>
+            </ul>
+        </div>
+        <!-- 新的表格里边没有这一类 -->
+       <!--  <div class="all-products">
+           <div class="all-goods-title oh">
+               <h2 class="cate-title fl">智能插座</h2>
+               <a href="list.html" class="goods-more-btn fr">查看更多</a>
+           </div>
+           
+           <ul>
+               <li><a href="">
+                   <img src="images/goods-ban02.jpg" alt="" />
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+           </ul>
+       </div> -->
+        <!-- 照明系统说要删掉 -->
+       <!--  <div class="all-products">
+           <div class="all-goods-title oh">
+               <h2 class="cate-title fl">智能照明</h2>
+               <a href="list.html" class="goods-more-btn fr">查看更多</a>
+           </div>
+           
+           <ul>
+               <li><a href="">
+                   <img src="images/goods-ban05.jpg" alt="" />
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+               <li><a href="detail.html" target="_blank">
+                   <img src="images/pro-pic01.png" alt="" />
+                   <h3>智能门锁智能门锁智能门智能门锁智能门锁</h3>
+                   <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                   <span>¥8888.88元</span>
+               </a></li>
+           </ul>
+       </div> -->
+        <div class="all-products">
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">智能传感</h2>
+                <a href="list.html" class="goods-more-btn fr">查看更多</a>
+            </div>
+            <ul>
+                <li><a href="">
+                    <img src="images/goods-ban03.jpg" alt="" />
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic005.png" alt="" />
+                    <h3>智能四合一传感器</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥560.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic006.png" alt="" />
+                    <h3>智能空气质量传感器</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥760.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic007.png" alt="" />
+                    <h3>红外转发器</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥520.00元</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <div class="all-products">
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">智能生活</h2>
+                <a href="list.html" class="goods-more-btn fr">查看更多</a>
+            </div>       
+            <ul>
+                <li><a href="#">
+                    <img src="images/goods-ban04.jpg" alt="" />
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic008.png" alt="" />
+                    <h3>智能语音机器人</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥4980.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic009.png" alt="" />
+                    <h3>智能手表</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥3500.00元</span>
+                </a></li>
+                <li><a href="detail.html" target="_blank">
+                    <img src="images/pro-pic010.png" alt="" />
+                    <h3>智能背景音乐</h3>
+                    <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                    <span>¥4980.00元</span>
+                </a></li>
+            </ul>
+        </div>
+
+        <div class="cate-big-wrap">
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">智能电机</h2>
+                <a href="list.html" class="goods-more-btn fr">查看更多</a>
+            </div> 
+            <div class="cate-big clearfix">
+                <a href="#" class="cate-big-banner"><!-- 这是一张长图片呀，要能随时更新更换的 -->
+                    <img src="images/goods-ban06.jpg" alt="" />
+                </a>
+                <ul class="cate-big-list">
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic011.png" alt="" />
+                        <h3>智能卷帘电机</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥840.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic012.png" alt="" />
+                        <h3>智能平开帘电机</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥840.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic013.png" alt="" />
+                        <h3>智能推窗电机</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥880.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic014.png" alt="" />
+                        <h3>机械手及控制器</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥598.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic016.png" alt="" />
+                        <h3>智能电磁阀</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥598.00元</span>
+                    </a></li>
+                </ul>
+            </div>      
+        </div> 
+        <div class="cate-big-wrap">
+            <div class="all-goods-title oh">
+                <h2 class="cate-title fl">智能安防</h2>
+                <a href="list.html" class="goods-more-btn fr">查看更多</a>
+            </div> 
+            <div class="cate-big clearfix">
+                <a href="#" class="cate-big-banner">
+                    <img src="images/goods-ban07.jpg" alt="" />
+                </a>
+                <ul class="cate-big-list">
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic022.png" alt="" />
+                        <h3>智能门锁</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥2880.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic019.png" alt="" />
+                        <h3>智能IP摄像机</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥780.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic020.png" alt="" />
+                        <h3>智能SOS紧急按钮</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥280.00元</span>
+                    </a></li>
+                    <li><a href="detail.html" target="_blank">
+                        <img src="images/pro-pic021.png" alt="" />
+                        <h3>智能门磁</h3>
+                        <p>真空纳米电镀，奢华品质真空纳米电镀，奢华品质真空纳米电镀，奢华品质</p>
+                        <span>¥280.00元</span>
+                    </a></li>
+                </ul>
+            </div>      
+        </div> 
+
+    </div>
+    
+
+    
+
+    
+<!-- ===============  全部商品 end  =============== --> 
+
+<!-- ===============  页脚 start  =============== --> 
+    <div class="slogan">
+        <ul class="clearfix">
+            <li><i></i>七天无理由退货</li>
+            <li><i class="sloganBg01"></i>15天免费换货</li>
+            <li><i class="sloganBg02"></i>超值优惠大礼包</li><!-- 修改文字 -->
+            <li><i class="sloganBg03"></i>线下体验店遍布全国</li><!-- 修改文字 -->
+        </ul>
+    </div>
+    <div class="footerWrap">
+        <div class="footer clearfix">
+            <dl>
+                <dt>帮助中心</dt>
+                <dd><a href="javascript:;">购物指南</a></dd>
+                <dd><a href="javascript:;" target="_blank">配送说明</a></dd>
+                <dd><a href="javascript:;">支付方式</a></dd>
+                <dd><a href="javascript:;">常见问题</a></dd>
+            </dl>
+            <dl>
+                <dt>售后服务</dt>
+                <dd><a href="javascript:;" target="_blank">保修政策</a></dd>
+                <dd><a href="javascript:;" target="_blank">退换货政策</a></dd>
+                <dd><a href="javascript:;" target="_blank">服务流程</a></dd>
+                <dd><a href="javascript:;" target="_blank">安装/维修说明</a></dd>
+            </dl>
+            <dl>
+                <dt>关于我们</dt>
+                <dd><a href="http://www.yihuicloud.com/AI/about/article_detail.html?id=00000030&mo_id=00000002" target="_blank">公司介绍</a></dd>
+                <dd><a href="doc/legal.html" target="_blank">法律声明</a></dd>
+                <dd><a href="doc/privacy.html" target="_blank">隐私声明</a></dd>
+            </dl>
+            <dl>
+                <dt>关注我们</dt>
+                <dd class="erweima-focus pr">
+                    <a href="http://weibo.com/p/1005055617257062/home?from=page_100505&mod=TAB&is_all=1#place" target="_blank">新浪微博</a>
+                    <div class="erweima"><img src="images/sina-code.png" alt="" width="150" /></div>
+                </dd>
+                <dd class="erweima-focus pr">
+                    <a href="javascript:;">官方微信</a>
+                    <div class="erweima"><img src="images/wechat-code.jpg" alt="" width="150"/></div>
+                </dd>
+            </dl>
+            <dl>
+                <dt>联系我们</dt>
+                <dd>
+                    <h3 class="f24 fn mb10">400-7788-006</h3>
+                    <h3 class="f24 fn mb10">0755-23501160</h3>
+                    <a href="javascript:;" class="footService"><i></i>24小时在线客服</a>
+                </dd>
+            </dl>
+        </div>
+        <p class="tc f12 mt20">亿慧云智能科技（深圳）股份有限公司©版权所有 | 网站备案/许可证号: 粤ICP备16113685号</p>
+    </div>
+
+    <!-- ======================  在线客服 start ======================= -->
+        <div class="main-im">
+            <div id="open_im" class="open-im"></div>  
+            <div class="im_main" id="im_main">
+                <div id="close_im" class="close-im"><a href="javascript:void(0);" title="点击关闭"></a></div>
+                <a href="http://wpa.qq.com/msgrd?v=3&amp;uin=852868043&amp;site=www.cactussoft.cn&amp;menu=yes" class="im-qq qq-a" title="在线QQ客服" target="_blank">
+                    <div class="qq-container"></div>
+                    <div class="qq-hover-c"><img class="img-qq" src="images/qq.png"></div>
+                    <span> QQ在线咨询</span> 
+                </a>
+                <div class="qq-contact">
+                    <p>售前客服</p>
+                    <a title="点击这里给我发消息" href="http://wpa.qq.com/msgrd?v=3&amp;uin=852868043&amp;site=www.cactussoft.cn&amp;menu=yes" target="_blank"><img src="images/button_11.gif"></a>
+                </div>
+                <div class="qq-contact">
+                    <p>售后客服</p>
+                    <a title="点击这里给我发消息" href="http://wpa.qq.com/msgrd?v=3&amp;uin=852868043&amp;site=www.cactussoft.cn&amp;menu=yes" target="_blank"><img src="images/button_11.gif"></a>
+                </div>
+                
+                <div class="im-tel">
+                    <div>免费咨询热线</div>
+                    <div class="tel-num">400-7788-006</div>
+                    <div class="tel-num">0755-23501160</div>
+                </div>
+                <div class="im-footer" style="position:relative">
+                    <div class="weixing-container">
+                        <div class="weixing-show">
+                            <div class="weixing-txt">获得更多惊喜</div>
+                            <img class="weixing-ma" src="images/erweima.jpg" height="140" width="120">
+                            <div class="weixing-sanjiao"></div>
+                            <div class="weixing-sanjiao-big"></div>
+                        </div>
+                    </div>
+                    <div class="go-top"><a href="javascript:;" title="返回顶部"></a> </div>
+                    <div style="clear:both"></div>
+                </div>
+            </div>
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+
+</body>
+</html>
+
+
+

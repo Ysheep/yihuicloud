@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc">
+	<link href="https://cdn.bootcss.com/zTree.v3/3.5.29/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+</head>
+
+<style>
+.w90{width:90px;height:90px;margin-left:2px;}
+.layui-input-block{
+margin-left:120px;
+}
+</style>
+<form class="layui-form" action="" id="orderEditForm" style="position: absolute;">
+<div class="layui-row"  style="margin-top:10px;">
+	  <input type="hidden" name="classId" id="classId" th:value="${goodsclass.classId}" />
+	  
+	  <div class="layui-form-item" style="margin-left:-10px;">
+	    <label class="layui-form-label " style="width:100px;">父级分类</label>
+	    <div class="layui-input-inline" style="width:200px;">
+	    <input type="text" id="pclass" readonly class="layui-input" placeholder="无" th:value="${goodsclass.pidName}"/>
+	    <input  name ="pid" class="layui-input" id="superId"  type="hidden" th:value="${goodsclass.pid}">
+	    </div>
+	     <div class="layui-input-inline" style="width:50px;">
+            <i id="menuBtn"  class="layui-btn layui-icon layui-btn-small">&#xe615;选择</i>
+        </div>
+	  </div>
+	  
+	 <div class="layui-form-item">
+		    <label class="layui-form-label required" style="width:90px;">分类名称</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="text" name="name" class="layui-input" th:value="${goodsclass.name}" lay-verify="required"/>
+		    </div>
+	   </div>
+	<div class="layui-form-item">
+		    <label class="layui-form-label" style="width:90px;">首页显示</label>
+		    <div class="layui-input-block" style="width:200px;" >
+				<select name="showIndex" id="showIndex" lay-verify="required">
+					<option th:each="ec:${isShow}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code}==${goodsclass.showIndex}"></option>
+				</select>
+		    </div>
+	   </div>
+	  <div class="layui-form-item">
+		    <label class="layui-form-label" style="width:90px;">状态</label>
+		    <div class="layui-input-block" style="width:200px;" >
+				<select name="deleteStatus" id="deleteStatus" lay-verify="required">
+					<option value="">请选择状态</option>
+					<option th:each="ec:${status}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code==goodsclass.deleteStatus+''}"></option>
+				</select>
+		    </div>
+	   </div>
+	   
+	    <div class="layui-form-item" style="">
+	    <label class="layui-form-label" style="width:90px;">序号</label>
+	    <div class="layui-input-block" style="width:200px;">
+	    	<input type="text" name="seq" class="layui-input" th:value="${goodsclass.seq}">
+	    </div>
+	</div>
+  	<div class="layui-row"  style="width:600px;margin-top:10px;">
+		 <div class="layui-upload required">
+			  <button type="button" class="layui-btn " style="" id="test2">选择分类图标</button>（支持*.png;*.jpg;*.gif等格式上传，建议选择尺寸400x250以上的图片）
+			  <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="display:none;" id="tips2">&#xe63d;</i>
+		 </div>
+		  <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;height:145px;">
+		    预览图：
+		    <div class="layui-upload-list" id="demo2" >
+		    	<input type="hidden" name="iconId" id="iconId" th:value='${goodsclass.iconId}'>
+	    	 	<img class="layui-upload-img w90" id="imageDemo1" th:attr="src=${goodsclass.iconUrl}">
+	    	  	<p id="demoText"></p>
+		    </div>
+		 </blockquote>
+	</div>
+	<div class="layui-row"  style="width:600px;margin-top:10px;">
+		 <div class="layui-upload required">
+			  <button type="button" class="layui-btn " style="" id="test3">选择首页图片</button>（支持*.png;*.jpg;*.gif等格式上传，建议选择尺寸400x250以上的图片）
+			  <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="display:none;" id="tips2">&#xe63d;</i>
+		 </div>
+		  <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;height:145px;">
+		    预览图：
+		    <div class="layui-upload-list" id="demo3" >
+		    	<input type="hidden" name="imageId" id="imageId" th:value='${goodsclass.imageId}'>
+	    	 	<img class="layui-upload-img w90" id="imageDemo2"  th:attr="src=${goodsclass.imageUrl}">
+	    	  	<p id="demoText1"></p>
+		    </div>
+		 </blockquote>
+	</div>
+</div>
+  
+ <div class="layui-row" style="margin-top:20px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;margin-left:35px;">
+        <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode="56">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+    <div id="menuContent" class="menuContent layui-bg-gray" style="display:none; position: absolute;">
+    <ul id="treeDemo" class="ztree" style="margin-top:0; width:160px;"></ul>
+    </div>
+</form>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.core.min.js"></script>
+<script src="https://cdn.bootcss.com/zTree.v3/3.5.29/js/jquery.ztree.excheck.js"></script>
+<script>
+
+//start use
+layui.use(['form','upload'], function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  var upload = layui.upload;
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	  
+	  var uploadInst = upload.render({
+		    elem: '#test2'
+		        ,url: '/admin/goods/upload'
+		       // ,multiple: true
+		        ,before: function(obj){
+		          //预读本地文件示例，不支持ie8
+		         obj.preview(function(index, file, result){
+					$("#imageDemo1").attr('src', result);
+		         }); 
+		        }
+		        ,done: function(res){
+		          //上传完毕
+		          if(res.code==200){
+		        	  $("#imageDemo1").attr('src', res.result.value);
+		        	  $("#iconId").val(res.result.code);
+		        	  var demoText = $('#demoText');
+		        	  demoText.html('<span style="color: #FF5722;">上传成功</span>');
+		            form.render();
+		          }else{
+		        	  $("#iconId").val('');
+		        	  var demoText = $('#demoText');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+		              demoText.find('.demo-reload').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		        }
+		        ,error: function(){
+		        	 $("#iconId").val('');
+		        	 var demoText = $('#demoText');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+		              demoText.find('.demo-reload').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		      });
+	  //首页图片上传
+	  var uploadInst = upload.render({
+		    elem: '#test3'
+		        ,url: '/admin/goods/upload'
+		       // ,multiple: true
+		        ,before: function(obj){
+		         //预读本地文件示例，不支持ie8
+		         obj.preview(function(index, file, result){
+					$("#imageDemo2").attr('src', result);
+		         }); 
+		        }
+		        ,done: function(res){
+		          //上传完毕
+		          if(res.code==200){
+		        	  $("#imageDemo2").attr('src', res.result.value);
+		        	  $("#imageId").val(res.result.code);
+		        	  var demoText = $('#demoText1');
+		        	  demoText.html('<span style="color: #FF5722;">上传成功</span>');
+		            form.render();
+		          }else{
+		        	  var demoText = $('#demoText1');
+		        	  $("#imageId").val('');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload1">重试</a>');
+		              demoText.find('.demo-reload1').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		        }
+		        ,error: function(){
+		        	 var demoText = $('#demoText1');
+		        	 $("#imageId").val('');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload1">重试</a>');
+		              demoText.find('.demo-reload1').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		      });
+	  
+	  
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		$.ajax({url:'/admin/goodsclass/execute_edit',
+			data:$("#orderEditForm").serializeJson(),
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					layer.msg("数据保存成功！");
+					window.parent.removeTabfunc("tab_修改分类56");
+					layer.closeAll();
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	$('#closeBtn').click(function() {
+		layer.close(editdialogindex);
+	});
+	
+	
+	 var setting = {
+	            view: {
+	                dblClickExpand: false
+	            },
+	            data: {
+	                simpleData: {
+	                    enable: true
+	                }
+	            },
+	            callback: {
+//	                 beforeClick: beforeClick,
+	                onClick: onClick
+	            }
+	        };
+	
+	
+	        function onClick(e, treeId, treeNode) {
+	            var pclass = $("#pclass");
+	            var superId = $("#superId");
+	            pclass.attr("value", treeNode.name);
+//	            layer.msg(treeNode.id);
+	            $("#superId").val(treeNode.id);
+// 	            isSubordinate($("#classId").val(),treeNode.id);
+// 	            console.log($("#classId").val()+","+treeNode.id);
+	            hideMenu();//关闭下拉
+	            return false;
+	        }
+
+//	        function showMenu() {
+			$("#menuBtn").click(function() {
+//				console.log("hello showMenu!");
+				$("#pclass").attr("value", "");
+				$("#superId").val('');
+	            var cityObj = $("#pclass");
+	            var cityOffset = $("#pclass").offset();
+	            $("#menuContent").css({left:"130px", top:"50px"}).slideDown("fast");
+	            $("body").bind("mousedown", onBodyDown);
+	            return false;
+			});
+	        
+	        function hideMenu() {
+	            $("#menuContent").fadeOut("fast");
+	            $("body").unbind("mousedown", onBodyDown);
+	        }
+	        function onBodyDown(event) {
+	            if (!(event.target.id == "menuBtn" || event.target.id == "menuContent" || $(event.target).parents("#menuContent").length>0)) {
+	                hideMenu();
+	            }
+	        }
+
+	        $(document).ready(function(){
+	        	 $.ajax({
+	                     type: "post",
+	                     url: "/admin/goodsclass/findZtree",
+	                     type:"post",
+	        			 contentType:"application/json",
+	                     success: function(data){
+	                     	if(data.code==200){
+//	        	             		layer.msg(data.message)
+	           					 $.fn.zTree.init($("#treeDemo"), setting, data.result);
+	                     	}else{
+	                     		layer.msg(data.message)
+	                     	}
+	                     }
+	        		});
+	        });
+	        
+// 	 function isSubordinate(pid,classId){
+// 		console.log(pid+","+classId);
+// 		  $.get('/admin/goodsclass/issubordinate?pid='+pid+"&classId="+classId, {}, function(data){
+// 			  			if(data.code == 200) {
+			  				
+// 			  			}else{
+// 			  				layer.msg(data.message);
+// 			  				$("#pclass").attr("value", "");
+// 							$("#superId").val('');
+// 			  			}
+// 				});
+// 	 }
+	
+});
+//end use
+</script>

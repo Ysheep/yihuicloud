@@ -1,0 +1,190 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>后台亿慧云 </title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+	<link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/layerui/css/layui.css}" media="all"/>
+  <style>
+  .layui-tab-content iframe{
+	  position: absolute;
+	  left: 200px
+	  right: 0;
+	  top: 61px;
+	  bottom: 0;
+	  width: 100%;
+	  height: 100%;
+	  border:0px;
+	}
+	.layui-nav-tree .layui-nav-item a i {
+	    display: block;
+	    text-align: center;
+	    width: 50px;
+	    line-height: 45px;
+	    float: left;
+	}
+	.layui-this{
+		background-color: #263949 !important;;
+		color:#fff !important;;
+	}
+	
+	.hvr-icon-pulse {
+	    display: inline-block;
+	    vertical-align: middle;
+	    -webkit-transform: translateZ(0);
+	    transform: translateZ(0);
+	    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+	    -webkit-backface-visibility: hidden;
+	    backface-visibility: hidden;
+	    -moz-osx-font-smoothing: grayscale;
+	    position: relative;
+}
+  </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo" style="font-size:24px;font-weight:600">亿慧云商城管理</div>
+    <ul class="layui-nav layui-layout-right">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+        <input type="hidden" id="agent" th:value="${session.session_user.loginId}">
+        <input type="hidden" id="type" th:value="${session.session_user.type}">
+          <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+          <span th:text="${session.session_user.name}">xx</span>  
+        <span class="layui-nav-more"></span></a>
+       <dl class="layui-nav-child">
+          <dd><a href="javascript:;">
+          	<span id="view">个人信息</span>
+          </a></dd>
+          <dd>
+          	<a href="javascript:;">
+          	<span id="pwd">密码设置</span>
+          	</a>
+          </dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item"><a href="/admin/logout">退出</a></li>
+      </ul>
+  </div>
+  
+  <div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+      <ul class="layui-nav layui-nav-tree" lay-filter="nav">
+		<!-- 侧边导航: <ul class="layui-nav layui-nav-tree layui-nav-side"> -->
+		  <li class="layui-nav-item" th:each="menu,menu1Stat : ${menus}">
+		    <a href="javascript:;" th:id="${menu.id}" th:attr="data-url=${menu.url}">
+		    	<i th:class="${'fa hvr-icon-pulse fa-lg '+menu.icon}"></i>
+		    	<span th:text="${menu.name}"></span>
+		    </a>
+		    
+		    <dl class="layui-nav-child" th:if="${not #lists.isEmpty(menu.childrens)}">
+		      <dd th:each="menu2,menu2Stat : ${menu.childrens}">
+		      	<a href="javascript:;" th:attr="data-url=${menu2.url}" th:id="${menu2.id}" style="padding-left:60px;">
+		      		<i th:class="${'fa hvr-icon-pulse fa-lg '+menu2.icon}"></i>
+		    		<span th:text="${menu2.name}"></span>
+		      	</a>
+		      </dd>
+		    </dl>
+		  </li>
+		  
+		</ul>
+    </div>
+  </div>
+  
+  <div class="layui-body">
+ 	<div class="layui-tab layui-tab-card" lay-allowclose="true" lay-filter="demo">
+	  <ul class="layui-tab-title">
+	   
+	  </ul>
+	  <div class="layui-tab-content" style="padding:0px;">
+	    
+	  </div>
+</div>  
+  </div>
+  
+ <!--  <div class="layui-footer">
+    底部固定区域
+    © qzdsoft.com
+  </div> -->
+</div>
+<script src="https://cdn.bootcss.com/jquery/2.1.0/jquery.min.js"></script>
+<script th:src="@{/layerui/layui.js}" charset="utf-8"  type="text/javascript"></script>
+<script th:src="@{/js/common.js}" charset="utf-8"  type="text/javascript"></script>
+<script>
+
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+  element.on('nav(nav)', function(elem){
+// 	  console.log(elem.html());//得到当前点击的DOM对象
+	  var url = elem.find("a").attr("data-url");
+	  var id = elem.find("a").attr("id");
+	  var des = elem.text();
+	  addTabFunction(url,id,des);
+  });
+});
+function addTabFunction(url,id,des){
+	layui.use('element', function(){
+		  var element = layui.element;
+		  var sj = "tab_"+id;
+		  if($(".layui-tab-title li[lay-id='"+sj+"']").length!=0){
+			  element.tabChange('demo', sj);
+			  return false;
+		  }
+		  var h = $("div.layui-body").outerHeight(true)-70;
+	    element.tabAdd('demo', {
+	      title: des //用于演示
+	      ,content: '<iframe  src=' + url + ' style="height:'+h+'" scrolling=auto"></iframe>'
+	      ,id: sj //实际使用一般是规定好的id，这里以时间戳模拟下
+	    })
+	    element.tabChange('demo', sj); //切换到：用户管理 
+	});
+}
+function removeTabfunc(id){
+	layui.use('element', function(){
+		  var element = layui.element;
+		  element.tabDelete('demo', id);
+	});
+}
+function addTabFrame(url,id,des){
+	addTabFunction(url,id,des);
+}
+</script>
+<script>
+layui.use(['layer'], function(){
+	  $("#pwd").click(function() {
+		  $.post('/admin/agents/changepwd',{"agentId":""},function(str) {
+			  editdialogindex = layer.open({
+				  	id:"layerDialog",
+					title:"修改密码",
+					type:1,
+					area:['370px', '180px'],
+					content:str,
+					zIndex:99999,
+				});
+		  });
+	  });
+	  
+	  $("#view").click(function() {
+		  $.post('/admin/sys/user/view',function(str) {
+			  editdialogindex = layer.open({
+				  	id:"layerDialog",
+					title:"个人资料",
+					type:1,
+					area:['400px', '400px'],
+					content:str,
+					zIndex:99999,
+				});
+		  });
+	  });
+});
+</script>
+</body>
+</html>

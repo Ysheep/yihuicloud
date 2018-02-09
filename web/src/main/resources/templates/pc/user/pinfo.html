@@ -1,0 +1,191 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc"></head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div class="column">
+	<ul class="column-list">
+		<li><a href="/">首页</a></li>
+		<li><a href="list.html">产品套餐</a></li>
+	</ul>
+</div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  member start  =============== --> 
+<div class="member-main  cf">
+	<div th:include="pc/commons/header :: mm-left"></div>
+	<div class="mm-right">
+
+		<div class="pinfo">
+	        <label style="margin-left:15px;">个人信息</label>
+			<div class="xinxi_form">
+			    <form method="POST" id="personal_form" action="">
+                    <div style="margin-top:20px;" class="inumber"><span class="xiang"><i>*</i>用户名：</span>
+                        <input type="text" id="yonghuming" readonly name="User_Number" th:value="${user.phone}">
+                    </div>
+					<div style="margin-top:20px;" class="iname"><span class="xiang"><i>*</i>昵称：</span>
+					  <input type="text" id="nicheng" name="User_Name" th:value="${user.userName}">
+					</div>
+					<div style="margin-top:10px;" class="ixingbie"><span class="xiang"><i>*</i>性别：</span>
+					  <label>
+						<input type="radio" id="RadioGroup1_0" th:attr="checked=${user.sex==0?'true':'false'}" value="0" name="RadioGroup1">
+						男
+					  </label>
+					  <label>
+						<input type="radio" th:attr="checked=${user.sex==1?'true':'false'}" id="RadioGroup1_1" value="1" name="RadioGroup1">
+						女</label>
+					  <label>
+						<input type="radio" id="RadioGroup1_1" th:attr="checked=${user.sex==2?'true':'false'}" value="2" name="RadioGroup1">
+						保密
+					  </label>
+					</div>
+					<div style="margin-top:10px;" class="ibirthday"><span class="xiang"><i>*</i>生日：</span>
+						<input type="text" class="demo-input" placeholder="请选择日期" th:value="${user.birthday}" id="test1">
+						<script type="text/javascript" th:src="@{/style/scripts/laydate.js}"></script>
+						<script>
+							lay('#version').html('-v'+ laydate.v);
+							//执行一个laydate实例
+							laydate.render({
+							  elem: '#test1' //指定元素
+							});
+						</script>
+					</div>
+					<div style="margin-top:9px;" class="iemailadd"><span class="xiang"><i>*</i>邮箱：</span>
+					  <input type="text" id="emailadd" name="User_Email" th:value="${user.email}">
+					</div>
+					<div style="margin-top:20px;" class="itruename"><span class="xiang"><i>*</i>真实姓名：</span>
+					  <input type="text" id="truename" name="User_NickName" th:value="${user.trueName}" >
+					</div>
+					<div style="margin-top:20px;" class="idiqu"><span class="xiang"><i>*</i>地区：</span>
+					  <div class="diqu-info">
+						<div>
+							<select name="s_province" id="loc_province" ><option value="">--省份--</option><option th:each="area:${area1.result}" th:value="${area.code}" th:selected="${area.code==proviceId}" th:text="${area.value}"></option></select>
+							<select name="s_city" id="loc_city"><div th:remove="${citys==null?'all':'none'}"><option th:each="city:${citys.result}" th:value="${city.code}" th:selected="${city.code==cityId}" th:text="${city.value}"></option></div></select>
+							<select name="s_county" id="loc_town"><div th:remove="${towns==null?'all':'none'}"><option th:each="town:${towns.result}" th:value="${town.code}" th:selected="${town.code==townId}" th:text="${town.value}"></option></div></select>
+							<script>
+								$("#loc_province,#loc_city").on('change',function(){
+									if($(this).attr("id")=='loc_province'){
+										$("#loc_town").html("");
+										getarea(this.value,"#loc_city");
+									}else if($(this).attr("id")=='loc_city'){
+										getarea(this.value,"#loc_town");
+									}
+								});
+								function getarea(id,str){
+									$.ajax({
+										type:'POST',
+										url:'/user/center/area',
+										data:{'id':id},
+										dataType:'json',
+										success:function(data){
+											if(data.code==200){
+												$(str).html("");
+												var result = data.result;
+													var option ="<option value=''>--请选择--</option>";
+												$.each(result,function(i,item){
+													option=option+"<option value="+item.code+">"+item.value+"</option>";
+												});
+												$(str).html(option);
+											}			
+										}
+									});
+								}
+							</script>
+						</div>
+						<div id="show"></div>
+					  </div>
+					</div>
+					
+					<!-- <div style="margin-top:20px;"><span class="xiang"><i>*</i>手机号码：</span>
+	                    <input type="text" name="Mobile" th:value="${user.phone}">
+					</div> -->
+					<a class="pinfo-submit" href="javascript:;">提交</a>
+				</form>
+			</div>
+
+        </div>
+        <div class="pinfo-ed">
+                <label style="margin-left:15px;">个人信息</label>
+                <div class="xinxi_form">
+                    <form method="POST" id="personal_form" action="">
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">用户名：</span>
+                            <span th:text="${user.phone}">188 8888 8888</span>
+                        </div>
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">昵称：</span>
+                            <span th:text="${user.userName}">小亿</span>
+                        </div>
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">性别：</span>
+                            <span th:remove="${user.sex==0?'none':'all'}">男</span>
+                            <span th:remove="${user.sex==1?'none':'all'}">女</span>
+                            <span th:remove="${user.sex==2?'none':'all'}">保密</span>
+                        </div>
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">生日：</span>
+                            <span th:text="${user.birthday}"></span>
+                        </div>
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">邮箱：</span>
+                            <span th:text="${user.email}">10000@qq.com</span>
+                        </div>
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">真实姓名：</span>
+                            <span th:text="${user.trueName}">yhy</span>
+                        </div>
+                        <!--<div style="margin-top:20px;" class="diqu"><span class="xiang">地区：</span>
+                          <div class="info">
+                            <div>
+                              <select name="s_province" id="loc_province"></select>
+                              <select name="s_city" id="loc_city"></select>
+                              <select name="s_county" id="loc_town"></select>
+                              <script>
+                                showLocation(广东省,广州市,天河区);
+                              </script>
+                            </div>
+                            <div id="show"></div>
+                          </div>
+                        </div>-->
+                        <div style="margin-top:20px;" class="pline-height"><span class="xiang">地区：</span>
+                          <div class="diqu-info">
+                                <span th:text="${user.address}">广东省广州市天河区</span>
+                          </div>
+                        </div>
+                        
+                        <!-- <div style="margin-top:20px;" class="pline-height"><span class="xiang">手机号码：</span>
+                            <span th:text="${user.phone}">188 8888 8888</span>
+                        </div> -->
+                        <a class="pinfo-edit" href="javascript:;">编辑</a>
+                    </form>
+                </div>
+    
+            </div>
+	</div>	
+</div>
+
+<!-- ===============  member end  =============== --> 
+
+
+<!-- ===============  页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+<!-- ======================  在线客服 end ======================= -->
+</body>
+</html>
+
+

@@ -1,0 +1,162 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+		
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+     <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+
+   <div th:include="pc/commons/header :: top-bar "></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+<div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+
+<!-- ===============  cart  start  =============== --> 
+<div class="deliver cf">
+	<div class="deliver-nav">
+		退款申请
+	</div>
+	<div class="deliver-header">
+		<input type="hidden" th:value="${info.orderId}" name="orderId" id="orderId">
+        <div class="dh-title">订单商品</div>
+       		<ul class="firm-list">
+        	<li th:each="good:${info.goods}"><a th:href="@{${'/goods/detail'}(goodsId=${good.goodsId})}" >
+            <div style="height: 80px;width:80px;">
+		            <img th:src="${good.image}" th:attr="alt=${good.goodName}" />
+        	</div>
+        	<span th:text="${good.goodName}" style="overflow-x: hidden;display: inline-block;width:  80px;white-space: nowrap;"></span>
+            <span th:text="'X'+${good.num}"></span>
+        	</a></li>
+    		</ul>
+        <div class="dh-company" th:text="${info.expressName}!=null?'物流公司&nbsp&nbsp'+${info.expressName}:''"></div>
+        <div class="dh-num" th:text="${info.expressName}!=null?'运单号码&nbsp&nbsp'+${info.expressNo}:''"></div>	
+    </div>
+    
+    <div class="track-rcol">
+        <div class="track-list">
+            <ul  id="traces" >
+            </ul>
+        </div>
+    </div>
+
+    <div class="refund">
+        <p class="refund-tit">请确认以下退款信息：</p>
+        <p>退款方式:
+            <select name="refundType" id="refundType">
+            	<option value="" th:each="t:${type}" th:value="${t.code}" th:text="${t.value}">退款退货</option>
+            </select>
+        </p>
+        <p>订单号:
+            <input type="text" placeholder="" th:value="${info.orderNo}" name="orderNo">
+        </p>
+        <p>
+            <div class="p-remark">退款理由：</div> 
+            <textarea name="pay_remark" id="pay_remark" placeholder="填写内容请先和客服确认" style="width:280px;height:80px;padding:10px;border: 1px solid #ccc;"></textarea>
+        </p>
+        <div class="refund-balance">
+            <p class="cb-total" >退款总额：<span id="refundMoney" th:text="'¥'+${info.refundTotalPrice}"> 999</span></p>
+            <a href="javascript:;" class="cb-refund confirm-refund" id="comfirmRefund">确认退款</a>
+        </div>
+    </div>
+
+</div>
+<!-- ===============  cart  end  =============== --> 
+
+
+<!-- ===============  footer页脚 start  =============== --> 
+    <div th:include="pc/commons/footer::footer"></div>
+
+<!-- ======================  在线客服 start ======================= -->
+        <div class="main-im" th:include="pc/commons/footer-links::footer-links">
+            
+        </div>
+    <!-- ======================  在线客服 end ======================= -->
+	<script type="text/javascript">
+		var refund = {
+				//申请退款
+				applyRefund : function() {
+					
+					var orderNo = $("input[name='orderNo']").val();
+					var orderId = $("#orderId").val();
+					if(orderNo == null || orderNo == '') {
+						alert("请填写订单号");
+						return;
+					}
+					var refundType = $("#refundType option:selected").val();
+					var refundReason = $("#pay_remark").val()
+					var refundMoney = $("#refundMoney").text();
+					var data = {}
+					data["orderId"] = orderId;
+					data["orderNo"] = orderNo;
+					data["orderNo"] = orderNo;
+					data["refundType"] = refundType;
+					data["refundReason"] = refundReason;
+					data["refundMoney"] = refundMoney;
+					$.ajax({
+						url:'/user/orders/confirm-refund',
+						data:JSON.stringify(data),
+						contentType:'application/json',
+						type:'post',
+						success:function(data){
+							if(data.code=200) {
+								window.location.href="/user/orders/detail?orderId="+data.result;
+							}else{
+								alert(data.messsge);
+							}
+						}
+					});
+					
+				},
+				getExpressInfo : function(orderId) {
+					$.post('/user/orders/express',{'orderId':orderId},function(data) {
+						if(data.code == 200) {
+							var ulstr = $("#traces");
+							if(data.result.traces!=null) {
+								 var result = data.result.traces.reverse();
+								 if(result.length>0) {
+									 console.log(result);
+									 for(var i=0;i<result.length;i++) {
+										 var listr = $("<li class=\"first\"></li>");
+										 var istr = $("<i class=\"node-icon\"></i>");
+										 istr.appendTo(listr);
+										 var timespan = $("<sapn class=\"class=time\">"+result[i].AcceptTime+"</sapn>");
+										 timespan.appendTo(listr);
+										 var txtspan = $("<sapn class=\"class=time\">"+result[i].AcceptStation+"</sapn>");
+										 txtspan.appendTo(listr);
+										 listr.appendTo(ulstr);
+									 }
+								 }else{
+									 var listr = $("<li class=\"first\"></li>");
+									 var istr = $("<i class=\"node-icon\"></i>");
+									 istr.appendTo(listr);
+									 var txtspan = $("<sapn class=\"class=time\">暂无轨迹信息</sapn>");
+									 txtspan.appendTo(listr);
+									 listr.appendTo(ulstr);
+								 }
+							 }
+						}
+					});
+				}
+		}
+		$(function() {
+			$("#comfirmRefund").click(function() {
+				refund.applyRefund();
+			});
+			var orderId = $("#orderId").val();
+			refund.getExpressInfo(orderId);
+		});
+	</script>
+</body>
+</html>

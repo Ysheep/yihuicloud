@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.goodsclass.GoodsPropertiesSpecMapper" >
+  <resultMap id="BaseResultMap" type="com.qzdsoft.eshop.domain.goodsclass.GoodsPropertiesSpec" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="spec_id" property="specId" jdbcType="INTEGER" />
+    <result column="property_id" property="propertyId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="delete_status" property="deleteStatus" jdbcType="TINYINT" />
+  </resultMap>
+  
+  <select id="selectBy" resultType="com.qzdsoft.eshop.vo.goods.pc.GoodsSpecInfo">
+  	SELECT
+  		gi.spec_img_id specImgId
+		,gi.spec_id specId
+		,ac.url imageUrl
+		,ac.accessory_id accessoryId
+	FROM
+		`goods_properties_spec_img` gi
+	JOIN accessory ac ON gi.accessory_id = ac.accessory_id
+	WHERE
+	gi.goods_id = #{goodsId}
+	AND gi.spec_id = #{specId}
+  </select>
+  
+</mapper>

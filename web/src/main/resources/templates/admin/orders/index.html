@@ -1,0 +1,197 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+
+<body>
+
+<th:block layout:fragment="content">
+<div>
+  <form class="layui-form search" id="searchForm">
+  <div class="layui-form-item layui-elem-quote">
+    <div class="layui-inline" style="margin-left:-60px;">
+      <label class="layui-form-label" style="width:120px;">关键字</label>
+      <div class="layui-input-inline" style="width:200px">
+        <input type="text" name="keyWord" class="layui-input" placeholder="请输入订单号，手机号，姓名"/>
+      </div>
+    </div>
+   <div class="layui-inline" style="margin-left:-60px;">
+      <label class="layui-form-label" style="width:120px;">订单状态</label>
+      <div class="layui-input-inline" style="width:200px">
+      	<select name="orderStatus">
+      		<option value="">请选择订单状态</option>
+      		<option th:each="ec:${orderStatus}" th:value="${ec.code}" th:text="${ec.value}"></option>
+      	</select>
+      </div>
+    </div>
+    
+    <div class="layui-inline">
+      <label class="layui-form-label" style="width:60px;margin-left:-20px">下单时间</label>
+      <div class="layui-input-inline" style="width:100px">
+        <input type="text" id="startDate" class="layui-input" name='startTime'/>
+      </div>
+       <div class="layui-form-mid">-</div>
+      <div class="layui-input-inline" style="width:100px">
+        <input type="text" id="endDate" class="layui-input" name="endTime"/>
+      </div>
+    </div>
+    
+    <div class="layui-inline">
+      <div class="layui-input-inline" style="width:50px;">
+        <button class="layui-btn" id="searchBtn" type="button" >查询</button>
+      </div>
+    </div>
+    
+  </div>
+ </form>
+</div>
+
+<table class="layui-table"  id="tab" lay-filter="tab"></table>
+<script>
+var ins,page,trobj,editdialogindex,table;
+$(function(){ 
+	layui.use("laydate",function(){
+		var laydate = layui.laydate;
+		laydate.render({
+			  elem: '#startDate'//指定元素
+			  
+			  ,done: function (value,date,enddate){
+				  console.log(value);
+				  console.log(date);
+				  console.log(enddate);
+			  }
+			});
+		laydate.render({
+			  elem: '#endDate' //指定元素
+			  ,done: function(value,date,enddate){
+				console.log(value);				 
+			  }
+			});
+	});
+	layui.use(['table','layer','element'], function(){
+		var element = layui.element;
+		table = layui.table;
+		ins =table.render({ //其它参数在此省略
+		 elem:"#tab",
+		 url: '/admin/orders/data',
+		 cols:[[
+		      {field:'orderNo', width:330,title:'订单号',fixed:true},
+		      {field:'goodsTotalPrice',width:100,title:'总金额(元)'},
+		      {field:'payType',width:120,title:'支付方式'},
+		      {field:'onlinePayMoney',width:150,title:'在线支付金额(元)'},
+		      {field:'balancePayMoney',width:150,title:'余额支付金额(元)'},
+		      {field:'carrige',width:150,title:'应收运费(元)'},
+		      {field:'endCarrige',width:150,title:'实收运费(元)'},
+		      {field:'invoice',width:100,title:'发票'},
+		      {field:'splitStatus',width:100,title:'分润状态'},
+		      {field:'status',width:100,title:'订单状态'},
+		      {field:'userRemark',width:100,title:'用户备注'},
+		      {field:'ctime',width:180,title:'下单时间'},
+		      {align:'center',fixed:'right',width:300, toolbar:'#toolbar',title:'操作'}
+		 ]]
+	    ,page: true //是否显示分页
+	    ,limits: [10,20,50]
+	    ,limit:10 //每页默认显示的数量
+	    ,even:true
+		  //where:{phone:phone}
+		  //method: 'post'
+		 ,done:function(res,curr,count){
+			 console.log(res);
+			 page = curr;
+			    //得到当前页码
+			    console.log(curr); 
+			    
+			    //得到数据总量
+			    console.log(count);
+		 }
+		});
+		
+		table.on("tool(tab)",function(obj) {
+			  var data = obj.data;//当前行数据
+			  var layEvent = obj.event; //获得 lay-event 对应的值
+			  console.log("obj"+obj.event);
+			  trobj = obj;
+			  var tr = obj.tr; //获得当前行 tr 的DOM对象
+			  if(layEvent == 'sneding'){
+				  if(data.orderStatus != 1) {
+					  layer.msg("订单未支付，不能发货");
+					  return false;
+				  }
+				  $.get('/admin/orders/delivery?orderId='+data.orderId, {}, function(str){
+					  editdialogindex = layer.open({
+							title:"订单发货",
+						    type: 1,
+						    area: ['500px', '400px'],
+						    content: str, //注意，如果str是object，那么需要字符拼接。
+						    zIndex:10
+						  });
+						});
+			  }else if(layEvent == 'view') {
+				  window.parent.addTabFrame('/admin/orders/detail?orderId='+data.orderId,"订单详情"+data.orderId,"订单详情");
+			  }else if(layEvent == 'refund') {
+				  if(data.orderStatus != 2) {
+					  layer.msg("订单未申请退款，不能退款");
+					  return false;
+				  }
+				  $.get('/admin/orders/refund?orderId='+data.orderId, {}, function(str){
+					  editdialogindex = layer.open({
+							title:"订单退款",
+						    type: 1,
+						    area: ['350px', '300px'],
+						    content: str, //注意，如果str是object，那么需要字符拼接。
+						    zIndex:10
+						  });
+						});
+			  }else if(layEvent == 'Redelivery') {
+				  if(data.orderStatus != 4) {
+					  layer.msg("订单未发货，不能修改物流");
+					  return false;
+				  }
+				  $.get('/admin/orders/delivery?orderId='+data.orderId, {}, function(str){
+					  editdialogindex = layer.open({
+							title:"修改物流",
+						    type: 1,
+						    area: ['500px', '400px'],
+						    content: str, //注意，如果str是object，那么需要字符拼接。
+						    zIndex:10
+						  });
+						});
+			  }else if(layEvent == 'edit') {
+				  $.get('/admin/orders/editinit?orderId='+data.orderId, {}, function(str){
+					  editdialogindex = layer.open({
+							title:"修改订单",
+						    type: 1,
+						    area: ['500px', '400px'],
+						    content: str, //注意，如果str是object，那么需要字符拼接。
+						    zIndex:10
+						  });
+						});
+			  }
+		});
+		
+		$("#searchBtn").click(function(){
+			var table = layui.table;
+		    ins.reload({url: '/admin/orders/data',where:$("#searchForm").serializeJson()})
+		    return false;
+		});
+	});
+}); 
+
+</script>
+<!-- <a class="layui-btn layui-btn-xs" lay-event="edit" >订单修改</a> -->
+<!-- <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refund">退款</a> -->
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs layui-btn-primary" lay-event="view">订单详情</a>
+	{{# if (d.orderStatus == 1  ) { }}
+	<a class="layui-btn layui-btn-xs" lay-event="sneding">发货</a>
+	{{#} }}
+	{{# if (d.orderStatus == 4) { }}
+	<a class="layui-btn layui-btn-xs" lay-event="Redelivery">修改物流</a>
+	{{#} }}
+	{{# if (d.orderStatus == 2  ) { }}
+	
+	{{#} }}
+</script>
+</th:block>
+</body>
+</html>

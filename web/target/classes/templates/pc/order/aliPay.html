@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head th:replace="pc/commons/tabhead::headc">
+<meta charset="UTF-8">
+<title>支付宝支付</title>
+</head>
+<body id="center">
+<input type="hidden" id="orderNo" th:value="${order.orderNo}">
+<input type="hidden" id="orderId" th:value="${order.orderId}">
+
+</body>
+<script type="text/javascript">
+	$(function() {
+		$.ajax({
+			url:'/user/orders/aliPay',
+			type:'post',
+			data:{'orderNo':$("#orderNo").val()},
+			success:function(data) {
+				if(data.code == 200) {
+					$('#center').append(data.result);
+// 					$("form").attr("target", "_blank");
+					document.forms[0].submit();
+// 					setTimeout(function () {
+// 						location.href="/user/orders/detail?orderId="+$("#orderId").val();
+// 				  }, 1000);
+				}else{
+					location.href="/user/orders/detail?orderId"+$("#orderId");
+				}
+			}
+		});	
+		
+	});
+</script>
+</html>

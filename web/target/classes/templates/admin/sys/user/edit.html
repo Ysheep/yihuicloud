@@ -1,0 +1,96 @@
+<style>
+.layui-input-block{
+margin-left:120px;
+}
+</style>
+<form class="layui-form" action="" id="orderEditForm" style="position: absolute;">
+<div class="layui-row"  style="margin-top:10px;">
+	  <input type="hidden" name="userId" th:value="${obj.userId}"/>
+	    <div class="layui-form-item" style="">
+		    <label class="layui-form-label required" style="width:80px;">名称</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="text" name="name" class="layui-input" th:value="${obj.name}"  lay-verify="required" />
+		    </div>
+	   </div>
+ 
+
+  
+  <div class="layui-form-item" style="">
+		    <label class="layui-form-label required" style="width:80px;">联系电话</label>
+		    <div class="layui-input-block" style="width:200px;">
+		         <input type="text" name="phone"  class="layui-input" th:value="${obj.phone}" lay-verify="required|phone"/>
+		    </div>
+	   </div>
+	
+	
+	<div class="layui-form-item" style="">
+	    <label class="layui-form-label" style="width:80px;">密码</label>
+	    <div class="layui-input-block" style="width:200px;">
+	      <input type="password" class="layui-input"   name="password"   >
+	    </div>
+	</div>
+	<div class="layui-form-item" style="">
+	    <label class="layui-form-label" style="width:80px;">角色</label>
+	    <div class="layui-input-block" style="width:200px;">
+	    	<select name="roleId">
+	    		<option th:each="ec:${roleList}" th:value="${ec.roleId}" th:text="${ec.name}" th:selected="${ec.roleId}==${obj.roleId}"></option>
+	    	</select>
+	    </div>
+	</div>
+	
+	<div class="layui-form-item" style="">
+	    <label class="layui-form-label" style="width:80px;">状态</label>
+	    <div class="layui-input-block" style="width:200px;">
+	    	<select name="deleteStatus">
+	    		<option th:each="ec:${status}" th:value="${ec.code}" th:text="${ec.value}" th:selected="${ec.code}==${obj.deleteStatus}"></option>
+	    	</select>
+	    </div>
+	</div>
+  	
+</div>
+  
+ <div class="layui-row" style="margin-top:20px;margin-left:60px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12" style="text-align:center;">
+          <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode="40">提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+    <div id="menuContent" class="menuContent layui-bg-gray" style="display:none; position: absolute;">
+    <ul id="treeDemo" class="ztree" style="margin-top:0; width:160px;"></ul>
+    </div>
+</form>
+
+<script>
+
+//start use
+layui.use('form', function(){
+	
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	//监听表单提交
+	form.on('submit(formSubmit)',function(data) {
+		$.ajax({url:'/admin/sys/user/editExcude',
+			data:$("#orderEditForm").serializeJson(),
+			type:"get",
+			contentType:"application/json",
+			success:function(data){
+				if(data.code==200){
+					layer.msg(data.message);
+					$.reloadData("searchBtn");
+					layer.closeAll();
+				}else{
+					layer.msg(data.message);
+				}
+			}});
+		return false;
+	});
+	$('#closeBtn').click(function() {
+		layer.close(editdialogindex);
+	});
+	
+});
+//end use
+</script>

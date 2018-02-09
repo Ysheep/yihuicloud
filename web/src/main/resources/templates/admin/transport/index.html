@@ -1,0 +1,132 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      >
+<head th:replace="fragments/tabhead::headc"></head>
+
+<body>
+<th:block layout:fragment="content">
+<style>
+.template-table{
+	 text-align:center;
+}
+.template-table .no-template{
+	margin:0 auto;
+}
+</style>
+<div class="search-form">
+  <form class="layui-form search" id="searchForm">
+  <div class="layui-form-item layui-elem-quote">
+    <div class="layui-inline">
+      <div class="layui-input-inline" style="width:300px;">
+        <button class="layui-btn" id="addBtn" type="button" >模板新增</button>
+        <button class="layui-btn" id="searchBtn" type="button" >查询</button>
+      </div>
+    </div>
+  </div>
+ </form>
+</div>
+<div class="layui-fluid template-table"  >
+	<div class="data-template" th:remove="${modelength}==0?'all':'none'">
+			<div class="operation" th:each="mode:${models}">
+				<table class="layui-table" style="margin-bottom:0px;"id="opertable" >
+                    <tr style="background-color:#f2f2f2;">
+                      <td>
+                      	  <span th:text="${mode.name}"></span>
+                      	  <div style="float:right;">
+                      	  <span style="margin-right:20px;" th:text="'最后编辑时间:'+${mode.addTime}">
+	                      </span>
+<!-- 	                      <a href="javascript:void(0);">编辑</a>| -->
+	                      <a class="layui-btn layui-btn-xs layui-btn-danger" href="javascript:void(0);" onclick="deltemplate(this);" th:attr="data-templateid=${mode.templateId}">删除</a>
+                      	  </div>
+                      </td>
+                    </tr>
+                  </table>
+                   <table class="layui-table" style="margin-top:0px;"  id="opertable" >
+                    <tr id="opertitle" th:remove="${mode.pricingMethod}!=1?'all':'none'">
+                      <td width="12%" >配送方式</td>
+                      <td>配送区域</td>
+                      <td width="8%">首件(件)</td>
+                      <td width="8%">运费(¥)</td>
+                      <td width="8%">续件(件)</td>
+                      <td width="8%">运费(¥)</td>
+                    </tr>
+                    <tr id="opertitle" th:remove="${mode.pricingMethod}!=2?'all':'none'">
+                      <td width="12%" >配送方式</td>
+                      <td>配送区域</td>
+                      <td width="8%">首重(kg)</td>
+                      <td width="8%">运费(¥)</td>
+                      <td width="8%" >续重(kg)</td>
+                      <td width="8%" >运费(¥)</td>
+                    </tr>
+                    <tr class="opertr" th:each="carry:${mode.carryWays}">
+                      <td th:text="${carry.carryName}"></td>
+                      <td th:text="${carry.RegionList}"></td>
+                      <td th:remove="${carry.firstPiece}!=null?'none':'all'" th:text="${carry.firstPiece}"></td>
+                      <td th:remove="${carry.firstWeight}!=null?'none':'all'" th:text="${carry.firstWeight}"></td>
+                      <td th:text="${carry.firstAmount}"></td>
+                      <td th:remove="${carry.secondPiece}!=null?'none':'all'" th:text="${carry.secondPiece}"></td>
+                      <td th:remove="${carry.secondWeight}!=null?'none':'all'" th:text="${carry.secondWeight}"></td>
+                      <td th:text="${carry.secondAmount}"></td>
+                    </tr>
+                  </table>
+			</div>
+	</div>
+	<div class="no-template" th:remove="${modelength}!=0?'all':'none'">
+		<div>没有添加模板</div>
+	</div>
+</div>
+<script>
+var layer
+layui.use('layer',function() {
+	layer = layui.layer;
+	
+	$("#addBtn").click(function() {
+		window.parent.addTabFrame('/admin/template/add',"模板新增","模板新增");
+	});
+	
+});
+function deltemplate(obj) {
+	var $del = $(obj);
+	var ele=obj.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
+	console.log("data-templateid="+$del.attr("data-templateid"));
+	var templateid= $del.attr("data-templateid");
+	layer.confirm('删除后不可恢复，是否继续?',{
+		  btn: ['是','否'],offset: '200px'},function() {
+			  $.post('/admin/template/deltemplate?templateId='+templateid,{},function(data) {
+				  if(data.code==200) {
+				    layer.msg(data.message);
+				    ele.remove();
+				  }else{
+					layer.msg(data.message);
+				  }
+			  });
+		  },function() {
+			  
+		  });
+	
+}
+
+$("#searchBtn").click(function(){
+	location.reload();
+    return false;
+});
+</script>
+<script id="demo" type="text/html">
+{{#  layui.each(d, function(index, item){ }}
+  <div class="w320">
+	<label class="layui-form-label" style="width:40px;" value="{{item.propertyId}}">{{ item.propertyName}}</label>
+	<div class="layui-input-block w520" id="properties_{{item.propertyId}}">
+		  {{#  layui.each(item.spec, function(index, item2){ }}
+					<input type='checkbox' name='encrypt_{{item.propertyId}}' lay-filter="encrypt_{{item.propertyId}}" value="{{ item2.code}}" title='{{ item2.value}}'>
+  		  {{#  }); }}
+  		   
+	</div>
+  </div>
+{{#  }); }}
+</script>
+
+
+
+</th:block>
+</body>
+</html>

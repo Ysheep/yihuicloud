@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qzdsoft.eshop.mapper.user.UserQueryMapper" >
+
+	<select id="selectByInfo" resultType="com.qzdsoft.eshop.vo.sys.UserInfo" parameterType="com.qzdsoft.eshop.vo.sys.UserQueryInfo">
+		SELECT
+			a.user_id userId
+			,a.user_name userName
+			,a.phone phone
+			<!-- ,a.password password -->
+			,a.wx_id wxId
+			,a.head_img headImg
+			,a.sex sex
+			,a.level level
+			,a.birthday
+			,a.email
+			,a.true_name trueName
+			,a.address 
+			,DATE_FORMAT(a.reg_time,'%Y-%m-%d %H:%i:%S') regTime
+			,a.referee_id refereeId
+			,a.balance
+			,a.freeze_money freezeMoney
+			,b.user_name refereeName
+		FROM
+			`user` a
+		LEFT JOIN `user` b ON a.referee_id = b.phone
+		WHERE 1=1
+		<if test="null != sreachKey and sreachKey!=''">
+			AND (a.phone LIKE CONCAT(#{sreachKey},"%") OR a.user_name LIKE CONCAT(#{sreachKey},"%"))
+		</if>
+	</select>
+	<select id="findCustomer" resultType="com.qzdsoft.eshop.vo.sys.CustomerInfo">
+		SELECT
+			user_id,
+			user_name userName,
+			true_name trueName,
+			phone
+		FROM
+			`user`
+		WHERE 1=1
+		<if test="type==1">
+		AND referee_id=#{userId}
+		</if>
+		<if test="type==2">
+		AND referee_id in
+				(SELECT user_id FROM `user` WHERE referee_id=#{userId})
+		</if>
+	</select>
+</mapper>

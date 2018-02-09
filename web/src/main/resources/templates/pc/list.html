@@ -1,0 +1,111 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	<head th:replace="pc/commons/tabhead::headc">
+	</head>
+<body>
+
+<!-- ===============  模态窗口 登录注册  start  =============== -->
+
+    <div class="grayDiv"></div>
+    <div th:include="pc/commons/header :: login"></div>
+
+<!-- ===============  模态窗口 登录注册 end  =============== -->
+
+<!-- ===============  顶部通栏 start  =============== -->
+
+    <div th:include="pc/commons/header :: top-bar"></div>
+
+<!-- ===============  header头部logo以及导航栏 end  =============== --> 
+
+<!-- ===============  栏目  start  =============== --> 
+ <div th:include="pc/commons/header :: header-column "></div>
+<!-- ===============  栏目  end  =============== --> 
+
+<!-- ===============  面包屑导航 start  =============== --> 
+    <div class="breadcrumbs">
+        <div class="breadcrumbs-con">
+            <a href="/">首页</a><span th:remove="${classNmae}!=''?'none':'all'">&nbsp;>&nbsp;</span><span th:remove="${classNmae}!=''?'none':'all'"><a th:text="${classNmae}!=null?${classNmae}:''" th:href="@{${'list'}(classId=${classId})}"></a></span><span th:remove="${systemName}!=''?'none':'all'">&nbsp;>&nbsp;</span><span th:remove="${systemName}!=''?'none':'all'"><a th:text="${systemName}!=null?${systemName}:''" th:href="@{${'list'}(systemId=${systemId})}"></a></span><span th:remove="${isPackagename}!=''?'none':'all'">&nbsp;>&nbsp;</span><span th:remove="${isPackagename}!=''?'none':'all'"><a th:text="${isPackagename}!=null?${isPackagename}:''" th:href="@{${'list'}(isPackage=${isPackage})}"></a></span>
+        </div>
+    </div>
+    <div class="filter-box">
+        <div class="filter-con">
+            <div class="filter-list clearfix filter-border">
+                <div class="filter-title fl">分类：</div>
+                <ul class="filter-item fl">
+                    <li><a href="list">全部</a></li><!-- th:href="'list?classId='+${cl.code}" -->
+                    <li th:each="cl:${gc}"><a th:href="@{${'list'}(classId=${cl.code},systemId=${systemId},isPackage=${isPackage})}" th:text="${cl.value}"></a></li>
+                </ul>
+                <a href="javascript:;" class="filter-more-btn">更多>></a>
+            </div>
+            <div class="filter-list clearfix">
+                <div class="filter-title fl">系统：</div>
+                <ul class="filter-item fl">
+                    <li><a href="list">全部</a></li><!-- th:href="'list?systemId='+${s.code}" -->
+                    <li th:each="s:${syscode}"><a th:href="@{${'list'}(systemId=${s.code},classId=${classId},isPackage=${isPackage})}" th:text="${s.value}">ZigBee二代</a></li>
+                   <!--  <li><a href="#">通用系列</a></li> -->
+                </ul>
+                <a href="javascript:;" class="filter-more-btn"></a>
+            </div>
+        </div>
+    </div>
+<!-- ===============  搜索结果列表 start  =============== --> 
+<div class="goods-search-wrap">
+    <div class="goods-search" th:remove="${#lists.size(goods.data)}  eq '0'?'all':'none'">
+        <ul class="goods-search-list clearfix">
+            <li th:each="good:${goods.data}">
+                <dl>
+                    <dt><a th:href="'detail.html?goodsId='+${good.goodsId}"><img th:src="${good.imageUrl}" alt="" /></a></dt>
+                    <dd class="smart-name"><a href="#" th:text="${good.name}">亿慧云智能门锁</a></dd>
+                    <dd class="smart-price" th:text="${good.price}">2999元</dd>
+                    <dd class="smart-cart"><a th:href="'/goods/detail.html?goodsId='+${good.goodsId}">加入购物车</a></dd>
+                </dl>
+            </li>
+            
+        </ul>
+    </div>
+  <div class="filter-box" th:remove="${#lists.size(goods.data)}  eq '0'?'none':'all'">
+        <div class="empty-search">
+        <p class="empty-filter-hd"><span>抱歉，没有搜索到相关的商品</span></p>
+    </div>
+  </div>
+   <div class="page" th:remove="${goods.totalPageNum}==0?'all':'none'">
+	    <div class="table-pagination">
+	    	<ul class="pagination">
+	    		<li th:text="'第'+${goods.nowPager}+'/共'+${goods.totalPageNum}+'页'"></li>
+	    		<li th:class="${goods.nowPager} eq '1'? 'disabled' : ''">
+	    			<a th:if="${ not goods.firstPage}" th:href="@{${'list'}(classId=${classId},systemId=${systemId},isPackage=${isPackage},page=${goods.nowPager-1})}">上一页</a>
+	    			<a th:if="${  goods.firstPage}" href="javascript:void(0);">上一页</a>
+	    		</li>
+<!-- 	    		<li th:each="pageNo : ${#numbers.sequence(1, goods.totalPageNum )}" th:class="${goods.nowPager eq pageNo}? 'active' : ''"> -->
+<!-- 	    			<a th:if="${goods.nowPager  eq pageNo}" href="javascript:void(0);" th:class="${goods.nowPager eq pageNo}? 'curr' : ''"> -->
+<!-- 	                	<span th:text="${pageNo}"></span> -->
+<!-- 	            	</a> -->
+<!-- 	            	<a th:if="${not (goods.nowPager  eq pageNo)}" th:href="@{${'list'}(classId=${classId},systemId=${systemId},isPackage=${isPackage},page=${pageNo})}"> -->
+<!-- 	                	<span th:text="${pageNo}"></span> -->
+<!-- 	            	</a> -->
+<!-- 	    		</li> -->
+	    		<li th:class="${goods.nowPager  ge goods.totalPageNum} ? 'disabled' : ''">
+		            <a th:if="${not goods.lastPage}" th:href="@{${'list'}(classId=${classId},systemId=${systemId},isPackage=${isPackage},page=${goods.nowPager+1})}">下一页</a>
+		            <a th:if="${goods.lastPage}" href="javascript:void(0);">下一页</a>
+	        	</li>
+	        	<li th:class="${goods.nowPager  ge goods.totalPageNum} ? 'disabled' : ''">
+	        		<a th:if="${not goods.lastPage}" th:href="@{${'list'}(classId=${classId},systemId=${systemId},isPackage=${isPackage},page=${goods.totalPageNum})}">末页</a>
+	        		<a th:if="${goods.lastPage}" href="javascript:void(0);">末页</a>
+	        	</li>
+	    	</ul>
+	    </div>
+    </div>
+</div>
+
+<!-- ===============  footer页脚 start  =============== --> 
+	 <div th:include="pc/commons/footer::footer"></div>
+<!-- ===============  footer页脚 end  =============== -->     
+<!-- ======================  在线客服 start ======================= -->
+    <div class="main-im" th:include="pc/commons/footer-links::footer-links"></div>
+<!-- ======================  在线客服 end ======================= -->
+</body>
+</html>
+
+
+

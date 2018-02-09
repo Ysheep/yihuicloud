@@ -1,0 +1,196 @@
+
+<style>
+.click{
+	color:#009688;text-decoration:underline;cursor: pointer;
+}
+.layui-input-block{
+margin-left:120px;
+}
+input:checkbox{
+	width:150px;heigth:35px;
+}
+.w90{width:90px;height:90px;margin-left:2px;}
+.w320{width:320px;margin-top:10px;}
+.w321{width:320px;margin-top:10px;margin-left:-50px;}
+.w320 input{margin:2px 3px;}
+.w520{width:520px;}
+</style>
+ <form class="layui-form" action="" id="orderEditForm" style="">
+	<div class="layui-row"  style="margin-top:10px;">
+	  <div class="w321">
+		    <label class="layui-form-label required" style="width:90px;">商品</label>
+		    <div class="layui-input-block" style="width:200px;">
+				<select name="goodsId"  style="width:200px;height:58px;" id="goodsId" lay-verify="required" required lay-ignore>
+				</select>
+		    </div>
+	   </div>
+	</div>
+	<div class="layui-row"  style="width:600px;margin-top:10px;">
+		 <div class="layui-upload required">
+			  <button type="button" class="layui-btn " style="" id="test2">选择图片</button>（支持*.png;*.jpg;*.gif等格式上传，建议选择尺寸400x250以上的图片）
+			  <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="display:none;" id="tips2">&#xe63d;</i>
+		 </div>
+		  <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;height:145px;">
+		    预览图：
+		    <div class="layui-upload-list" id="demo2" >
+		    	<input type="hidden" name="accessoryId" id="advertiseUrl" value=''>
+	    	 	<img class="layui-upload-img w90" id="imageDemo1">
+	    	  	<p id="demoText"></p>
+		    </div>
+		 </blockquote>
+	</div>
+	
+
+ <div class="layui-row" style="margin-bottom:20px;margin-top:20px;">
+    <div class="layui-col-xs12 layui-col-sm12 layui-col-md12"  style="text-align:center;">
+        <button class="layui-btn" lay-submit="" lay-filter="formSubmit" authcode='72'>提交</button>
+      	<button type="button" class="layui-btn layui-btn-primary" id="closeBtn">关闭</button>
+    </div>
+  </div>
+</form>
+
+
+<script>
+
+//start use
+layui.use(['form','upload'], function(){
+	  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+	  var upload = layui.upload;
+	  //……
+	  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+	  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+	  form.render();
+	  var uploadInst = upload.render({
+		    elem: '#test2'
+		        ,url: '/admin/goods/upload'
+		       // ,multiple: true
+		        ,before: function(obj){
+		          //预读本地文件示例，不支持ie8
+		         obj.preview(function(index, file, result){
+					$("#imageDemo1").attr('src', result);
+		         }); 
+		        }
+		        ,done: function(res){
+		          //上传完毕
+		          if(res.code==200){
+		        	  $("#imageDemo1").attr('src', res.result.value);
+		        	  $("#advertiseUrl").val(res.result.code);
+		        	  var demoText = $('#demoText');
+		        	  demoText.html('<span style="color: #FF5722;">上传成功</span>');
+		            form.render();
+		          }else{
+		        	  var demoText = $('#demoText');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+		              demoText.find('.demo-reload').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		        }
+		        ,error: function(){
+		        	 var demoText = $('#demoText');
+		              demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+		              demoText.find('.demo-reload').on('click', function(){
+		              	uploadInst.upload();
+		              });
+		          }
+		      });
+	  
+	  
+	 	$("[name='goodsId']").select2({
+			  ajax: {
+				    url: "/admin/ad/goodsList",
+				    dataType: 'json',
+				    delay: 350,
+				    data: function (params) {
+				      console.log(params.page);
+				      return {
+				    	name: params.term,
+				        page: params.page,
+				        limit:30
+				      };
+				    },
+				    processResults: function (data, params) {
+				      params.page = params.page || 1;
+				     // console.log(JSON.stringify(data))
+				     var resultJson = [];
+				     for(var i=0;i<data.data.length;i++){
+				    	 var dataI = data.data[i];
+				    	 dataI.id=data.data[i].code;
+				    	 resultJson.push(dataI)
+				     }
+				      return {
+				        results: resultJson,
+				        pagination: {
+				          more: (params.page * 30) < data.count
+				        }
+				      };
+				    },
+				    cache: true
+				  },
+				  escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+				  minimumInputLength: 0,//最小输入字符，输入最小字符后开始后台请求
+				  templateResult: formatRepo, // 处理远程返回数据
+				  templateSelection: formatRepoSelection // 设置下拉选中后显示内容
+				}); 
+				
+		  	function formatRepo (repo) {
+		  		//下拉展示内容可以修改自定义样式
+		      if (repo.loading) return repo.text;
+		      var markup = "<div class=\"layui-row\" style='width:280px;'>" +
+		     "<div class=\"layui-col-xs8 layui-col-sm8 layui-col-md9\">" +
+		      	"<div class=\"grid-demo grid-demo-bg1\">"+repo.value+"</div>" +
+		     "</div>";
+
+		      return markup;
+		    }
+
+		  	function formatRepoSelection (repo) { 
+		    	if(repo.value==null || repo.value=='') {
+		    		return repo.text;
+		    	}
+		      return repo.value;//选中返回select中的值
+		    }
+		
+		  var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+		  //……
+		  //但是，如果你的HTML是动态生成的，自动渲染就会失效
+		  //因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+		  form.render();
+		//select2选中事件
+		  $("[name='goodsId']").on("select2:select",function(e){ 
+			  console.log(e.params);
+			  var id = e.params.data.code;
+		  }) 
+	  
+		  form.on('submit(formSubmit)',function(data) {
+			 var param =  $("#orderEditForm").serializeJson()
+			 console.log(param.goodsId);
+			 console.log(param.accessoryId);
+			 if(param.accessoryId == null || param.accessoryId == '') {
+				 layer.msg("请上传广告图片");
+				 return false;
+			 }
+			 $.ajax({url:'/admin/ad/add_excuted',
+					data:param,
+					type:"get",
+					contentType:"application/json",
+					success:function(data){
+						if(data.code==200){
+							layer.msg("数据保存成功！");
+							$.reloadData("searchBtn");
+							layer.closeAll();
+						}else{
+							layer.msg(data.message);
+						}
+					}});
+				return false;
+		  });
+	$('#closeBtn').click(function() {
+		layer.closeAll();
+	});
+	
+
+//end use
+
+});
+</script>
